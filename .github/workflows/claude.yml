@@ -1,4 +1,3 @@
-
 name: Claude Code
 on:
     issue_comment:
@@ -9,7 +8,6 @@ on:
         types: [opened, assigned]
     pull_request_review:
         types: [submitted]
-
 jobs:
     claude:
         if: |
@@ -17,21 +15,30 @@ jobs:
             (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
             (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
             (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
-
         runs-on: ubuntu-latest
-
         permissions:
             contents: write
             pull-requests: write
             issues: write
             id-token: write
-
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
               with:
                   fetch-depth: 1
-
+            
+            # 認証情報キャッシュを追加
+            - name: Cache Claude credentials
+              uses: actions/cache@v4
+              with:
+                  path: |
+                      ~/.claude
+                      /home/runner/.claude
+                  key: claude-auth-${{ github.repository }}-${{ runner.os }}
+                  restore-keys: |
+                      claude-auth-${{ github.repository }}-
+                      claude-auth-
+            
             - name: Run Claude Code
               id: claude
               uses: 2424takumi/claude-code-action@main
