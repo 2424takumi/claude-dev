@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridMe デザインシステム デモ</title>
+    
+    <!-- フォントの読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- デザインシステムの読み込み -->
+    <link rel="stylesheet" href="../styles/design-tokens.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            color: var(--text-primary);
+            background: var(--bg-primary);
+            line-height: var(--leading-normal);
+        }
+        
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--spacing-6);
+        }
+        
+        .section {
+            margin-bottom: var(--spacing-16);
+        }
+        
+        .section-title {
+            font-size: var(--text-3xl);
+            font-weight: var(--font-bold);
+            margin-bottom: var(--spacing-8);
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-6);
+        }
+        
+        .flex {
+            display: flex;
+            gap: var(--spacing-4);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .hero {
+            background: var(--gradient-mesh);
+            filter: blur(100px);
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        
+        .demo-card {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-4);
+        }
+        
+        h3 {
+            font-size: var(--text-xl);
+            font-weight: var(--font-semibold);
+            margin-bottom: var(--spacing-2);
+        }
+        
+        p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-4);
+        }
+    </style>
+</head>
+<body>
+    <div class="hero"></div>
+    
+    <div class="container">
+        <!-- ヘッダー -->
+        <section class="section">
+            <h1 class="section-title">GridMe デザインシステム</h1>
+            <p style="font-size: var(--text-lg); max-width: 600px;">
+                Z世代向けのモダンで「シンプルだけどワクワクする」デザインシステムです。
+                このページでは、すべてのコンポーネントとスタイルを確認できます。
+            </p>
+        </section>
+        
+        <!-- ボタン -->
+        <section class="section">
+            <h2 class="section-title">ボタン</h2>
+            <div class="flex">
+                <button class="btn-primary">プライマリボタン</button>
+                <button class="btn-ghost">ゴーストボタン</button>
+                <button class="btn-secondary">セカンダリボタン</button>
+                <button class="btn-icon">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/>
+                    </svg>
+                </button>
+            </div>
+        </section>
+        
+        <!-- カード -->
+        <section class="section">
+            <h2 class="section-title">カード</h2>
+            <div class="grid">
+                <div class="card demo-card">
+                    <h3>ベースカード</h3>
+                    <p>ホバーで浮き上がるエフェクトが特徴的なカードコンポーネントです。</p>
+                    <button class="btn-primary">詳細を見る</button>
+                </div>
+                
+                <div class="card-glass demo-card">
+                    <h3>グラスモーフィズム</h3>
+                    <p>背景が透けて見える、モダンなグラスモーフィズムスタイルです。</p>
+                    <button class="btn-ghost">詳細を見る</button>
+                </div>
+                
+                <div class="card-interactive demo-card">
+                    <h3>インタラクティブカード</h3>
+                    <p>カード全体がクリック可能で、ホバー時に微妙なグラデーションが現れます。</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- フォーム要素 -->
+        <section class="section">
+            <h2 class="section-title">フォーム要素</h2>
+            <div class="grid">
+                <div>
+                    <h3>テキスト入力</h3>
+                    <input type="text" class="input" placeholder="名前を入力">
+                </div>
+                
+                <div>
+                    <h3>テキストエリア</h3>
+                    <textarea class="textarea" placeholder="メッセージを入力"></textarea>
+                </div>
+                
+                <div>
+                    <h3>スイッチ</h3>
+                    <label class="switch">
+                        <input type="checkbox">
+                        <span class="switch-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+        
+        <!-- バッジ -->
+        <section class="section">
+            <h2 class="section-title">バッジ</h2>
+            <div class="flex">
+                <span class="badge badge-primary">新着</span>
+                <span class="badge badge-success">完了</span>
+                <span class="badge badge-warning">保留中</span>
+                <span class="badge badge-error">エラー</span>
+            </div>
+        </section>
+        
+        <!-- プログレスバー -->
+        <section class="section">
+            <h2 class="section-title">プログレスバー</h2>
+            <div class="progress">
+                <div class="progress-bar" style="width: 60%;"></div>
+            </div>
+        </section>
+        
+        <!-- タブ -->
+        <section class="section">
+            <h2 class="section-title">タブ</h2>
+            <div class="tabs">
+                <div class="tab active">概要</div>
+                <div class="tab">詳細</div>
+                <div class="tab">設定</div>
+                <div class="tab">ヘルプ</div>
+            </div>
+        </section>
+        
+        <!-- カラーパレット -->
+        <section class="section">
+            <h2 class="section-title">カラーパレット</h2>
+            <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+                <div class="card" style="background: var(--primary-solid); color: white; text-align: center;">
+                    <p style="color: white;">Primary</p>
+                    <small style="opacity: 0.8;">#6366F1</small>
+                </div>
+                <div class="card" style="background: var(--secondary-cyan); color: white; text-align: center;">
+                    <p style="color: white;">Cyan</p>
+                    <small style="opacity: 0.8;">#06B6D4</small>
+                </div>
+                <div class="card" style="background: var(--secondary-emerald); color: white; text-align: center;">
+                    <p style="color: white;">Emerald</p>
+                    <small style="opacity: 0.8;">#10B981</small>
+                </div>
+                <div class="card" style="background: var(--secondary-pink); color: white; text-align: center;">
+                    <p style="color: white;">Pink</p>
+                    <small style="opacity: 0.8;">#EC4899</small>
+                </div>
+                <div class="card" style="background: var(--accent-neon-purple); color: white; text-align: center;">
+                    <p style="color: white;">Neon Purple</p>
+                    <small style="opacity: 0.8;">#BF40BF</small>
+                </div>
+                <div class="card" style="background: var(--accent-coral); color: white; text-align: center;">
+                    <p style="color: white;">Coral</p>
+                    <small style="opacity: 0.8;">#FF6B6B</small>
+                </div>
+            </div>
+        </section>
+        
+        <!-- アニメーション -->
+        <section class="section">
+            <h2 class="section-title">アニメーション効果</h2>
+            <div class="flex">
+                <div class="card hover-lift" style="padding: var(--spacing-4);">
+                    <p>ホバーリフト</p>
+                </div>
+                <div class="card hover-scale" style="padding: var(--spacing-4);">
+                    <p>ホバースケール</p>
+                </div>
+                <div class="card glow" style="padding: var(--spacing-4);">
+                    <p>グロウ効果</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- トースト通知 -->
+        <div class="toast toast-success">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="var(--success)">
+                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/>
+            </svg>
+            <span>保存しました！</span>
+        </div>
+    </div>
+    
+    <script>
+        // タブの切り替え
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+        
+        // プログレスバーのアニメーション
+        setTimeout(() => {
+            document.querySelector('.progress-bar').style.width = '80%';
+        }, 500);
+    </script>
+</body>
+</html>
