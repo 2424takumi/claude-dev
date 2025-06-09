@@ -64,7 +64,7 @@
     // グリッドアイテムの作成
     function createGridItem(section, index) {
         const gridItem = document.createElement('div');
-        gridItem.className = `photo-theme-item theme-${section.theme}`;
+        gridItem.className = 'photo-theme-item';
         gridItem.dataset.index = index;
         
         // セクションコンテナ
@@ -74,22 +74,15 @@
         // タイトル表示
         const titleDiv = document.createElement('div');
         titleDiv.className = 'shared-section-title';
-        titleDiv.textContent = section.title || `セクション ${index + 1}`;
+        titleDiv.textContent = section.title || `テーマ ${index + 1}`;
         
-        // テーマバッジ
-        const themeBadge = document.createElement('span');
-        themeBadge.className = 'theme-badge';
-        themeBadge.textContent = getThemeLabel(section.theme);
-        
-        // コンテンツ表示
-        const contentDiv = document.createElement('div');
-        contentDiv.className = 'shared-section-content';
-        contentDiv.textContent = section.content || '';
+        // 写真表示エリア
+        const photoArea = document.createElement('div');
+        photoArea.className = 'photo-display-area';
         
         // 要素の組み立て
         sectionContainer.appendChild(titleDiv);
-        sectionContainer.appendChild(themeBadge);
-        sectionContainer.appendChild(contentDiv);
+        sectionContainer.appendChild(photoArea);
         gridItem.appendChild(sectionContainer);
         
         return gridItem;

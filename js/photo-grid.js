@@ -31,8 +31,6 @@
             this.row = row;
             this.col = col;
             this.title = '';
-            this.theme = 'default';
-            this.content = '';
         }
     }
     
@@ -80,62 +78,26 @@
         const sectionContainer = document.createElement('div');
         sectionContainer.className = 'grid-section-container';
         
-        // タイトル入力
+        // タイトル入力（テーマ入力として使用）
         const titleInput = document.createElement('input');
         titleInput.type = 'text';
         titleInput.className = 'section-title-input';
-        titleInput.placeholder = 'タイトル';
+        titleInput.placeholder = 'テーマを入力';
         titleInput.maxLength = 30;
         titleInput.value = section.title;
         titleInput.dataset.index = index;
         titleInput.dataset.field = 'title';
         
-        // テーマ選択
-        const themeSelect = document.createElement('select');
-        themeSelect.className = 'section-theme-select';
-        themeSelect.dataset.index = index;
-        themeSelect.dataset.field = 'theme';
-        
-        // テーマオプション
-        const themes = [
-            { value: 'default', label: 'デフォルト', color: '#f0f0f0' },
-            { value: 'warm', label: '暖色', color: '#ffe5cc' },
-            { value: 'cool', label: '寒色', color: '#cce5ff' },
-            { value: 'nature', label: '自然', color: '#d4f5d4' },
-            { value: 'elegant', label: 'エレガント', color: '#f5e6ff' },
-            { value: 'modern', label: 'モダン', color: '#e0e0e0' }
-        ];
-        
-        themes.forEach(theme => {
-            const option = document.createElement('option');
-            option.value = theme.value;
-            option.textContent = theme.label;
-            themeSelect.appendChild(option);
-        });
-        
-        themeSelect.value = section.theme;
-        
-        // コンテンツ入力
-        const contentTextarea = document.createElement('textarea');
-        contentTextarea.className = 'section-content-input';
-        contentTextarea.placeholder = 'コンテンツを入力';
-        contentTextarea.maxLength = 200;
-        contentTextarea.value = section.content;
-        contentTextarea.dataset.index = index;
-        contentTextarea.dataset.field = 'content';
+        // 写真表示エリア
+        const photoArea = document.createElement('div');
+        photoArea.className = 'photo-display-area';
         
         // イベントリスナーの追加
         titleInput.addEventListener('input', handleSectionUpdate);
-        themeSelect.addEventListener('change', handleSectionUpdate);
-        contentTextarea.addEventListener('input', handleSectionUpdate);
-        
-        // テーマの適用
-        applyThemeToSection(gridItem, section.theme);
         
         // 要素の組み立て
         sectionContainer.appendChild(titleInput);
-        sectionContainer.appendChild(themeSelect);
-        sectionContainer.appendChild(contentTextarea);
+        sectionContainer.appendChild(photoArea);
         gridItem.appendChild(sectionContainer);
         
         return gridItem;
@@ -148,12 +110,6 @@
         const value = e.target.value;
         
         state.gridSections[index][field] = value;
-        
-        // テーマが変更された場合は見た目を更新
-        if (field === 'theme') {
-            const gridItem = elements.themeGrid.querySelector(`[data-index="${index}"]`);
-            applyThemeToSection(gridItem, value);
-        }
         
         // 全てのセクションが完了しているかチェック
         checkAllSectionsCompleted();
@@ -172,8 +128,7 @@
     // 全てのセクションが完了しているかチェック
     function checkAllSectionsCompleted() {
         const allCompleted = state.gridSections.every(section => 
-            section.title.trim() !== '' && 
-            section.content.trim() !== ''
+            section.title.trim() !== ''
         );
         
         // 共有ボタンの有効/無効を制御
@@ -218,7 +173,7 @@
     // 共有機能
     async function shareGrid() {
         if (!checkAllSectionsCompleted()) {
-            showToast('全てのセクションにタイトルとコンテンツを入力してください', 'warning');
+            showToast('全てのセクションにテーマを入力してください', 'warning');
             return;
         }
         
@@ -226,9 +181,7 @@
         const shareData = {
             size: state.gridSize,
             sections: state.gridSections.map(section => ({
-                title: section.title,
-                theme: section.theme,
-                content: section.content
+                title: section.title
             }))
         };
         
@@ -294,8 +247,6 @@
                         const col = index % state.gridSize;
                         const gridSection = new GridSection(index, row, col);
                         gridSection.title = section.title || '';
-                        gridSection.theme = section.theme || 'default';
-                        gridSection.content = section.content || '';
                         return gridSection;
                     });
                 }
