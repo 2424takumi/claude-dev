@@ -202,7 +202,7 @@
         };
         
         const encodedData = btoa(JSON.stringify(shareData));
-        const shareUrl = `${window.location.origin}/shared.html?data=${encodedData}`;
+        const shareUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}shared.html?data=${encodedData}`;
         
         try {
             if (navigator.share) {

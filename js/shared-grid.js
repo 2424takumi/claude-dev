@@ -27,7 +27,7 @@
         if (!encodedData) {
             showToast('共有データが見つかりません', 'error');
             setTimeout(() => {
-                window.location.href = '/';
+                window.location.href = './index.html';
             }, 2000);
             return null;
         }
