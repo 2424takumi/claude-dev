@@ -1,7 +1,7 @@
 /**
  * GridMe テーマグリッドアプリケーション
  * 
- * 3x3のテーマグリッドでテーマを管理するインタラクティブなアプリケーション
+ * 動的サイズのテーマグリッドでテーマを管理するインタラクティブなアプリケーション
  */
 
 (function() {
@@ -10,11 +10,11 @@
     // 状態管理
     const state = {
         gridSize: 3,
-        gridThemes: []
+        gridThemes: [],
         currentTheme: '',
-        gridImages: new Array(81).fill(null),
+        gridImages: new Array(9).fill(null),
         selectedCell: null,
-        gridTexts: new Array(81).fill(null),
+        gridTexts: new Array(9).fill(null),
         gridComplete: false,
         shareId: null
     };
@@ -24,7 +24,7 @@
         themeGrid: document.getElementById('theme-grid'),
         mainShareBtn: document.getElementById('main-share-btn'),
         shareBtn: document.getElementById('share-btn'),
-        gridSizeSelect: document.getElementById('grid-size')
+        gridSizeSelect: document.getElementById('grid-size'),
         downloadBtn: document.getElementById('download-btn'),
         saveBtn: document.getElementById('save-btn'),
         uploadModal: document.getElementById('upload-modal'),
@@ -148,9 +148,10 @@
         const labels = [];
         const words = theme.split(/\s+/);
         const baseWords = ['写真', '思い出', '瞬間', '景色', '風景', '美しさ', '魅力', '感動'];
+        const totalCells = state.gridSize * state.gridSize;
         
         // テーマの単語とベース単語を組み合わせてラベルを生成
-        for (let i = 0; i < 81; i++) {
+        for (let i = 0; i < totalCells; i++) {
             if (Math.random() < 0.3) { // 30%の確率でテキストを配置
                 const wordIndex = Math.floor(Math.random() * words.length);
                 const baseIndex = Math.floor(Math.random() * baseWords.length);
@@ -175,8 +176,8 @@
     function clearGrid() {
         if (!confirm('すべての写真を削除しますか？')) return;
         
-        state.gridImages = new Array(81).fill(null);
-        state.gridTexts = new Array(81).fill(null);
+        state.gridImages = new Array(state.gridSize * state.gridSize).fill(null);
+        state.gridTexts = new Array(state.gridSize * state.gridSize).fill(null);
         state.gridComplete = false;
         state.shareId = null;
         updateGridDisplay();
@@ -201,7 +202,7 @@
         }
         
         // 新しい配列を作成
-        const newImages = new Array(81).fill(null);
+        const newImages = new Array(state.gridSize * state.gridSize).fill(null);
         filledCells.forEach((item, index) => {
             const newIndex = state.gridImages.findIndex((img, idx) => img !== null && !newImages.includes(img));
             if (newIndex !== -1) {
@@ -271,6 +272,9 @@
     function handleGridSizeChange(e) {
         const newSize = parseInt(e.target.value);
         state.gridSize = newSize;
+        // 画像とテキスト配列をリサイズ
+        state.gridImages = new Array(newSize * newSize).fill(null);
+        state.gridTexts = new Array(newSize * newSize).fill(null);
         initializeGrid();
         showToast(`グリッドサイズを${newSize}x${newSize}に変更しました`, 'success');
     }
@@ -358,7 +362,8 @@
     function checkGridCompletion() {
         // テキストがあるセルが全て画像で埋まっているかチェック
         let isComplete = true;
-        for (let i = 0; i < 81; i++) {
+        const totalCells = state.gridSize * state.gridSize;
+        for (let i = 0; i < totalCells; i++) {
             if (state.gridTexts[i] && !state.gridImages[i]) {
                 isComplete = false;
                 break;
@@ -418,8 +423,8 @@
                 elements.gridSizeSelect.value = state.gridSize;
                 const decodedData = JSON.parse(decodeURIComponent(atob(fullGridParam)));
                 state.currentTheme = decodedData.theme || '';
-                state.gridImages = decodedData.images || new Array(81).fill(null);
-                state.gridTexts = decodedData.texts || new Array(81).fill(null);
+                state.gridImages = decodedData.images || new Array(state.gridSize * state.gridSize).fill(null);
+                state.gridTexts = decodedData.texts || new Array(state.gridSize * state.gridSize).fill(null);
                 state.shareId = decodedData.timestamp;
                 state.gridComplete = true;
                 
@@ -450,7 +455,8 @@
                 // テキストを配置
                 if (decodedData.texts && Array.isArray(decodedData.texts)) {
                     let textIndex = 0;
-                    for (let i = 0; i < 81 && textIndex < decodedData.texts.length; i++) {
+                    const totalCells = state.gridSize * state.gridSize;
+                    for (let i = 0; i < totalCells && textIndex < decodedData.texts.length; i++) {
                         if (Math.random() < 0.3) { // 元の確率と同じくらいでテキストを配置
                             state.gridTexts[i] = decodedData.texts[textIndex];
                             textIndex++;
@@ -480,8 +486,8 @@
                 try {
                     const data = JSON.parse(savedData);
                     state.currentTheme = data.theme || '';
-                    state.gridImages = data.images || new Array(81).fill(null);
-                    state.gridTexts = data.texts || new Array(81).fill(null);
+                    state.gridImages = data.images || new Array(state.gridSize * state.gridSize).fill(null);
+                    state.gridTexts = data.texts || new Array(state.gridSize * state.gridSize).fill(null);
                     
                     if (state.currentTheme) {
                         elements.themeInput.value = state.currentTheme;
