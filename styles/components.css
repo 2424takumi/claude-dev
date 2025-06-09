@@ -112,6 +112,27 @@
   transform: scale(1.1);
 }
 
+/* ダークモード時のアイコンボタンスタイル */
+.dark-theme .btn-icon {
+  background: var(--neutral-800);
+  color: white;
+}
+
+.dark-theme .btn-icon:hover {
+  background: var(--neutral-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  .btn-icon {
+    background: var(--neutral-800);
+    color: white;
+  }
+  
+  .btn-icon:hover {
+    background: var(--neutral-700);
+  }
+}
+
 /* ===== カード ===== */
 
 /* ベースカード */
