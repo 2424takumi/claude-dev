@@ -33,7 +33,7 @@
         }
         
         try {
-            const decodedData = atob(encodedData);
+            const decodedData = decodeURIComponent(escape(atob(encodedData)));
             return JSON.parse(decodedData);
         } catch (err) {
             console.error('データのデコードエラー:', err);

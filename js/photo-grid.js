@@ -221,7 +221,7 @@
             }))
         };
         
-        const encodedData = btoa(JSON.stringify(shareData));
+        const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
         return `${window.location.origin}${window.location.pathname.replace('index.html', '')}shared.html?data=${encodedData}`;
     }
     
