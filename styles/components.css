@@ -179,7 +179,7 @@
 /* テキストインプット */
 .input {
   width: 100%;
-  background: var(--neutral-100); /* Lighter gray for more subtle appearance in light mode */
+  background: #f4f4f4; /* Updated to requested light mode color */
   border: 2px solid transparent;
   border-radius: var(--radius-md);
   padding: var(--spacing-3) var(--spacing-4);
@@ -202,7 +202,7 @@
 /* Dark mode specific adjustments for inputs */
 @media (prefers-color-scheme: dark) {
   .input {
-    background: var(--neutral-800); /* Lighter gray for more subtle appearance in dark mode */
+    background: #2d3748; /* Updated to requested dark mode color */
     border: 1px solid var(--neutral-700); /* Subtle border for visibility */
   }
   
@@ -215,7 +215,7 @@
 /* テキストエリア */
 .textarea {
   width: 100%;
-  background: var(--neutral-100); /* Lighter gray for more subtle appearance in light mode */
+  background: #f4f4f4; /* Updated to requested light mode color */
   border: 2px solid transparent;
   border-radius: var(--radius-md);
   padding: var(--spacing-3) var(--spacing-4);
@@ -236,7 +236,7 @@
 /* Dark mode specific adjustments for textarea */
 @media (prefers-color-scheme: dark) {
   .textarea {
-    background: var(--neutral-800); /* Lighter gray for more subtle appearance in dark mode */
+    background: #2d3748; /* Updated to requested dark mode color */
     border: 1px solid var(--neutral-700); /* Subtle border for visibility */
   }
   
