@@ -21,6 +21,29 @@ body {
     background: var(--bg-primary);
     line-height: var(--leading-normal);
     transition: background-color var(--transition-base), color var(--transition-base);
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 1px 1px, var(--neutral-100) 1px, transparent 1px);
+    background-size: 40px 40px;
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    body::before {
+        background-image: 
+            radial-gradient(circle at 1px 1px, var(--neutral-900) 1px, transparent 1px);
+        opacity: 0.3;
+    }
 }
 
 .container {
@@ -72,7 +95,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
     .navbar {
-        background: rgba(9, 9, 11, 0.8);
+        background: rgba(0, 0, 0, 0.8);
     }
 }
 
@@ -163,7 +186,7 @@ body {
     height: 200%;
     background: var(--gradient-mesh);
     filter: blur(100px);
-    opacity: 0.3;
+    opacity: 0.1;
     animation: float 20s ease-in-out infinite;
 }
 
@@ -212,10 +235,16 @@ body {
     padding: var(--spacing-8);
     text-align: center;
     transition: all var(--transition-slow);
+    position: relative;
 }
 
 .feature-card:hover {
     transform: translateY(-8px);
+}
+
+.feature-card:hover .feature-icon {
+    background: var(--gradient-orange);
+    transform: scale(1.1);
 }
 
 .feature-icon {
@@ -227,6 +256,7 @@ body {
     justify-content: center;
     border-radius: var(--radius-xl);
     color: white;
+    transition: all var(--transition-base);
 }
 
 .gradient-bg {

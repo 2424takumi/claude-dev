@@ -26,6 +26,29 @@
             color: var(--text-primary);
             background: var(--bg-primary);
             line-height: var(--leading-normal);
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 1px 1px, var(--neutral-100) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            body::before {
+                background-image: 
+                    radial-gradient(circle at 1px 1px, var(--neutral-900) 1px, transparent 1px);
+                opacity: 0.3;
+            }
         }
         
         .container {
@@ -70,7 +93,7 @@
             width: 200%;
             height: 200%;
             z-index: -1;
-            opacity: 0.3;
+            opacity: 0.1;
         }
         
         .demo-card {
@@ -201,28 +224,28 @@
             <h2 class="section-title">カラーパレット</h2>
             <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
                 <div class="card" style="background: var(--primary-solid); color: white; text-align: center;">
-                    <p style="color: white;">Primary</p>
-                    <small style="opacity: 0.8;">#6366F1</small>
+                    <p style="color: white;">Primary Orange</p>
+                    <small style="opacity: 0.8;">#FF6B35</small>
                 </div>
-                <div class="card" style="background: var(--secondary-cyan); color: white; text-align: center;">
-                    <p style="color: white;">Cyan</p>
-                    <small style="opacity: 0.8;">#06B6D4</small>
+                <div class="card" style="background: var(--accent-orange-light); color: white; text-align: center;">
+                    <p style="color: white;">Light Orange</p>
+                    <small style="opacity: 0.8;">#FFA500</small>
                 </div>
-                <div class="card" style="background: var(--secondary-emerald); color: white; text-align: center;">
-                    <p style="color: white;">Emerald</p>
-                    <small style="opacity: 0.8;">#10B981</small>
+                <div class="card" style="background: var(--neutral-900); color: white; text-align: center;">
+                    <p style="color: white;">Black</p>
+                    <small style="opacity: 0.8;">#18181B</small>
                 </div>
-                <div class="card" style="background: var(--secondary-pink); color: white; text-align: center;">
-                    <p style="color: white;">Pink</p>
-                    <small style="opacity: 0.8;">#EC4899</small>
+                <div class="card" style="background: var(--neutral-50); color: var(--text-primary); text-align: center;">
+                    <p>Light Gray</p>
+                    <small style="opacity: 0.8;">#FAFAFA</small>
                 </div>
-                <div class="card" style="background: var(--accent-neon-purple); color: white; text-align: center;">
-                    <p style="color: white;">Neon Purple</p>
-                    <small style="opacity: 0.8;">#BF40BF</small>
+                <div class="card" style="background: #FFFFFF; color: var(--text-primary); text-align: center; border: 1px solid var(--border-primary);">
+                    <p>White</p>
+                    <small style="opacity: 0.8;">#FFFFFF</small>
                 </div>
-                <div class="card" style="background: var(--accent-coral); color: white; text-align: center;">
-                    <p style="color: white;">Coral</p>
-                    <small style="opacity: 0.8;">#FF6B6B</small>
+                <div class="card" style="background: var(--secondary-gray); color: white; text-align: center;">
+                    <p style="color: white;">Gray</p>
+                    <small style="opacity: 0.8;">#6B7280</small>
                 </div>
             </div>
         </section>

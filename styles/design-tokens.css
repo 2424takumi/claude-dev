@@ -9,17 +9,17 @@
 :root {
   /* ===== カラーパレット ===== */
   
-  /* プライマリカラー */
-  --primary-gradient-start: #667EEA;
-  --primary-gradient-end: #764BA2;
-  --primary-solid: #6366F1;
-  --primary-light: #A5B4FC;
-  --primary-dark: #4338CA;
+  /* プライマリカラー（オレンジ） */
+  --primary-gradient-start: #FF6B35;
+  --primary-gradient-end: #F7931E;
+  --primary-solid: #FF6B35;
+  --primary-light: #FFB088;
+  --primary-dark: #E85D2C;
   
-  /* セカンダリカラー */
-  --secondary-cyan: #06B6D4;
-  --secondary-emerald: #10B981;
-  --secondary-pink: #EC4899;
+  /* セカンダリカラー（モノトーン） */
+  --secondary-gray: #6B7280;
+  --secondary-light: #E5E7EB;
+  --secondary-dark: #374151;
   
   /* ニュートラルカラー */
   --neutral-50: #FAFAFA;
@@ -34,17 +34,17 @@
   --neutral-900: #18181B;
   --neutral-950: #09090B;
   
-  /* アクセントカラー */
-  --accent-neon-purple: #BF40BF;
-  --accent-neon-green: #39FF14;
-  --accent-coral: #FF6B6B;
-  --accent-yellow: #FFD93D;
+  /* アクセントカラー（オレンジ系） */
+  --accent-orange: #FF6B35;
+  --accent-orange-light: #FFA500;
+  --accent-orange-dark: #CC5200;
+  --accent-gray: #9CA3AF;
   
   /* セマンティックカラー */
-  --success: #22C55E;
+  --success: #10B981;
   --warning: #F59E0B;
   --error: #EF4444;
-  --info: #3B82F6;
+  --info: #6B7280;
   
   /* ===== タイポグラフィ ===== */
   
@@ -139,21 +139,21 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* 背景色 */
-    --bg-primary: var(--neutral-950);
-    --bg-secondary: var(--neutral-900);
-    --bg-tertiary: var(--neutral-800);
+    --bg-primary: #000000;
+    --bg-secondary: #111111;
+    --bg-tertiary: #1A1A1A;
     
     /* テキスト色 */
-    --text-primary: var(--neutral-50);
-    --text-secondary: var(--neutral-400);
-    --text-tertiary: var(--neutral-500);
+    --text-primary: #FFFFFF;
+    --text-secondary: var(--neutral-300);
+    --text-tertiary: var(--neutral-400);
     
     /* ボーダー色 */
-    --border-primary: var(--neutral-700);
-    --border-secondary: var(--neutral-800);
+    --border-primary: var(--neutral-800);
+    --border-secondary: var(--neutral-900);
     
     /* カード背景 */
-    --card-bg: var(--neutral-900);
+    --card-bg: #111111;
     --card-border: var(--neutral-800);
   }
 }
@@ -179,15 +179,14 @@
   --card-border: var(--neutral-200);
 }
 
-/* ===== グラデーション定義 ===== */
+/* ===== グラデーション定義（シンプル） ===== */
 :root {
   --gradient-primary: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
   --gradient-mesh: 
-    radial-gradient(circle at 20% 50%, var(--accent-neon-purple) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, var(--secondary-cyan) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, var(--secondary-pink) 0%, transparent 50%);
-  --gradient-sunset: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #fda085 100%);
-  --gradient-ocean: linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #6366F1 100%);
+    radial-gradient(circle at 20% 50%, var(--accent-orange-light) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, var(--neutral-100) 0%, transparent 50%);
+  --gradient-subtle: linear-gradient(135deg, #FFFFFF 0%, #F3F4F6 100%);
+  --gradient-orange: linear-gradient(135deg, #FF6B35 0%, #FFA500 100%);
 }
 
 /* ===== アニメーション定義 ===== */
