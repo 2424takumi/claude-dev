@@ -719,7 +719,7 @@ body {
     max-width: 800px;
     width: 100%;
     margin: 0 auto;
-    background: var(--bg-secondary);
+    background: #000000;
     padding: var(--spacing-6);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
