@@ -9,16 +9,9 @@
     
     // 状態管理
     const state = {
-        gridSize: 3,
-        gridThemes: [],
-
+        gridSize: 2, // デフォルトを2x2に設定
+        gridSections: [], // グリッドセクションを格納
         saveTimeout: null
-        currentTheme: '',
-        gridImages: new Array(9).fill(null),
-        selectedCell: null,
-        gridTexts: new Array(9).fill(null),
-        gridComplete: false,
-        shareId: null
     };
     
     // DOM要素
@@ -26,222 +19,217 @@
         themeGrid: document.getElementById('theme-grid'),
         mainShareBtn: document.getElementById('main-share-btn'),
         shareBtn: document.getElementById('share-btn'),
-
         gridSizeSelect: document.getElementById('grid-size'),
         downloadBtn: document.getElementById('download-btn'),
-        saveBtn: document.getElementById('save-btn'),
-        uploadModal: document.getElementById('upload-modal'),
-        uploadArea: document.getElementById('upload-area'),
-        fileInput: document.getElementById('file-input'),
-        modalClose: document.querySelector('.app-modal-close')
+        saveBtn: document.getElementById('save-btn')
     };
+    
+    // グリッドセクションクラス
+    class GridSection {
+        constructor(index, row, col) {
+            this.index = index;
+            this.row = row;
+            this.col = col;
+            this.title = '';
+            this.theme = 'default';
+            this.content = '';
+        }
+    }
     
     // グリッドの初期化
     function initializeGrid() {
         const size = state.gridSize;
-        const totalCells = size * size;
+        const totalSections = size * size;
         
-        // グリッドテーマ配列の初期化
-        state.gridThemes = new Array(totalCells).fill('');
+        // グリッドセクション配列の初期化
+        state.gridSections = [];
+        for (let i = 0; i < totalSections; i++) {
+            const row = Math.floor(i / size);
+            const col = i % size;
+            state.gridSections.push(new GridSection(i, row, col));
+        }
         
         // グリッドHTMLの生成
+        renderGrid();
+        
+        // 初期状態でボタンを無効化
+        checkAllSectionsCompleted();
+    }
+    
+    // グリッドのレンダリング
+    function renderGrid() {
+        const size = state.gridSize;
+        
         elements.themeGrid.innerHTML = '';
         elements.themeGrid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
         elements.themeGrid.style.gridTemplateRows = `repeat(${size}, 1fr)`;
         
-        for (let i = 0; i < totalCells; i++) {
-            const gridItem = document.createElement('div');
-            gridItem.className = 'grid-theme-item';
-            gridItem.dataset.index = i;
-            
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.className = 'theme-input';
-            input.placeholder = 'テーマを入力';
-            input.maxLength = 50;
-            input.dataset.index = i;
-            
-            input.addEventListener('input', (e) => handleThemeInput(e));
-            
-            gridItem.appendChild(input);
+        state.gridSections.forEach((section, index) => {
+            const gridItem = createGridItem(section, index);
             elements.themeGrid.appendChild(gridItem);
+        });
+    }
+    
+    // グリッドアイテムの作成
+    function createGridItem(section, index) {
+        const gridItem = document.createElement('div');
+        gridItem.className = 'grid-theme-item';
+        gridItem.dataset.index = index;
+        
+        // セクションコンテナ
+        const sectionContainer = document.createElement('div');
+        sectionContainer.className = 'grid-section-container';
+        
+        // タイトル入力
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.className = 'section-title-input';
+        titleInput.placeholder = 'タイトル';
+        titleInput.maxLength = 30;
+        titleInput.value = section.title;
+        titleInput.dataset.index = index;
+        titleInput.dataset.field = 'title';
+        
+        // テーマ選択
+        const themeSelect = document.createElement('select');
+        themeSelect.className = 'section-theme-select';
+        themeSelect.dataset.index = index;
+        themeSelect.dataset.field = 'theme';
+        
+        // テーマオプション
+        const themes = [
+            { value: 'default', label: 'デフォルト', color: '#f0f0f0' },
+            { value: 'warm', label: '暖色', color: '#ffe5cc' },
+            { value: 'cool', label: '寒色', color: '#cce5ff' },
+            { value: 'nature', label: '自然', color: '#d4f5d4' },
+            { value: 'elegant', label: 'エレガント', color: '#f5e6ff' },
+            { value: 'modern', label: 'モダン', color: '#e0e0e0' }
+        ];
+        
+        themes.forEach(theme => {
+            const option = document.createElement('option');
+            option.value = theme.value;
+            option.textContent = theme.label;
+            themeSelect.appendChild(option);
+        });
+        
+        themeSelect.value = section.theme;
+        
+        // コンテンツ入力
+        const contentTextarea = document.createElement('textarea');
+        contentTextarea.className = 'section-content-input';
+        contentTextarea.placeholder = 'コンテンツを入力';
+        contentTextarea.maxLength = 200;
+        contentTextarea.value = section.content;
+        contentTextarea.dataset.index = index;
+        contentTextarea.dataset.field = 'content';
+        
+        // イベントリスナーの追加
+        titleInput.addEventListener('input', handleSectionUpdate);
+        themeSelect.addEventListener('change', handleSectionUpdate);
+        contentTextarea.addEventListener('input', handleSectionUpdate);
+        
+        // テーマの適用
+        applyThemeToSection(gridItem, section.theme);
+        
+        // 要素の組み立て
+        sectionContainer.appendChild(titleInput);
+        sectionContainer.appendChild(themeSelect);
+        sectionContainer.appendChild(contentTextarea);
+        gridItem.appendChild(sectionContainer);
+        
+        return gridItem;
+    }
+    
+    // セクション更新ハンドラー
+    function handleSectionUpdate(e) {
+        const index = parseInt(e.target.dataset.index);
+        const field = e.target.dataset.field;
+        const value = e.target.value;
+        
+        state.gridSections[index][field] = value;
+        
+        // テーマが変更された場合は見た目を更新
+        if (field === 'theme') {
+            const gridItem = elements.themeGrid.querySelector(`[data-index="${index}"]`);
+            applyThemeToSection(gridItem, value);
         }
         
-        // 初期状態でボタンを無効化
-        checkAllThemesCompleted();
+        // 全てのセクションが完了しているかチェック
+        checkAllSectionsCompleted();
+        
+        // 自動保存
+        autoSave();
     }
     
-    // テーマ入力ハンドラー
-    function handleThemeInput(e) {
-        const index = parseInt(e.target.dataset.index);
-        state.gridThemes[index] = e.target.value;
-        
-        // 全てのテーマが入力されているかチェック
-        checkAllThemesCompleted();
+    // セクションにテーマを適用
+    function applyThemeToSection(gridItem, theme) {
+        // 既存のテーマクラスを削除
+        gridItem.className = gridItem.className.replace(/theme-\w+/g, '');
+        gridItem.classList.add('grid-theme-item', `theme-${theme}`);
     }
     
-    // 全てのテーマが入力されているかチェック
-    function checkAllThemesCompleted() {
-        const totalCells = state.gridSize * state.gridSize;
-        const filledThemes = state.gridThemes.filter(theme => theme && theme.trim() !== '');
-        
-
-        // 全てのセルにテーマが入力されているか
-        const allThemesFilled = filledThemes.length === totalCells;
+    // 全てのセクションが完了しているかチェック
+    function checkAllSectionsCompleted() {
+        const allCompleted = state.gridSections.every(section => 
+            section.title.trim() !== '' && 
+            section.content.trim() !== ''
+        );
         
         // 共有ボタンの有効/無効を制御
         if (elements.mainShareBtn) {
-            elements.mainShareBtn.disabled = !allThemesFilled;
-            if (allThemesFilled) {
+            elements.mainShareBtn.disabled = !allCompleted;
+            if (allCompleted) {
                 elements.mainShareBtn.classList.remove('btn-disabled');
-        elements.photoGrid.style.background = gradient;
-    }
-    
-    // 文字列のハッシュコード生成
-    function hashCode(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) {
-            const char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
-        }
-        return hash;
-    }
-    
-    // グリッドテキストの生成
-    function generateGridTexts(theme) {
-        // テーマに基づいてテキストラベルを生成
-        const labels = [];
-        const words = theme.split(/\s+/);
-        const baseWords = ['写真', '思い出', '瞬間', '景色', '風景', '美しさ', '魅力', '感動'];
-        const totalCells = state.gridSize * state.gridSize;
-        
-        // テーマの単語とベース単語を組み合わせてラベルを生成
-        for (let i = 0; i < totalCells; i++) {
-            if (Math.random() < 0.3) { // 30%の確率でテキストを配置
-                const wordIndex = Math.floor(Math.random() * words.length);
-                const baseIndex = Math.floor(Math.random() * baseWords.length);
-                labels.push(`${words[wordIndex] || theme}の${baseWords[baseIndex]}`);
             } else {
                 elements.mainShareBtn.classList.add('btn-disabled');
             }
         }
         
-
         if (elements.shareBtn) {
-            elements.shareBtn.disabled = !allThemesFilled;
-            if (allThemesFilled) {
+            elements.shareBtn.disabled = !allCompleted;
+            if (allCompleted) {
                 elements.shareBtn.classList.remove('btn-disabled');
-
-        state.gridTexts = labels;
-        updateGridDisplay();
-    }
-    
-    // サジェスチョンチップのクリック
-    function handleSuggestionClick(e) {
-        const theme = e.target.dataset.theme;
-        elements.themeInput.value = theme;
-        applyTheme();
-    }
-    
-    // グリッドクリア
-    function clearGrid() {
-        if (!confirm('すべての写真を削除しますか？')) return;
-        
-        state.gridImages = new Array(state.gridSize * state.gridSize).fill(null);
-        state.gridTexts = new Array(state.gridSize * state.gridSize).fill(null);
-        state.gridComplete = false;
-        state.shareId = null;
-        updateGridDisplay();
-        showToast('グリッドをクリアしました', 'info');
-    }
-    
-    // グリッドシャッフル
-    function randomizeGrid() {
-        const filledCells = state.gridImages
-            .map((img, index) => ({ img, index }))
-            .filter(item => item.img !== null);
-        
-        if (filledCells.length === 0) {
-            showToast('シャッフルする写真がありません', 'warning');
-            return;
-        }
-        
-        // 配列をシャッフル
-        for (let i = filledCells.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [filledCells[i], filledCells[j]] = [filledCells[j], filledCells[i]];
-        }
-        
-        // 新しい配列を作成
-        const newImages = new Array(state.gridSize * state.gridSize).fill(null);
-        filledCells.forEach((item, index) => {
-            const newIndex = state.gridImages.findIndex((img, idx) => img !== null && !newImages.includes(img));
-            if (newIndex !== -1) {
-                newImages[newIndex] = item.img;
-            }
-        });
-        
-        state.gridImages = newImages;
-        updateGridDisplay();
-        showToast('写真をシャッフルしました', 'success');
-    }
-    
-    // グリッド表示の更新
-    function updateGridDisplay() {
-        const gridItems = elements.photoGrid.querySelectorAll('.grid-item');
-        
-        gridItems.forEach((item, index) => {
-            const image = state.gridImages[index];
-            const text = state.gridTexts[index];
-            
-            if (image) {
-                item.classList.remove('empty');
-                item.innerHTML = `<img src="${image}" alt="Grid image ${index + 1}">`;
-            } else if (text) {
-                item.classList.add('empty');
-                const placeholder = document.createElement('div');
-                placeholder.className = 'grid-placeholder';
-                placeholder.textContent = text;
-                placeholder.style.fontSize = '14px';
-                placeholder.style.padding = '5px';
-                placeholder.style.whiteSpace = 'normal';
-                placeholder.style.lineHeight = '1.2';
-                item.innerHTML = '';
-                item.appendChild(placeholder);
             } else {
                 elements.shareBtn.classList.add('btn-disabled');
             }
         }
         
-        return allThemesFilled;
+        return allCompleted;
     }
     
     // グリッドサイズ変更
     function handleGridSizeChange(e) {
         const newSize = parseInt(e.target.value);
+        
+        // 確認ダイアログ
+        if (state.gridSections.some(section => section.title || section.content)) {
+            if (!confirm('グリッドサイズを変更すると、現在の内容が失われます。続行しますか？')) {
+                e.target.value = state.gridSize;
+                return;
+            }
+        }
+        
         state.gridSize = newSize;
-        // 画像とテキスト配列をリサイズ
-        state.gridImages = new Array(newSize * newSize).fill(null);
-        state.gridTexts = new Array(newSize * newSize).fill(null);
         initializeGrid();
         showToast(`グリッドサイズを${newSize}x${newSize}に変更しました`, 'success');
     }
     
     // 共有機能
     async function shareGrid() {
-        const totalCells = state.gridSize * state.gridSize;
-        const filledThemes = state.gridThemes.filter(theme => theme && theme.trim() !== '');
-        
-        if (filledThemes.length !== totalCells) {
-            showToast(`全ての${totalCells}個のテーマを入力してください`, 'warning');
+        if (!checkAllSectionsCompleted()) {
+            showToast('全てのセクションにタイトルとコンテンツを入力してください', 'warning');
             return;
         }
         
-        // 共有用のURLパラメータを生成
+        // 共有用のデータを生成
         const shareData = {
             size: state.gridSize,
-            themes: state.gridThemes
+            sections: state.gridSections.map(section => ({
+                title: section.title,
+                theme: section.theme,
+                content: section.content
+            }))
         };
         
         const encodedData = btoa(JSON.stringify(shareData));
@@ -266,151 +254,59 @@
         }
     }
     
-    // 保存データの読み込み
-    function loadSavedGrid() {
-        const savedData = localStorage.getItem('gridme-themes');
-
-    // ダウンロード機能
-    function downloadGrid() {
-        if (!state.currentTheme) {
-            showToast('まずテーマを設定してください', 'warning');
-            return;
-        }
-        
-        // Canvas要素を作成してグリッドを描画
-        html2canvas(elements.photoGrid).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `gridme-${state.currentTheme.replace(/\s+/g, '-')}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            showToast('ダウンロードを開始しました', 'success');
-        }).catch(err => {
-            console.error('ダウンロードエラー:', err);
-            showToast('ダウンロードに失敗しました', 'error');
-        });
-    }
-    
-    // グリッド完成チェック
-    function checkGridCompletion() {
-        // テキストがあるセルが全て画像で埋まっているかチェック
-        let isComplete = true;
-        const totalCells = state.gridSize * state.gridSize;
-        for (let i = 0; i < totalCells; i++) {
-            if (state.gridTexts[i] && !state.gridImages[i]) {
-                isComplete = false;
-                break;
-            }
-        }
-        
-        state.gridComplete = isComplete;
-        
-        if (savedData) {
-            try {
-                const data = JSON.parse(savedData);
-                state.gridSize = data.size || 3;
-                state.gridThemes = data.themes || [];
-                
-                // グリッドサイズセレクトを更新
-
-                if (elements.gridSizeSelect) {
-                    elements.gridSizeSelect.value = state.gridSize;
-                }
-
-                elements.gridSizeSelect.value = state.gridSize;
-                const decodedData = JSON.parse(decodeURIComponent(atob(fullGridParam)));
-                state.currentTheme = decodedData.theme || '';
-                state.gridImages = decodedData.images || new Array(state.gridSize * state.gridSize).fill(null);
-                state.gridTexts = decodedData.texts || new Array(state.gridSize * state.gridSize).fill(null);
-                state.shareId = decodedData.timestamp;
-                state.gridComplete = true;
-                
-                // グリッドを再初期化
-                initializeGrid();
-                
-                // 保存されたテーマを入力
-                state.gridThemes.forEach((theme, index) => {
-                    const input = elements.themeGrid.querySelector(`input[data-index="${index}"]`);
-                    if (input) {
-                        input.value = theme;
-                    }
-                });
-
-            } catch (err) {
-                console.error('保存データの読み込みエラー:', err);
-                showToast('共有されたグリッドを表示しています', 'info');
-                updateGridDisplay();
-            } catch (err) {
-                console.error('共有データの読み込みエラー:', err);
-                showToast('共有データの読み込みに失敗しました', 'error');
-            }
-        } else if (gridParam) {
-            // 共有URLからの読み込み
-            try {
-                const decodedData = JSON.parse(decodeURIComponent(atob(gridParam)));
-                state.currentTheme = decodedData.theme || '';
-                state.shareId = decodedData.timestamp;
-                
-                // テキストを配置
-                if (decodedData.texts && Array.isArray(decodedData.texts)) {
-                    let textIndex = 0;
-                    const totalCells = state.gridSize * state.gridSize;
-                    for (let i = 0; i < totalCells && textIndex < decodedData.texts.length; i++) {
-                        if (Math.random() < 0.3) { // 元の確率と同じくらいでテキストを配置
-                            state.gridTexts[i] = decodedData.texts[textIndex];
-                            textIndex++;
-                        }
-                    }
-                }
-                
-                if (state.currentTheme) {
-                    elements.themeInput.value = state.currentTheme;
-                    elements.currentThemeDisplay.textContent = `フォトグリッド - ${state.currentTheme}`;
-                    updateThemeColors();
-                }
-                
-                // 共有モードであることを表示
-                showToast('共有されたグリッドを読み込みました。各セルをタップして写真を追加してください。', 'info');
-                
-                updateGridDisplay();
-            } catch (err) {
-                console.error('共有データの読み込みエラー:', err);
-                showToast('共有データの読み込みに失敗しました', 'error');
-            }
-        } else {
-            // ローカル保存データの読み込み
-            const savedData = localStorage.getItem('gridme-current');
-            
-            if (savedData) {
-                try {
-                    const data = JSON.parse(savedData);
-                    state.currentTheme = data.theme || '';
-                    state.gridImages = data.images || new Array(state.gridSize * state.gridSize).fill(null);
-                    state.gridTexts = data.texts || new Array(state.gridSize * state.gridSize).fill(null);
-                    
-                    if (state.currentTheme) {
-                        elements.themeInput.value = state.currentTheme;
-                        elements.currentThemeDisplay.textContent = `フォトグリッド - ${state.currentTheme}`;
-                        updateThemeColors();
-                    }
-                    
-                    updateGridDisplay();
-                } catch (err) {
-                    console.error('保存データの読み込みエラー:', err);
-                }
-            }
-        }
+    // 自動保存
+    function autoSave() {
+        clearTimeout(state.saveTimeout);
+        state.saveTimeout = setTimeout(() => {
+            saveGrid();
+        }, 1000);
     }
     
     // データの保存
     function saveGrid() {
         const gridData = {
             size: state.gridSize,
-            themes: state.gridThemes,
+            sections: state.gridSections,
             timestamp: new Date().toISOString()
         };
         
-        localStorage.setItem('gridme-themes', JSON.stringify(gridData));
-        showToast('グリッドを保存しました', 'success');
+        localStorage.setItem('gridme-sections', JSON.stringify(gridData));
+    }
+    
+    // 保存データの読み込み
+    function loadSavedGrid() {
+        const savedData = localStorage.getItem('gridme-sections');
+        
+        if (savedData) {
+            try {
+                const data = JSON.parse(savedData);
+                state.gridSize = data.size || 2;
+                
+                // グリッドサイズセレクトを更新
+                if (elements.gridSizeSelect) {
+                    elements.gridSizeSelect.value = state.gridSize;
+                }
+                
+                // セクションデータを復元
+                if (data.sections && Array.isArray(data.sections)) {
+                    state.gridSections = data.sections.map((section, index) => {
+                        const row = Math.floor(index / state.gridSize);
+                        const col = index % state.gridSize;
+                        const gridSection = new GridSection(index, row, col);
+                        gridSection.title = section.title || '';
+                        gridSection.theme = section.theme || 'default';
+                        gridSection.content = section.content || '';
+                        return gridSection;
+                    });
+                }
+                
+                // グリッドを再描画
+                renderGrid();
+                checkAllSectionsCompleted();
+            } catch (err) {
+                console.error('保存データの読み込みエラー:', err);
+            }
+        }
     }
     
     // イベントリスナーの設定
@@ -427,17 +323,6 @@
         if (elements.shareBtn) {
             elements.shareBtn.addEventListener('click', shareGrid);
         }
-        
-        // 自動保存（入力時）
-        document.addEventListener('input', (e) => {
-            if (e.target.classList.contains('theme-input')) {
-                // デバウンス処理
-                clearTimeout(state.saveTimeout);
-                state.saveTimeout = setTimeout(() => {
-                    saveGrid();
-                }, 1000);
-            }
-        });
     }
     
     // トースト通知を表示
