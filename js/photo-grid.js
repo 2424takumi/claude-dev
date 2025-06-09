@@ -11,6 +11,8 @@
     const state = {
         gridSize: 3,
         gridThemes: [],
+
+        saveTimeout: null
         currentTheme: '',
         gridImages: new Array(9).fill(null),
         selectedCell: null,
@@ -24,6 +26,7 @@
         themeGrid: document.getElementById('theme-grid'),
         mainShareBtn: document.getElementById('main-share-btn'),
         shareBtn: document.getElementById('share-btn'),
+
         gridSizeSelect: document.getElementById('grid-size'),
         downloadBtn: document.getElementById('download-btn'),
         saveBtn: document.getElementById('save-btn'),
@@ -51,7 +54,6 @@
             gridItem.className = 'grid-theme-item';
             gridItem.dataset.index = i;
             
-
             const input = document.createElement('input');
             input.type = 'text';
             input.className = 'theme-input';
@@ -64,70 +66,34 @@
             gridItem.appendChild(input);
             elements.themeGrid.appendChild(gridItem);
         }
+        
+        // 初期状態でボタンを無効化
+        checkAllThemesCompleted();
     }
     
     // テーマ入力ハンドラー
     function handleThemeInput(e) {
         const index = parseInt(e.target.dataset.index);
         state.gridThemes[index] = e.target.value;
-            const placeholder = document.createElement('div');
-            placeholder.className = 'grid-placeholder';
-            
-            // テキストまたは+記号を表示
-            if (state.gridTexts[i]) {
-                placeholder.textContent = state.gridTexts[i];
-                placeholder.style.fontSize = '14px';
-                placeholder.style.padding = '5px';
-            } else {
-                placeholder.textContent = '+';
-            }
-            
-            gridItem.appendChild(placeholder);
-            
-            gridItem.addEventListener('click', () => handleCellClick(i));
-            elements.photoGrid.appendChild(gridItem);
-        }
+        
+        // 全てのテーマが入力されているかチェック
+        checkAllThemesCompleted();
     }
     
-    // セルクリックハンドラー
-    function handleCellClick(index) {
-        // 共有されたグリッドの場合のみ写真アップロードを許可
-        if (state.shareId && state.gridTexts[index] && !state.gridImages[index]) {
-            state.selectedCell = index;
-            elements.uploadModal.classList.add('active');
-        } else if (!state.shareId) {
-            // 通常モードでは常に写真アップロード可能
-            state.selectedCell = index;
-            elements.uploadModal.classList.add('active');
-        }
-    }
-    
-    // テーマ適用
-    function applyTheme() {
-        const theme = elements.themeInput.value.trim();
-        if (!theme) {
-            showToast('テーマを入力してください', 'warning');
-            return;
-        }
+    // 全てのテーマが入力されているかチェック
+    function checkAllThemesCompleted() {
+        const totalCells = state.gridSize * state.gridSize;
+        const filledThemes = state.gridThemes.filter(theme => theme && theme.trim() !== '');
         
-        state.currentTheme = theme;
-        elements.currentThemeDisplay.textContent = `フォトグリッド - ${theme}`;
-        showToast(`テーマ「${theme}」を適用しました`, 'success');
+
+        // 全てのセルにテーマが入力されているか
+        const allThemesFilled = filledThemes.length === totalCells;
         
-        // テーマに基づいて背景グラデーションを変更
-        updateThemeColors();
-        
-        // テーマに基づいてグリッドにテキストを配置
-        if (!state.shareId) {
-            generateGridTexts(theme);
-        }
-    }
-    
-    // テーマカラーの更新
-    function updateThemeColors() {
-        const hue = Math.abs(hashCode(state.currentTheme)) % 360;
-        const gradient = `linear-gradient(135deg, hsl(${hue}, 70%, 60%) 0%, hsl(${(hue + 60) % 360}, 70%, 60%) 100%)`;
-        
+        // 共有ボタンの有効/無効を制御
+        if (elements.mainShareBtn) {
+            elements.mainShareBtn.disabled = !allThemesFilled;
+            if (allThemesFilled) {
+                elements.mainShareBtn.classList.remove('btn-disabled');
         elements.photoGrid.style.background = gradient;
     }
     
@@ -157,10 +123,16 @@
                 const baseIndex = Math.floor(Math.random() * baseWords.length);
                 labels.push(`${words[wordIndex] || theme}の${baseWords[baseIndex]}`);
             } else {
-                labels.push(null);
+                elements.mainShareBtn.classList.add('btn-disabled');
             }
         }
         
+
+        if (elements.shareBtn) {
+            elements.shareBtn.disabled = !allThemesFilled;
+            if (allThemesFilled) {
+                elements.shareBtn.classList.remove('btn-disabled');
+
         state.gridTexts = labels;
         updateGridDisplay();
     }
@@ -238,34 +210,11 @@
                 item.innerHTML = '';
                 item.appendChild(placeholder);
             } else {
-                item.classList.add('empty');
-                item.innerHTML = '<div class="grid-placeholder">+</div>';
+                elements.shareBtn.classList.add('btn-disabled');
             }
-        });
-    }
-    
-    // 画像アップロード処理
-    function handleImageUpload(file) {
-        if (!file || !file.type.startsWith('image/')) {
-            showToast('画像ファイルを選択してください', 'error');
-            return;
         }
         
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            if (state.selectedCell !== null) {
-                state.gridImages[state.selectedCell] = e.target.result;
-                updateGridDisplay();
-                closeModal();
-                showToast('画像をアップロードしました', 'success');
-                
-                // 共有グリッドで全ての写真が追加されたかチェック
-                if (state.shareId) {
-                    checkGridCompletion();
-                }
-            }
-        };
-        reader.readAsDataURL(file);
+        return allThemesFilled;
     }
     
     // グリッドサイズ変更
@@ -281,33 +230,18 @@
     
     // 共有機能
     async function shareGrid() {
-        const filledThemes = state.gridThemes.filter(theme => theme.trim() !== '');
+        const totalCells = state.gridSize * state.gridSize;
+        const filledThemes = state.gridThemes.filter(theme => theme && theme.trim() !== '');
         
-        if (filledThemes.length === 0) {
-            showToast('少なくとも1つのテーマを入力してください', 'warning');
+        if (filledThemes.length !== totalCells) {
+            showToast(`全ての${totalCells}個のテーマを入力してください`, 'warning');
             return;
         }
         
-
         // 共有用のURLパラメータを生成
         const shareData = {
             size: state.gridSize,
             themes: state.gridThemes
-        // グリッドデータを準備
-        const gridData = {
-            theme: state.currentTheme,
-            texts: state.gridTexts.filter(t => t !== null),
-            timestamp: Date.now()
-        };
-        
-        // Base64エンコード
-        const encodedData = btoa(encodeURIComponent(JSON.stringify(gridData)));
-        const shareUrl = `${window.location.origin}${window.location.pathname}?grid=${encodedData}`;
-        
-        const shareData = {
-            title: `GridMe - ${state.currentTheme}`,
-            text: `「${state.currentTheme}」のフォトグリッドを作成しました！`,
-            url: shareUrl
         };
         
         const encodedData = btoa(JSON.stringify(shareData));
@@ -324,9 +258,7 @@
             } else {
                 // フォールバック: URLをクリップボードにコピー
                 await navigator.clipboard.writeText(shareUrl);
-
                 showToast('共有URLをコピーしました', 'success');
-                showToast('URLをコピーしました', 'success');
             }
         } catch (err) {
             console.error('共有エラー:', err);
@@ -334,10 +266,10 @@
         }
     }
     
-
     // 保存データの読み込み
     function loadSavedGrid() {
         const savedData = localStorage.getItem('gridme-themes');
+
     // ダウンロード機能
     function downloadGrid() {
         if (!state.currentTheme) {
@@ -372,54 +304,18 @@
         
         state.gridComplete = isComplete;
         
-        if (isComplete) {
-            showToast('グリッドが完成しました！保存ボタンから保存してください。', 'success');
-        }
-    }
-    
-    // 保存機能
-    function saveGrid() {
-        const gridData = {
-            theme: state.currentTheme,
-            images: state.gridImages,
-            texts: state.gridTexts,
-            timestamp: new Date().toISOString(),
-            shareId: state.shareId
-        };
-        
-        // 完成したグリッドを保存
-        if (state.gridComplete) {
-            const savedGrids = JSON.parse(localStorage.getItem('gridme-saved-grids') || '[]');
-            savedGrids.push(gridData);
-            localStorage.setItem('gridme-saved-grids', JSON.stringify(savedGrids));
-            
-            // 共有URLを生成
-            const shareUrl = generateShareableUrl(gridData);
-            showToast('グリッドを保存しました', 'success');
-            
-            // 共有ダイアログを表示
-            showShareDialog(shareUrl);
-        } else {
-            localStorage.setItem('gridme-current', JSON.stringify(gridData));
-            showToast('グリッドを保存しました', 'success');
-        }
-    }
-    
-    // 保存データの読み込み
-    function loadSavedGrid() {
-        // URLパラメータをチェック
-        const urlParams = new URLSearchParams(window.location.search);
-        const gridParam = urlParams.get('grid');
-        const fullGridParam = urlParams.get('fullgrid');
-        
-        if (fullGridParam) {
-            // 完成したグリッドの読み込み
+        if (savedData) {
             try {
                 const data = JSON.parse(savedData);
                 state.gridSize = data.size || 3;
                 state.gridThemes = data.themes || [];
                 
                 // グリッドサイズセレクトを更新
+
+                if (elements.gridSizeSelect) {
+                    elements.gridSizeSelect.value = state.gridSize;
+                }
+
                 elements.gridSizeSelect.value = state.gridSize;
                 const decodedData = JSON.parse(decodeURIComponent(atob(fullGridParam)));
                 state.currentTheme = decodedData.theme || '';
@@ -431,7 +327,6 @@
                 // グリッドを再初期化
                 initializeGrid();
                 
-
                 // 保存されたテーマを入力
                 state.gridThemes.forEach((theme, index) => {
                     const input = elements.themeGrid.querySelector(`input[data-index="${index}"]`);
@@ -439,6 +334,9 @@
                         input.value = theme;
                     }
                 });
+
+            } catch (err) {
+                console.error('保存データの読み込みエラー:', err);
                 showToast('共有されたグリッドを表示しています', 'info');
                 updateGridDisplay();
             } catch (err) {
@@ -518,10 +416,14 @@
     // イベントリスナーの設定
     function setupEventListeners() {
         // グリッドサイズ変更
-        elements.gridSizeSelect.addEventListener('change', handleGridSizeChange);
+        if (elements.gridSizeSelect) {
+            elements.gridSizeSelect.addEventListener('change', handleGridSizeChange);
+        }
         
         // 共有ボタン
-        elements.mainShareBtn.addEventListener('click', shareGrid);
+        if (elements.mainShareBtn) {
+            elements.mainShareBtn.addEventListener('click', shareGrid);
+        }
         if (elements.shareBtn) {
             elements.shareBtn.addEventListener('click', shareGrid);
         }
@@ -538,58 +440,23 @@
         });
     }
     
-
-    // 共有可能なURLを生成
-    function generateShareableUrl(gridData) {
-        const shareData = {
-            theme: gridData.theme,
-            images: gridData.images,
-            texts: gridData.texts,
-            timestamp: gridData.timestamp
-        };
+    // トースト通知を表示
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
         
-        // Base64エンコード（画像付き）
-        const encodedData = btoa(encodeURIComponent(JSON.stringify(shareData)));
-        return `${window.location.origin}${window.location.pathname}?fullgrid=${encodedData}`;
-    }
-    
-    // 共有ダイアログを表示
-    function showShareDialog(shareUrl) {
-        // シンプルなモーダルを作成
-        const modal = document.createElement('div');
-        modal.className = 'app-modal active';
-        modal.innerHTML = `
-            <div class="app-modal-content card-glass">
-                <div class="app-modal-header">
-                    <h3>グリッドを共有</h3>
-                    <button class="btn-icon app-modal-close" onclick="this.closest('.app-modal').remove()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="app-modal-body">
-                    <p>完成したグリッドの共有URLです：</p>
-                    <div style="margin: 15px 0;">
-                        <input type="text" value="${shareUrl}" class="input" readonly style="width: 100%;">
-                    </div>
-                    <button class="btn-primary" onclick="navigator.clipboard.writeText('${shareUrl}').then(() => showToast('URLをコピーしました', 'success'))">
-                        URLをコピー
-                    </button>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-    }
-    
-    // html2canvasライブラリの動的読み込み
-    function loadHtml2Canvas() {
-        if (typeof html2canvas === 'undefined') {
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            script.async = true;
-            document.head.appendChild(script);
+        const container = document.getElementById('toast-container');
+        if (container) {
+            container.appendChild(toast);
+            
+            // アニメーション後に削除
+            setTimeout(() => {
+                toast.classList.add('toast-fade-out');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
         }
     }
     
