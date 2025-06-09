@@ -36,11 +36,11 @@
     background: var(--bg-primary);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    cursor: pointer;
     transition: all var(--transition-base);
-    aspect-ratio: 1;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
+    padding: var(--spacing-4);
 }
 
 .photo-theme-item:hover {
@@ -48,12 +48,93 @@
     box-shadow: var(--shadow-lg);
 }
 
-.photo-theme-item.empty .photo-placeholder {
-    opacity: 0.7;
+/* 共有セクションコンテナ */
+.shared-section-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
 }
 
-.photo-theme-item.empty:hover .photo-placeholder {
-    opacity: 1;
+/* 共有セクションタイトル */
+.shared-section-title {
+    font-size: var(--text-lg);
+    font-weight: var(--font-bold);
+    color: var(--text-primary);
+    margin-bottom: var(--spacing-1);
+}
+
+/* テーマバッジ */
+.theme-badge {
+    display: inline-block;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    padding: var(--spacing-1) var(--spacing-3);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    margin-bottom: var(--spacing-2);
+}
+
+/* 共有セクションコンテンツ */
+.shared-section-content {
+    flex: 1;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+    overflow-y: auto;
+}
+
+/* テーマ別スタイル（共有ページ） */
+.photo-theme-item.theme-default {
+    background-color: #fafafa;
+}
+
+.photo-theme-item.theme-warm {
+    background-color: #fff5f0;
+}
+
+.photo-theme-item.theme-cool {
+    background-color: #f0f5ff;
+}
+
+.photo-theme-item.theme-nature {
+    background-color: #f0fdf0;
+}
+
+.photo-theme-item.theme-elegant {
+    background-color: #faf5ff;
+}
+
+.photo-theme-item.theme-modern {
+    background-color: #f5f5f5;
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+    .photo-theme-item.theme-default {
+        background-color: #1a1a1a;
+    }
+    
+    .photo-theme-item.theme-warm {
+        background-color: #2d1810;
+    }
+    
+    .photo-theme-item.theme-cool {
+        background-color: #101828;
+    }
+    
+    .photo-theme-item.theme-nature {
+        background-color: #0a1f0a;
+    }
+    
+    .photo-theme-item.theme-elegant {
+        background-color: #1f0a2d;
+    }
+    
+    .photo-theme-item.theme-modern {
+        background-color: #0f0f0f;
+    }
 }
 
 /* ===== テーマラベル ===== */
