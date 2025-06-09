@@ -72,7 +72,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
     .navbar {
-        background: rgba(9, 9, 11, 0.8);
+        background: var(--bg-primary);
     }
 }
 
@@ -561,7 +561,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
     .app-header {
-        background: rgba(9, 9, 11, 0.9);
+        background: var(--bg-primary);
     }
 }
 
