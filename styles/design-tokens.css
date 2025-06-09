@@ -10,11 +10,11 @@
   /* ===== カラーパレット ===== */
   
   /* プライマリカラー */
-  --primary-gradient-start: #667EEA;
-  --primary-gradient-end: #764BA2;
-  --primary-solid: #6366F1;
-  --primary-light: #A5B4FC;
-  --primary-dark: #4338CA;
+  --primary-gradient-start: #FF6B35;
+  --primary-gradient-end: #F7931E;
+  --primary-solid: #FF6B35;
+  --primary-light: #FFB088;
+  --primary-dark: #E55100;
   
   /* セカンダリカラー */
   --secondary-cyan: #06B6D4;
@@ -35,7 +35,7 @@
   --neutral-950: #09090B;
   
   /* アクセントカラー */
-  --accent-neon-purple: #BF40BF;
+  --accent-neon-orange: #FF4500;
   --accent-neon-green: #39FF14;
   --accent-coral: #FF6B6B;
   --accent-yellow: #FFD93D;
@@ -183,11 +183,11 @@
 :root {
   --gradient-primary: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
   --gradient-mesh: 
-    radial-gradient(circle at 20% 50%, var(--accent-neon-purple) 0%, transparent 50%),
+    radial-gradient(circle at 20% 50%, var(--accent-neon-orange) 0%, transparent 50%),
     radial-gradient(circle at 80% 80%, var(--secondary-cyan) 0%, transparent 50%),
     radial-gradient(circle at 40% 20%, var(--secondary-pink) 0%, transparent 50%);
-  --gradient-sunset: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #fda085 100%);
-  --gradient-ocean: linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #6366F1 100%);
+  --gradient-sunset: linear-gradient(135deg, #FF6B35 0%, #F7931E 25%, #f093fb 50%, #f5576c 75%, #fda085 100%);
+  --gradient-ocean: linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #FF6B35 100%);
 }
 
 /* ===== アニメーション定義 ===== */
