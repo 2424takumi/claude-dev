@@ -723,6 +723,7 @@ body {
     padding: var(--spacing-6);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
+    border: 2px solid #000000;
 }
 
 .grid-theme-item {
@@ -754,20 +755,21 @@ body {
 /* セクションタイトル入力 */
 .section-title-input {
     width: 100%;
-    border: 1px solid var(--border-primary);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: var(--radius-md);
-    padding: var(--spacing-2) var(--spacing-3);
-    font-size: var(--text-base);
-    font-weight: var(--font-semibold);
+    padding: var(--spacing-1) var(--spacing-2);
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
     transition: all var(--transition-base);
-    background: var(--bg-primary);
-    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--text-secondary);
 }
 
 .section-title-input:focus {
     outline: none;
-    border-color: var(--primary-solid);
-    box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+    box-shadow: none;
+    background: rgba(255, 255, 255, 0.7);
 }
 
 /* セクションテーマ選択 */
@@ -808,6 +810,18 @@ body {
     outline: none;
     border-color: var(--primary-solid);
     box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
+}
+
+/* 写真表示エリア */
+.photo-display-area {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 /* テーマスタイル */
@@ -859,6 +873,26 @@ body {
     
     .theme-modern {
         background-color: #0f0f0f;
+    }
+    
+    .theme-grid {
+        border-color: #ffffff;
+    }
+    
+    .section-title-input {
+        background: rgba(0, 0, 0, 0.3);
+        color: var(--text-secondary);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .section-title-input:focus {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .photo-display-area {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 }
 

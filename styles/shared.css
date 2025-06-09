@@ -29,6 +29,7 @@
     padding: var(--spacing-6);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
+    border: 2px solid #000000;
 }
 
 .photo-theme-item {
@@ -134,6 +135,15 @@
     
     .photo-theme-item.theme-modern {
         background-color: #0f0f0f;
+    }
+    
+    .photo-theme-grid {
+        border-color: #ffffff;
+    }
+    
+    .photo-display-area {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 }
 
