@@ -11,8 +11,18 @@
     const state = {
         gridSize: 2, // デフォルトを2x2に設定
         gridSections: [], // グリッドセクションを格納
-        saveTimeout: null
+        saveTimeout: null,
+        currentFocusedInput: null // 現在フォーカスされている入力フィールド
     };
+    
+    // テーマサジェスチョンのリスト
+    const themeSuggestions = [
+        '動物', 'キャラクター', '花', 'MBTI', '植物',
+        '宝石', '季節', '天気', '食べ物', '飲み物',
+        '色', '音楽ジャンル', '映画ジャンル', 'スポーツ', '趣味',
+        '国', '都市', '自然現象', '職業', '感情',
+        '時代', '神話', '星座', '元素', 'ポケモン'
+    ];
     
     // DOM要素
     const elements = {
@@ -90,6 +100,17 @@
         
         // イベントリスナーの追加
         titleInput.addEventListener('input', handleSectionUpdate);
+        titleInput.addEventListener('focus', () => {
+            state.currentFocusedInput = titleInput;
+        });
+        titleInput.addEventListener('blur', () => {
+            // 少し遅延させて、チップクリックが先に処理されるようにする
+            setTimeout(() => {
+                if (state.currentFocusedInput === titleInput) {
+                    state.currentFocusedInput = null;
+                }
+            }, 200);
+        });
         
         // 要素の組み立て
         sectionContainer.appendChild(titleInput);
@@ -291,11 +312,54 @@
         }
     }
     
+    // テーマサジェスチョンチップを作成
+    function createThemeChip(theme, colorIndex) {
+        const chip = document.createElement('div');
+        chip.className = `theme-chip chip-color-${colorIndex}`;
+        chip.textContent = theme;
+        
+        chip.addEventListener('click', () => {
+            if (state.currentFocusedInput) {
+                state.currentFocusedInput.value = theme;
+                // イベントを手動でトリガー
+                const event = new Event('input', { bubbles: true });
+                state.currentFocusedInput.dispatchEvent(event);
+                state.currentFocusedInput.focus();
+            } else {
+                showToast('まずテーマ入力欄をクリックしてください', 'info');
+            }
+        });
+        
+        return chip;
+    }
+    
+    // テーマサジェスチョンを初期化
+    function initializeThemeSuggestions() {
+        const tracks = document.querySelectorAll('.suggestions-track');
+        
+        tracks.forEach((track, rowIndex) => {
+            // 各行に異なるテーマを配置
+            const startIndex = rowIndex * Math.floor(themeSuggestions.length / 2);
+            const endIndex = startIndex + Math.floor(themeSuggestions.length / 2);
+            const rowThemes = themeSuggestions.slice(startIndex, endIndex);
+            
+            // アニメーションのために2セット作成
+            for (let set = 0; set < 2; set++) {
+                rowThemes.forEach((theme, index) => {
+                    const colorIndex = ((startIndex + index) % 10) + 1;
+                    const chip = createThemeChip(theme, colorIndex);
+                    track.appendChild(chip);
+                });
+            }
+        });
+    }
+    
     // 初期化
     function init() {
         initializeGrid();
         setupEventListeners();
         loadSavedGrid();
+        initializeThemeSuggestions();
     }
     
     // DOMContentLoadedで初期化
