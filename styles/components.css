@@ -28,7 +28,7 @@
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 10px 20px rgba(255, 107, 53, 0.3);
 }
 
 .btn-primary:active {
@@ -192,7 +192,7 @@
 .input:focus {
   border-color: var(--primary-solid);
   background: var(--bg-primary);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
 }
 
 .input::placeholder {
@@ -217,7 +217,7 @@
 .textarea:focus {
   border-color: var(--primary-solid);
   background: var(--bg-primary);
-  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.1);
 }
 
 /* ===== バッジ ===== */
@@ -467,9 +467,9 @@
 
 .glow {
   box-shadow: 
-    0 0 20px rgba(99, 102, 241, 0.5),
-    0 0 40px rgba(99, 102, 241, 0.3),
-    0 0 60px rgba(99, 102, 241, 0.1);
+    0 0 20px rgba(255, 107, 53, 0.5),
+    0 0 40px rgba(255, 107, 53, 0.3),
+    0 0 60px rgba(255, 107, 53, 0.1);
 }
 
 .gradient-text {
