@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GridMe デザインシステム</title>
+  <meta name="description" content="Z世代向けのモダンで「シンプルだけどワクワクする」デザインシステム">
+  
+  <!-- フォント -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- スタイルシート -->
+  <link rel="stylesheet" href="/styles/design-tokens.css">
+  <link rel="stylesheet" href="/styles/components.css">
+  
+  <style>
+    body {
+      font-family: var(--font-body);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    
+    .hero {
+      padding: var(--spacing-20) var(--spacing-6);
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end));
+      color: white;
+    }
+    
+    .hero h1 {
+      font-size: var(--text-5xl);
+      font-weight: 800;
+      margin: 0 0 var(--spacing-4);
+      background: linear-gradient(to right, white 30%, var(--accent-neon-green));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--spacing-8);
+    }
+    
+    .section {
+      margin-bottom: var(--spacing-16);
+    }
+    
+    .section h2 {
+      font-size: var(--text-3xl);
+      font-weight: 700;
+      margin-bottom: var(--spacing-6);
+      color: var(--text-primary);
+    }
+    
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: var(--spacing-6);
+    }
+    
+    .nav {
+      background: var(--bg-secondary);
+      padding: var(--spacing-4);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: var(--spacing-6);
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--primary-solid);
+    }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <h1>GridMe</h1>
+    <p>シンプルだけどワクワクするデザインシステム</p>
+    <div style="margin-top: var(--spacing-8);">
+      <a href="/examples/demo.html" class="btn-primary">デモを見る</a>
+      <a href="https://github.com/2424takumi/claude-dev" class="btn-ghost" style="margin-left: var(--spacing-4);">GitHubで見る</a>
+    </div>
+  </div>
+  
+  <nav class="nav">
+    <div class="nav-links">
+      <a href="#components">コンポーネント</a>
+      <a href="#design">デザイン原則</a>
+      <a href="#start">はじめる</a>
+      <a href="/examples/demo.html">デモ</a>
+    </div>
+  </nav>
+  
+  <div class="container">
+    <section id="components" class="section">
+      <h2>コンポーネント</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>ボタン</h3>
+          <p>様々なスタイルのボタンコンポーネント</p>
+          <div style="display: flex; gap: var(--spacing-2); flex-wrap: wrap;">
+            <button class="btn-primary">プライマリ</button>
+            <button class="btn-secondary">セカンダリ</button>
+            <button class="btn-ghost">ゴースト</button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h3>フォーム</h3>
+          <p>美しく機能的なフォーム要素</p>
+          <input type="text" class="input" placeholder="テキストを入力">
+        </div>
+        
+        <div class="card">
+          <h3>カード</h3>
+          <p>情報を整理して表示するカードコンポーネント</p>
+          <div class="badge">新機能</div>
+        </div>
+      </div>
+    </section>
+    
+    <section id="design" class="section">
+      <h2>デザイン原則</h2>
+      <div class="grid">
+        <div class="card-glass">
+          <h3>Authenticity</h3>
+          <p>誇張しない、素直なデザイン</p>
+        </div>
+        <div class="card-glass">
+          <h3>Fluidity</h3>
+          <p>スムーズなトランジション</p>
+        </div>
+        <div class="card-glass">
+          <h3>Playfulness</h3>
+          <p>予想外の楽しい要素</p>
+        </div>
+        <div class="card-glass">
+          <h3>Minimalism Plus</h3>
+          <p>必要最小限 + 意味のあるアクセント</p>
+        </div>
+      </div>
+    </section>
+    
+    <section id="start" class="section">
+      <h2>はじめる</h2>
+      <div class="card">
+        <h3>インストール</h3>
+        <pre style="background: var(--bg-tertiary); padding: var(--spacing-4); border-radius: var(--radius-md); overflow-x: auto;">
+<code>npm install gridme-design-system</code></pre>
+        <p>または、CDNから直接読み込むこともできます。</p>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

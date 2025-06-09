@@ -1,0 +1,62 @@
+{
+  "name": "gridme-design-system",
+  "version": "0.1.0",
+  "description": "Z世代向けのモダンで「シンプルだけどワクワクする」デザインシステム",
+  "author": "GridMe Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint:css": "stylelint \"**/*.css\"",
+    "lint:js": "eslint .",
+    "lint": "npm run lint:css && npm run lint:js",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "tsc --noEmit",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.6.0",
+    "@storybook/addon-interactions": "^7.6.0",
+    "@storybook/addon-links": "^7.6.0",
+    "@storybook/blocks": "^7.6.0",
+    "@storybook/html": "^7.6.0",
+    "@storybook/html-vite": "^7.6.0",
+    "@storybook/testing-library": "^0.2.0",
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.55.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-storybook": "^0.6.15",
+    "prettier": "^3.1.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "storybook": "^7.6.0",
+    "stylelint": "^16.0.0",
+    "stylelint-config-standard": "^35.0.0",
+    "stylelint-order": "^6.0.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "design-system",
+    "css",
+    "components",
+    "ui",
+    "z-generation",
+    "modern"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/2424takumi/claude-dev"
+  }
+}

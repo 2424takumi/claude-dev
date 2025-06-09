@@ -4,25 +4,58 @@ Z世代向けのモダンで「シンプルだけどワクワクする」デザ�
 
 ## 🚀 クイックスタート
 
-### 1. CSSファイルをインポート
+### インストール
+
+```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバーの起動
+npm run dev
+
+# プロダクションビルド
+npm run build
+```
+
+### CDNから使用する場合
 
 ```html
 <!-- デザイントークン -->
-<link rel="stylesheet" href="styles/design-tokens.css">
+<link rel="stylesheet" href="https://unpkg.com/gridme-design-system/dist/css/design-tokens.css">
 <!-- コンポーネントスタイル -->
-<link rel="stylesheet" href="styles/components.css">
-```
-
-### 2. フォントの読み込み
-
-```html
+<link rel="stylesheet" href="https://unpkg.com/gridme-design-system/dist/css/components.css">
+<!-- フォントの読み込み -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 ```
 
-### 3. コンポーネントを使用
+### 基本的な使い方
 
 ```html
 <button class="btn-primary">はじめる</button>
+```
+
+## 🛠 開発環境
+
+### 利用可能なスクリプト
+
+```bash
+# 開発サーバー（ホットリロード対応）
+npm run dev
+
+# プロダクションビルド
+npm run build
+
+# ビルドのプレビュー
+npm run preview
+
+# コードの品質チェック
+npm run lint         # ESLintとStylelintを実行
+npm run format       # Prettierでフォーマット
+npm run type-check   # TypeScriptの型チェック
+
+# Storybook（コンポーネントカタログ）
+npm run storybook
+npm run build-storybook
 ```
 
 ## 📁 ファイル構成
@@ -126,6 +159,11 @@ CSS変数を上書きすることで、簡単にカスタマイズできます�
 - Firefox (最新)
 - Safari (最新)
 - Edge (最新)
+
+## 🔧 環境要件
+
+- Node.js 18.0.0以上
+- npm 8.0.0以上
 
 ## 📄 ライセンス
 
