@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridMe - Z世代向けモダンデザインプラットフォーム</title>
+    <meta name="description" content="シンプルだけどワクワクする、Z世代向けのモダンなデザインシステム">
+    
+    <!-- フォントの読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- デザインシステムの読み込み -->
+    <link rel="stylesheet" href="styles/design-tokens.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+    <!-- ナビゲーションバー -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <a href="/" class="nav-brand">
+                    <span class="gradient-text">GridMe</span>
+                </a>
+                
+                <button class="nav-toggle" aria-label="メニューを開く">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <ul class="nav-menu">
+                    <li><a href="#home" class="nav-link active">ホーム</a></li>
+                    <li><a href="#features" class="nav-link">特徴</a></li>
+                    <li><a href="#components" class="nav-link">コンポーネント</a></li>
+                    <li><a href="#showcase" class="nav-link">ショーケース</a></li>
+                    <li><a href="#contact" class="nav-link">コンタクト</a></li>
+                </ul>
+                
+                <div class="nav-actions">
+                    <button class="btn-icon theme-toggle" aria-label="テーマ切り替え">
+                        <svg class="icon-sun" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"/>
+                        </svg>
+                        <svg class="icon-moon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" style="display: none;">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
+                        </svg>
+                    </button>
+                    <button class="btn-primary btn-sm">はじめる</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- メインコンテンツ -->
+    <main>
+        <!-- ヒーローセクション -->
+        <section id="home" class="hero-section">
+            <div class="hero-bg"></div>
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        <span class="gradient-text">シンプル</span>だけど
+                        <span class="gradient-text">ワクワク</span>する
+                        デザインシステム
+                    </h1>
+                    <p class="hero-subtitle">
+                        Z世代のためのモダンなUIコンポーネントとデザインガイドライン。<br>
+                        あなたのプロジェクトに、新しい体験を。
+                    </p>
+                    <div class="hero-actions">
+                        <button class="btn-primary btn-lg">今すぐ始める</button>
+                        <a href="examples/demo.html" class="btn-ghost btn-lg">デモを見る</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 特徴セクション -->
+        <section id="features" class="section">
+            <div class="container">
+                <h2 class="section-title text-center">GridMeの特徴</h2>
+                <div class="grid grid-3">
+                    <div class="feature-card card-glass">
+                        <div class="feature-icon gradient-bg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                                <path d="M2 17l10 5 10-5"/>
+                                <path d="M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
+                        <h3>モジュラー設計</h3>
+                        <p>再利用可能なコンポーネントで、効率的な開発を実現</p>
+                    </div>
+                    
+                    <div class="feature-card card-glass">
+                        <div class="feature-icon gradient-bg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                <path d="M3 9h18M9 21V9"/>
+                            </svg>
+                        </div>
+                        <h3>レスポンシブ</h3>
+                        <p>すべてのデバイスで美しく表示される、適応的なレイアウト</p>
+                    </div>
+                    
+                    <div class="feature-card card-glass">
+                        <div class="feature-icon gradient-bg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                                <line x1="15" y1="9" x2="15.01" y2="9"/>
+                            </svg>
+                        </div>
+                        <h3>楽しいUX</h3>
+                        <p>使うたびにワクワクする、インタラクティブな体験</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- コンポーネントショーケース -->
+        <section id="components" class="section bg-secondary">
+            <div class="container">
+                <h2 class="section-title text-center">コンポーネント</h2>
+                
+                <!-- インタラクティブデモ -->
+                <div class="component-demo">
+                    <div class="demo-tabs">
+                        <button class="demo-tab active" data-demo="buttons">ボタン</button>
+                        <button class="demo-tab" data-demo="forms">フォーム</button>
+                        <button class="demo-tab" data-demo="cards">カード</button>
+                        <button class="demo-tab" data-demo="feedback">フィードバック</button>
+                    </div>
+                    
+                    <div class="demo-content">
+                        <!-- ボタンデモ -->
+                        <div class="demo-panel active" id="demo-buttons">
+                            <div class="demo-grid">
+                                <button class="btn-primary">プライマリ</button>
+                                <button class="btn-ghost">ゴースト</button>
+                                <button class="btn-secondary">セカンダリ</button>
+                                <button class="btn-primary" disabled>無効</button>
+                            </div>
+                        </div>
+                        
+                        <!-- フォームデモ -->
+                        <div class="demo-panel" id="demo-forms">
+                            <form class="demo-form">
+                                <input type="text" class="input" placeholder="テキスト入力">
+                                <textarea class="textarea" placeholder="複数行テキスト"></textarea>
+                                <label class="switch">
+                                    <input type="checkbox">
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </form>
+                        </div>
+                        
+                        <!-- カードデモ -->
+                        <div class="demo-panel" id="demo-cards">
+                            <div class="demo-grid">
+                                <div class="card">
+                                    <h4>ベースカード</h4>
+                                    <p>ホバーで浮き上がる効果</p>
+                                </div>
+                                <div class="card-glass">
+                                    <h4>グラスカード</h4>
+                                    <p>透明感のあるデザイン</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- フィードバックデモ -->
+                        <div class="demo-panel" id="demo-feedback">
+                            <div class="demo-stack">
+                                <button class="btn-primary" id="show-toast">トースト表示</button>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: 0%;"></div>
+                                </div>
+                                <div class="badge-group">
+                                    <span class="badge badge-primary">新着</span>
+                                    <span class="badge badge-success">完了</span>
+                                    <span class="badge badge-warning">保留</span>
+                                    <span class="badge badge-error">エラー</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- ショーケース -->
+        <section id="showcase" class="section">
+            <div class="container">
+                <h2 class="section-title text-center">活用例</h2>
+                <div class="showcase-grid">
+                    <div class="showcase-item">
+                        <div class="showcase-preview card-interactive">
+                            <div class="mock-browser">
+                                <div class="browser-bar">
+                                    <span></span><span></span><span></span>
+                                </div>
+                                <div class="browser-content">
+                                    <div class="mini-hero gradient-bg"></div>
+                                    <div class="mini-content">
+                                        <div class="mini-bar"></div>
+                                        <div class="mini-bar short"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h3>ランディングページ</h3>
+                        <p>魅力的なファーストビューで訪問者を惹きつける</p>
+                    </div>
+                    
+                    <div class="showcase-item">
+                        <div class="showcase-preview card-interactive">
+                            <div class="mock-phone">
+                                <div class="phone-screen">
+                                    <div class="mini-app">
+                                        <div class="mini-nav"></div>
+                                        <div class="mini-cards">
+                                            <div class="mini-card"></div>
+                                            <div class="mini-card"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h3>モバイルアプリ</h3>
+                        <p>スマートフォンに最適化された体験</p>
+                    </div>
+                    
+                    <div class="showcase-item">
+                        <div class="showcase-preview card-interactive">
+                            <div class="mock-dashboard">
+                                <div class="dash-sidebar"></div>
+                                <div class="dash-main">
+                                    <div class="dash-chart gradient-bg"></div>
+                                    <div class="dash-stats">
+                                        <div class="stat-card"></div>
+                                        <div class="stat-card"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <h3>ダッシュボード</h3>
+                        <p>データを美しく、わかりやすく表示</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- CTA セクション -->
+        <section id="contact" class="section cta-section">
+            <div class="container">
+                <div class="cta-content card-glass">
+                    <h2 class="cta-title gradient-text">今すぐGridMeを始めよう</h2>
+                    <p class="cta-subtitle">
+                        あなたのプロジェクトに、新しいデザイン体験を。<br>
+                        無料で利用可能、すぐに実装できます。
+                    </p>
+                    <div class="cta-actions">
+                        <button class="btn-primary btn-lg" id="get-started">スタートガイドを見る</button>
+                        <a href="https://github.com/2424takumi/claude-dev" class="btn-ghost btn-lg">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <!-- フッター -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="gradient-text">GridMe</span>
+                    <p>Z世代向けモダンデザインシステム</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#features">特徴</a>
+                    <a href="#components">コンポーネント</a>
+                    <a href="examples/demo.html">デモ</a>
+                    <a href="https://github.com/2424takumi/claude-dev">GitHub</a>
+                </div>
+                <div class="footer-copy">
+                    <p>&copy; 2024 GridMe. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- トースト通知コンテナ -->
+    <div id="toast-container"></div>
+    
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+</body>
+</html>
