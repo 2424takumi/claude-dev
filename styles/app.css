@@ -730,6 +730,10 @@ body {
 .grid-placeholder {
     color: var(--text-tertiary);
     font-size: var(--text-2xl);
+    text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 /* ===== アクションセクション ===== */
