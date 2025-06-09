@@ -770,7 +770,7 @@ body {
 }
 
 /* ===== モーダル ===== */
-.modal {
+.app-modal {
     display: none;
     position: fixed;
     top: 0;
@@ -779,23 +779,28 @@ body {
     bottom: 0;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
-    z-index: var(--z-modal);
+    z-index: var(--z-modal-backdrop);
     align-items: center;
     justify-content: center;
 }
 
-.modal.active {
+.app-modal.active {
     display: flex;
 }
 
-.modal-content {
+.app-modal-content {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
     max-width: 500px;
     width: 90%;
     max-height: 90vh;
     overflow-y: auto;
+    box-shadow: var(--shadow-2xl);
+    animation: slideUp var(--transition-slow);
+    z-index: var(--z-modal);
 }
 
-.modal-header {
+.app-modal-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -803,18 +808,18 @@ body {
     border-bottom: 1px solid var(--border-primary);
 }
 
-.modal-header h3 {
+.app-modal-header h3 {
     margin: 0;
 }
 
-.modal-close {
+.app-modal-close {
     background: none;
     border: none;
     cursor: pointer;
     padding: var(--spacing-2);
 }
 
-.modal-body {
+.app-modal-body {
     padding: var(--spacing-6);
 }
 
