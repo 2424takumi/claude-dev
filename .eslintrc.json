@@ -1,0 +1,44 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "prettier"
+  ],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "prefer-const": "warn",
+    "arrow-body-style": ["warn", "as-needed"],
+    "no-var": "error",
+    "object-shorthand": "warn",
+    "prefer-template": "warn",
+    "quote-props": ["warn", "as-needed"],
+    "array-callback-return": "error",
+    "no-duplicate-imports": "error",
+    "no-useless-constructor": "warn",
+    "no-useless-return": "warn",
+    "prefer-destructuring": ["warn", {
+      "object": true,
+      "array": false
+    }],
+    "consistent-return": "warn",
+    "curly": ["error", "all"],
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-else-return": ["warn", { "allowElseIf": false }],
+    "no-multi-spaces": "warn",
+    "no-trailing-spaces": "warn",
+    "semi": ["error", "always"],
+    "comma-dangle": ["warn", "always-multiline"],
+    "quotes": ["warn", "single", { "avoidEscape": true }]
+  },
+  "globals": {
+    "html2canvas": "readonly"
+  }
+}

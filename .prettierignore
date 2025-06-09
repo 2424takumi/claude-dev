@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Coverage
+coverage/
+
+# Cache
+.eslintcache
+.prettier-cache
+
+# Minified files
+*.min.js
+*.min.css
+
+# Vendor files
+vendor/
+
+# Auto-generated files
+package-lock.json
+yarn.lock
