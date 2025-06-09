@@ -31,7 +31,14 @@
         shareBtn: document.getElementById('share-btn'),
         gridSizeSelect: document.getElementById('grid-size'),
         downloadBtn: document.getElementById('download-btn'),
-        saveBtn: document.getElementById('save-btn')
+        saveBtn: document.getElementById('save-btn'),
+        shareModal: document.getElementById('share-modal'),
+        shareModalClose: null,
+        copyUrlBtn: document.getElementById('copy-url-btn'),
+        shareTwitterBtn: document.getElementById('share-twitter-btn'),
+        shareFacebookBtn: document.getElementById('share-facebook-btn'),
+        shareLineBtn: document.getElementById('share-line-btn'),
+        shareUrlInput: document.getElementById('share-url-input')
     };
     
     // グリッドセクションクラス
@@ -187,13 +194,26 @@
     }
     
     // 共有機能
-    async function shareGrid() {
+    function shareGrid() {
         if (!checkAllSectionsCompleted()) {
             showToast('全てのセクションにテーマを入力してください', 'warning');
             return;
         }
         
-        // 共有用のデータを生成
+        // 共有URLを生成
+        const shareUrl = generateShareUrl();
+        
+        // URLをモーダルに表示
+        if (elements.shareUrlInput) {
+            elements.shareUrlInput.value = shareUrl;
+        }
+        
+        // モーダルを表示
+        showModal();
+    }
+    
+    // 共有URLを生成
+    function generateShareUrl() {
         const shareData = {
             size: state.gridSize,
             sections: state.gridSections.map(section => ({
@@ -202,25 +222,57 @@
         };
         
         const encodedData = btoa(JSON.stringify(shareData));
-        const shareUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}shared.html?data=${encodedData}`;
+        return `${window.location.origin}${window.location.pathname.replace('index.html', '')}shared.html?data=${encodedData}`;
+    }
+    
+    // モーダルを表示
+    function showModal() {
+        if (elements.shareModal) {
+            elements.shareModal.classList.add('active');
+        }
+    }
+    
+    // モーダルを閉じる
+    function closeModal() {
+        if (elements.shareModal) {
+            elements.shareModal.classList.remove('active');
+        }
+    }
+    
+    // URLをコピー
+    async function copyShareUrl() {
+        const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
         
         try {
-            if (navigator.share) {
-                await navigator.share({
-                    title: 'GridMe - テーマグリッド',
-                    text: 'カスタムテーマグリッドを共有します',
-                    url: shareUrl
-                });
-                showToast('共有しました', 'success');
-            } else {
-                // フォールバック: URLをクリップボードにコピー
-                await navigator.clipboard.writeText(shareUrl);
-                showToast('共有URLをコピーしました', 'success');
-            }
+            await navigator.clipboard.writeText(shareUrl);
+            showToast('URLをコピーしました', 'success');
         } catch (err) {
-            console.error('共有エラー:', err);
-            showToast('共有に失敗しました', 'error');
+            console.error('コピーエラー:', err);
+            showToast('URLのコピーに失敗しました', 'error');
         }
+    }
+    
+    // Twitterで共有
+    function shareOnTwitter() {
+        const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
+        const text = encodeURIComponent('GridMeで作成したテーマグリッドを共有します！');
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}`;
+        window.open(twitterUrl, '_blank', 'width=600,height=400');
+    }
+    
+    // Facebookで共有
+    function shareOnFacebook() {
+        const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        window.open(facebookUrl, '_blank', 'width=600,height=400');
+    }
+    
+    // LINEで共有
+    function shareOnLine() {
+        const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
+        const text = encodeURIComponent('GridMeで作成したテーマグリッドを見てください！');
+        const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${text}`;
+        window.open(lineUrl, '_blank', 'width=600,height=400');
     }
     
     // 自動保存
@@ -289,6 +341,38 @@
         }
         if (elements.shareBtn) {
             elements.shareBtn.addEventListener('click', shareGrid);
+        }
+        
+        // モーダル関連
+        if (elements.shareModal) {
+            // モーダルの閉じるボタンを取得
+            elements.shareModalClose = elements.shareModal.querySelector('.app-modal-close');
+            
+            // モーダルを閉じる
+            if (elements.shareModalClose) {
+                elements.shareModalClose.addEventListener('click', closeModal);
+            }
+            
+            // モーダル背景クリックで閉じる
+            elements.shareModal.addEventListener('click', (e) => {
+                if (e.target === elements.shareModal) {
+                    closeModal();
+                }
+            });
+        }
+        
+        // 共有オプションボタン
+        if (elements.copyUrlBtn) {
+            elements.copyUrlBtn.addEventListener('click', copyShareUrl);
+        }
+        if (elements.shareTwitterBtn) {
+            elements.shareTwitterBtn.addEventListener('click', shareOnTwitter);
+        }
+        if (elements.shareFacebookBtn) {
+            elements.shareFacebookBtn.addEventListener('click', shareOnFacebook);
+        }
+        if (elements.shareLineBtn) {
+            elements.shareLineBtn.addEventListener('click', shareOnLine);
         }
     }
     
