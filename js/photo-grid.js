@@ -32,7 +32,7 @@
         uploadModal: document.getElementById('upload-modal'),
         uploadArea: document.getElementById('upload-area'),
         fileInput: document.getElementById('file-input'),
-        modalClose: document.querySelector('.modal-close')
+        modalClose: document.querySelector('.app-modal-close')
     };
     
     // グリッドの初期化
@@ -523,19 +523,19 @@
     function showShareDialog(shareUrl) {
         // シンプルなモーダルを作成
         const modal = document.createElement('div');
-        modal.className = 'modal active';
+        modal.className = 'app-modal active';
         modal.innerHTML = `
-            <div class="modal-content card-glass">
-                <div class="modal-header">
+            <div class="app-modal-content card-glass">
+                <div class="app-modal-header">
                     <h3>グリッドを共有</h3>
-                    <button class="btn-icon modal-close" onclick="this.closest('.modal').remove()">
+                    <button class="btn-icon app-modal-close" onclick="this.closest('.app-modal').remove()">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="18" y1="6" x2="6" y2="18"/>
                             <line x1="6" y1="6" x2="18" y2="18"/>
                         </svg>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="app-modal-body">
                     <p>完成したグリッドの共有URLです：</p>
                     <div style="margin: 15px 0;">
                         <input type="text" value="${shareUrl}" class="input" readonly style="width: 100%;">
