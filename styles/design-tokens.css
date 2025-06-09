@@ -188,6 +188,12 @@
     radial-gradient(circle at 40% 20%, var(--secondary-pink) 0%, transparent 50%);
   --gradient-sunset: linear-gradient(135deg, #FF6B35 0%, #F7931E 25%, #f093fb 50%, #f5576c 75%, #fda085 100%);
   --gradient-ocean: linear-gradient(135deg, #06B6D4 0%, #3B82F6 50%, #FF6B35 100%);
+  
+  /* Primary color RGB values for transparency */
+  --primary-rgb: 255, 107, 53;
+  
+  /* Primary hover state */
+  --primary-hover: #E55100;
 }
 
 /* ===== アニメーション定義 ===== */

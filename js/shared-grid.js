@@ -10,7 +10,7 @@
     // 状態管理
     const state = {
         gridSize: 3,
-        gridThemes: [],
+        gridSections: [],
         gridImages: [],
         selectedCell: null
     };
@@ -54,7 +54,7 @@
         if (!sharedData) return;
         
         state.gridSize = sharedData.size || 3;
-        state.gridThemes = sharedData.themes || [];
+        state.gridSections = sharedData.sections || [];
         const totalCells = state.gridSize * state.gridSize;
         state.gridImages = new Array(totalCells).fill(null);
         
@@ -64,18 +64,42 @@
         elements.photoThemeGrid.style.gridTemplateRows = `repeat(${state.gridSize}, 1fr)`;
         
         for (let i = 0; i < totalCells; i++) {
-            const gridItem = document.createElement('div');
-            gridItem.className = 'photo-theme-item empty';
-            gridItem.dataset.index = i;
-            
-            // テーマラベル
-            const themeLabel = document.createElement('div');
-            themeLabel.className = 'theme-label';
-            themeLabel.textContent = state.gridThemes[i] || `テーマ ${i + 1}`;
-            
-            // 写真プレースホルダー
-            const placeholder = document.createElement('div');
-            placeholder.className = 'photo-placeholder';
+            const section = state.gridSections[i] || { title: '', theme: '' };
+            const gridItem = createPhotoSection(i, section);
+            elements.photoThemeGrid.appendChild(gridItem);
+        }
+        
+        // 保存されたデータを読み込む
+        loadSavedImages();
+    }
+    
+    // 写真セクションの作成
+    function createPhotoSection(index, section) {
+        const gridItem = document.createElement('div');
+        gridItem.className = 'photo-section-item empty';
+        gridItem.dataset.index = index;
+        
+        // セクションヘッダー（タイトル表示）
+        if (section.title) {
+            const header = document.createElement('div');
+            header.className = 'photo-section-header';
+            header.textContent = section.title;
+            gridItem.appendChild(header);
+        }
+        
+        // テーマラベル
+        const themeLabel = document.createElement('div');
+        themeLabel.className = 'photo-theme-label';
+        themeLabel.textContent = section.theme || `セクション ${index + 1}`;
+        
+        // 写真プレースホルダー
+        const placeholder = document.createElement('div');
+        placeholder.className = 'photo-placeholder';
+        
+        if (state.gridImages[index]) {
+            placeholder.innerHTML = `<img src="${state.gridImages[index]}" alt="${section.title || section.theme || 'Grid image'}">`;
+            gridItem.classList.remove('empty');
+        } else {
             placeholder.innerHTML = `
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
                     <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -84,16 +108,14 @@
                 </svg>
                 <span>写真を追加</span>
             `;
-            
-            gridItem.appendChild(themeLabel);
-            gridItem.appendChild(placeholder);
-            
-            gridItem.addEventListener('click', () => handleCellClick(i));
-            elements.photoThemeGrid.appendChild(gridItem);
         }
         
-        // 保存されたデータを読み込む
-        loadSavedImages();
+        gridItem.appendChild(themeLabel);
+        gridItem.appendChild(placeholder);
+        
+        gridItem.addEventListener('click', () => handleCellClick(index));
+        
+        return gridItem;
     }
     
     // セルクリックハンドラー
@@ -124,15 +146,16 @@
     
     // グリッド表示の更新
     function updateGridDisplay() {
-        const gridItems = elements.photoThemeGrid.querySelectorAll('.photo-theme-item');
+        const gridItems = elements.photoThemeGrid.querySelectorAll('.photo-section-item');
         
         gridItems.forEach((item, index) => {
             const image = state.gridImages[index];
             const placeholder = item.querySelector('.photo-placeholder');
+            const section = state.gridSections[index] || { title: '', theme: '' };
             
             if (image) {
                 item.classList.remove('empty');
-                placeholder.innerHTML = `<img src="${image}" alt="${state.gridThemes[index] || 'Grid image'}">`;
+                placeholder.innerHTML = `<img src="${image}" alt="${section.title || section.theme || 'Grid image'}">`;
             } else {
                 item.classList.add('empty');
                 placeholder.innerHTML = `
@@ -155,7 +178,7 @@
     
     // 画像データの保存
     function saveImages() {
-        const saveKey = `gridme-shared-${btoa(JSON.stringify(state.gridThemes)).substring(0, 20)}`;
+        const saveKey = `gridme-shared-${btoa(JSON.stringify(state.gridSections)).substring(0, 20)}`;
         const saveData = {
             images: state.gridImages,
             timestamp: new Date().toISOString()
@@ -171,7 +194,7 @@
     
     // 保存された画像の読み込み
     function loadSavedImages() {
-        const saveKey = `gridme-shared-${btoa(JSON.stringify(state.gridThemes)).substring(0, 20)}`;
+        const saveKey = `gridme-shared-${btoa(JSON.stringify(state.gridSections)).substring(0, 20)}`;
         const savedData = localStorage.getItem(saveKey);
         
         if (savedData) {
