@@ -733,10 +733,10 @@ body {
     overflow: hidden;
     transition: all var(--transition-base);
     display: flex;
-    align-items: stretch;
+    align-items: center;
     justify-content: center;
     padding: var(--spacing-3);
-    min-height: 200px;
+    min-height: 100px;
 }
 
 .grid-theme-item:hover {
@@ -748,28 +748,27 @@ body {
 .grid-section-container {
     width: 100%;
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
+    align-items: center;
+    justify-content: center;
 }
 
 /* セクションタイトル入力 */
 .section-title-input {
     width: 100%;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: none;
     border-radius: var(--radius-md);
     padding: var(--spacing-1) var(--spacing-2);
     font-size: var(--text-sm);
     font-weight: var(--font-normal);
     transition: all var(--transition-base);
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.3);
     color: var(--text-secondary);
 }
 
 .section-title-input:focus {
     outline: none;
-    border-color: rgba(0, 0, 0, 0.2);
     box-shadow: none;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.5);
 }
 
 /* セクションテーマ選択 */
@@ -812,17 +811,6 @@ body {
     box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1);
 }
 
-/* 写真表示エリア */
-.photo-display-area {
-    flex: 1;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: var(--radius-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 150px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
 
 /* テーマスタイル */
 .theme-default {
@@ -880,20 +868,14 @@ body {
     }
     
     .section-title-input {
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(0, 0, 0, 0.2);
         color: var(--text-secondary);
-        border-color: rgba(255, 255, 255, 0.1);
     }
     
     .section-title-input:focus {
-        background: rgba(0, 0, 0, 0.5);
-        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(0, 0, 0, 0.3);
     }
     
-    .photo-display-area {
-        background: rgba(0, 0, 0, 0.3);
-        border-color: rgba(255, 255, 255, 0.1);
-    }
 }
 
 /* ===== アクションセクション ===== */
@@ -1158,7 +1140,7 @@ body {
     }
     
     .grid-theme-item {
-        min-height: 150px;
+        min-height: 80px;
     }
     
     .grid-size-selector {
