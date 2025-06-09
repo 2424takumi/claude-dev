@@ -88,16 +88,11 @@
         titleInput.dataset.index = index;
         titleInput.dataset.field = 'title';
         
-        // 写真表示エリア
-        const photoArea = document.createElement('div');
-        photoArea.className = 'photo-display-area';
-        
         // イベントリスナーの追加
         titleInput.addEventListener('input', handleSectionUpdate);
         
         // 要素の組み立て
         sectionContainer.appendChild(titleInput);
-        sectionContainer.appendChild(photoArea);
         gridItem.appendChild(sectionContainer);
         
         return gridItem;
