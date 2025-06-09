@@ -50,86 +50,33 @@
     <!-- メインコンテンツ -->
     <main class="app-main">
         <div class="container">
-            <!-- テーマ入力セクション -->
-            <section class="theme-input-section">
-                <div class="theme-input-card card-glass">
-                    <h2 class="theme-title">テーマを入力してください</h2>
-                    <p class="theme-subtitle">写真グリッドのテーマやコンセプトを入力して、あなただけのフォトコレクションを作成しましょう</p>
-                    
-                    <div class="theme-form">
-                        <div class="input-group">
-                            <input 
-                                type="text" 
-                                id="theme-input" 
-                                class="input input-lg" 
-                                placeholder="例: 夏の思い出、都市の風景、自然の美しさ..."
-                                maxlength="100"
-                            >
-                            <button class="btn-primary btn-lg" id="apply-theme-btn">
-                                テーマを適用
-                            </button>
-                        </div>
-                        <div class="theme-suggestions">
-                            <span class="suggestion-label">おすすめ:</span>
-                            <button class="suggestion-chip" data-theme="夏の風景">夏の風景</button>
-                            <button class="suggestion-chip" data-theme="都市の夜景">都市の夜景</button>
-                            <button class="suggestion-chip" data-theme="自然と動物">自然と動物</button>
-                            <button class="suggestion-chip" data-theme="料理とグルメ">料理とグルメ</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- フォトグリッドセクション -->
-            <section class="photo-grid-section">
-                <div class="grid-header">
-                    <h3 class="grid-title" id="current-theme-display">フォトグリッド</h3>
-                    <div class="grid-actions">
-                        <button class="btn-ghost btn-sm" id="clear-grid-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 6h18"/>
-                                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                            </svg>
-                            クリア
-                        </button>
-                        <button class="btn-ghost btn-sm" id="randomize-btn">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="16 3 21 3 21 8"/>
-                                <line x1="4" y1="20" x2="21" y2="3"/>
-                                <polyline points="21 16 21 21 16 21"/>
-                                <line x1="15" y1="15" x2="21" y2="21"/>
-                                <line x1="4" y1="4" x2="9" y2="9"/>
-                            </svg>
-                            シャッフル
-                        </button>
-                    </div>
+            <!-- グリッドセクション -->
+            <section class="grid-main-section">
+                <!-- グリッドサイズ選択 -->
+                <div class="grid-size-selector">
+                    <label for="grid-size">グリッドサイズ:</label>
+                    <select id="grid-size" class="input">
+                        <option value="3">3x3</option>
+                        <option value="4">4x4</option>
+                        <option value="5">5x5</option>
+                    </select>
                 </div>
                 
-                <!-- 9x9 フォトグリッド -->
-                <div class="photo-grid" id="photo-grid">
-                    <!-- 81個のグリッドアイテムを動的に生成 -->
+                <!-- 共有ボタン -->
+                <div class="share-button-container">
+                    <button class="btn-primary btn-lg" id="main-share-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                            <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/>
+                            <polyline points="16 6 12 2 8 6"/>
+                            <line x1="12" y1="2" x2="12" y2="15"/>
+                        </svg>
+                        GridMeを共有
+                    </button>
                 </div>
-            </section>
-            
-            <!-- アクションセクション -->
-            <section class="actions-section">
-                <div class="action-buttons">
-                    <button class="btn-secondary" id="download-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-                            <polyline points="7 10 12 15 17 10"/>
-                            <line x1="12" y1="15" x2="12" y2="3"/>
-                        </svg>
-                        ダウンロード
-                    </button>
-                    <button class="btn-primary" id="save-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-                            <polyline points="17 21 17 13 7 13 7 21"/>
-                            <polyline points="7 3 7 8 15 8"/>
-                        </svg>
-                        保存
-                    </button>
+                
+                <!-- 3x3 テーマグリッド -->
+                <div class="theme-grid" id="theme-grid">
+                    <!-- 9個のグリッドアイテムを動的に生成 -->
                 </div>
             </section>
         </div>
@@ -142,31 +89,6 @@
         </div>
     </footer>
     
-    <!-- 画像アップロードモーダル -->
-    <div class="modal" id="upload-modal">
-        <div class="modal-content card-glass">
-            <div class="modal-header">
-                <h3>画像を選択</h3>
-                <button class="btn-icon modal-close" aria-label="閉じる">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="18" y1="6" x2="6" y2="18"/>
-                        <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="upload-area" id="upload-area">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                        <polyline points="21 15 16 10 5 21"/>
-                    </svg>
-                    <p>クリックまたはドラッグ＆ドロップで画像をアップロード</p>
-                    <input type="file" id="file-input" accept="image/*" style="display: none;">
-                </div>
-            </div>
-        </div>
-    </div>
     
     <!-- トースト通知コンテナ -->
     <div id="toast-container"></div>
