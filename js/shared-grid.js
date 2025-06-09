@@ -21,7 +21,7 @@
         uploadModal: document.getElementById('upload-modal'),
         uploadArea: document.getElementById('upload-area'),
         fileInput: document.getElementById('file-input'),
-        modalClose: document.querySelector('.modal-close'),
+        modalClose: document.querySelector('.app-modal-close'),
         downloadBtn: document.getElementById('download-grid-btn')
     };
     
@@ -271,6 +271,26 @@
                 closeModal();
             }
         });
+    }
+    
+    // トースト通知を表示
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        
+        const container = document.getElementById('toast-container');
+        if (container) {
+            container.appendChild(toast);
+            
+            // アニメーション後に削除
+            setTimeout(() => {
+                toast.classList.add('toast-fade-out');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
     }
     
     // 初期化
