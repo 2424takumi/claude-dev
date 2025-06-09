@@ -1,0 +1,143 @@
+/**
+ * GridMe 共有ページスタイル
+ */
+
+/* ===== 共有グリッドセクション ===== */
+.shared-grid-section {
+    padding: var(--spacing-8) 0;
+    text-align: center;
+}
+
+.shared-title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--spacing-4);
+}
+
+.shared-subtitle {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-10);
+}
+
+/* ===== フォトテーマグリッド ===== */
+.photo-theme-grid {
+    display: grid;
+    gap: var(--spacing-4);
+    max-width: 900px;
+    margin: 0 auto var(--spacing-10);
+    background: var(--bg-secondary);
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+}
+
+.photo-theme-item {
+    position: relative;
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.photo-theme-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.photo-theme-item.empty .photo-placeholder {
+    opacity: 0.7;
+}
+
+.photo-theme-item.empty:hover .photo-placeholder {
+    opacity: 1;
+}
+
+/* ===== テーマラベル ===== */
+.theme-label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    text-align: center;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+}
+
+/* ===== 写真プレースホルダー ===== */
+.photo-placeholder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    color: var(--text-tertiary);
+    transition: all var(--transition-base);
+}
+
+.photo-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo-placeholder span {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+}
+
+/* ===== 共有アクション ===== */
+.shared-actions {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-4);
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 768px) {
+    .photo-theme-grid {
+        gap: var(--spacing-3);
+        padding: var(--spacing-4);
+        max-width: 95%;
+    }
+    
+    .theme-label {
+        font-size: var(--text-xs);
+        padding: var(--spacing-1) var(--spacing-2);
+    }
+    
+    .shared-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .shared-actions button {
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .photo-theme-grid {
+        gap: var(--spacing-2);
+        padding: var(--spacing-3);
+    }
+    
+    .photo-placeholder svg {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .photo-placeholder span {
+        font-size: var(--text-xs);
+    }
+}

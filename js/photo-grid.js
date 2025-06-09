@@ -1,7 +1,7 @@
 /**
- * GridMe フォトグリッドアプリケーション
+ * GridMe テーマグリッドアプリケーション
  * 
- * 9x9のフォトグリッドで写真を管理するインタラクティブなアプリケーション
+ * 3x3のテーマグリッドでテーマを管理するインタラクティブなアプリケーション
  */
 
 (function() {
@@ -9,6 +9,8 @@
     
     // 状態管理
     const state = {
+        gridSize: 3,
+        gridThemes: []
         currentTheme: '',
         gridImages: new Array(81).fill(null),
         selectedCell: null,
@@ -19,14 +21,10 @@
     
     // DOM要素
     const elements = {
-        themeInput: document.getElementById('theme-input'),
-        applyThemeBtn: document.getElementById('apply-theme-btn'),
-        suggestionChips: document.querySelectorAll('.suggestion-chip'),
-        photoGrid: document.getElementById('photo-grid'),
-        currentThemeDisplay: document.getElementById('current-theme-display'),
-        clearGridBtn: document.getElementById('clear-grid-btn'),
-        randomizeBtn: document.getElementById('randomize-btn'),
+        themeGrid: document.getElementById('theme-grid'),
+        mainShareBtn: document.getElementById('main-share-btn'),
         shareBtn: document.getElementById('share-btn'),
+        gridSizeSelect: document.getElementById('grid-size')
         downloadBtn: document.getElementById('download-btn'),
         saveBtn: document.getElementById('save-btn'),
         uploadModal: document.getElementById('upload-modal'),
@@ -37,13 +35,41 @@
     
     // グリッドの初期化
     function initializeGrid() {
-        elements.photoGrid.innerHTML = '';
+        const size = state.gridSize;
+        const totalCells = size * size;
         
-        for (let i = 0; i < 81; i++) {
+        // グリッドテーマ配列の初期化
+        state.gridThemes = new Array(totalCells).fill('');
+        
+        // グリッドHTMLの生成
+        elements.themeGrid.innerHTML = '';
+        elements.themeGrid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+        elements.themeGrid.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+        
+        for (let i = 0; i < totalCells; i++) {
             const gridItem = document.createElement('div');
-            gridItem.className = 'grid-item empty';
+            gridItem.className = 'grid-theme-item';
             gridItem.dataset.index = i;
             
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'theme-input';
+            input.placeholder = 'テーマを入力';
+            input.maxLength = 50;
+            input.dataset.index = i;
+            
+            input.addEventListener('input', (e) => handleThemeInput(e));
+            
+            gridItem.appendChild(input);
+            elements.themeGrid.appendChild(gridItem);
+        }
+    }
+    
+    // テーマ入力ハンドラー
+    function handleThemeInput(e) {
+        const index = parseInt(e.target.dataset.index);
+        state.gridThemes[index] = e.target.value;
             const placeholder = document.createElement('div');
             placeholder.className = 'grid-placeholder';
             
@@ -241,19 +267,28 @@
         reader.readAsDataURL(file);
     }
     
-    // モーダルを閉じる
-    function closeModal() {
-        elements.uploadModal.classList.remove('active');
-        state.selectedCell = null;
+    // グリッドサイズ変更
+    function handleGridSizeChange(e) {
+        const newSize = parseInt(e.target.value);
+        state.gridSize = newSize;
+        initializeGrid();
+        showToast(`グリッドサイズを${newSize}x${newSize}に変更しました`, 'success');
     }
     
     // 共有機能
     async function shareGrid() {
-        if (!state.currentTheme) {
-            showToast('まずテーマを設定してください', 'warning');
+        const filledThemes = state.gridThemes.filter(theme => theme.trim() !== '');
+        
+        if (filledThemes.length === 0) {
+            showToast('少なくとも1つのテーマを入力してください', 'warning');
             return;
         }
         
+
+        // 共有用のURLパラメータを生成
+        const shareData = {
+            size: state.gridSize,
+            themes: state.gridThemes
         // グリッドデータを準備
         const gridData = {
             theme: state.currentTheme,
@@ -271,13 +306,22 @@
             url: shareUrl
         };
         
+        const encodedData = btoa(JSON.stringify(shareData));
+        const shareUrl = `${window.location.origin}/shared.html?data=${encodedData}`;
+        
         try {
             if (navigator.share) {
-                await navigator.share(shareData);
+                await navigator.share({
+                    title: 'GridMe - テーマグリッド',
+                    text: 'カスタムテーマグリッドを共有します',
+                    url: shareUrl
+                });
                 showToast('共有しました', 'success');
             } else {
                 // フォールバック: URLをクリップボードにコピー
                 await navigator.clipboard.writeText(shareUrl);
+
+                showToast('共有URLをコピーしました', 'success');
                 showToast('URLをコピーしました', 'success');
             }
         } catch (err) {
@@ -286,6 +330,10 @@
         }
     }
     
+
+    // 保存データの読み込み
+    function loadSavedGrid() {
+        const savedData = localStorage.getItem('gridme-themes');
     // ダウンロード機能
     function downloadGrid() {
         if (!state.currentTheme) {
@@ -362,6 +410,12 @@
         if (fullGridParam) {
             // 完成したグリッドの読み込み
             try {
+                const data = JSON.parse(savedData);
+                state.gridSize = data.size || 3;
+                state.gridThemes = data.themes || [];
+                
+                // グリッドサイズセレクトを更新
+                elements.gridSizeSelect.value = state.gridSize;
                 const decodedData = JSON.parse(decodeURIComponent(atob(fullGridParam)));
                 state.currentTheme = decodedData.theme || '';
                 state.gridImages = decodedData.images || new Array(81).fill(null);
@@ -369,12 +423,17 @@
                 state.shareId = decodedData.timestamp;
                 state.gridComplete = true;
                 
-                if (state.currentTheme) {
-                    elements.themeInput.value = state.currentTheme;
-                    elements.currentThemeDisplay.textContent = `フォトグリッド - ${state.currentTheme}`;
-                    updateThemeColors();
-                }
+                // グリッドを再初期化
+                initializeGrid();
                 
+
+                // 保存されたテーマを入力
+                state.gridThemes.forEach((theme, index) => {
+                    const input = elements.themeGrid.querySelector(`input[data-index="${index}"]`);
+                    if (input) {
+                        input.value = theme;
+                    }
+                });
                 showToast('共有されたグリッドを表示しています', 'info');
                 updateGridDisplay();
             } catch (err) {
@@ -438,73 +497,42 @@
         }
     }
     
-    // ドラッグ&ドロップ処理
-    function setupDragAndDrop() {
-        elements.uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            elements.uploadArea.classList.add('dragover');
-        });
+    // データの保存
+    function saveGrid() {
+        const gridData = {
+            size: state.gridSize,
+            themes: state.gridThemes,
+            timestamp: new Date().toISOString()
+        };
         
-        elements.uploadArea.addEventListener('dragleave', () => {
-            elements.uploadArea.classList.remove('dragover');
-        });
-        
-        elements.uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            elements.uploadArea.classList.remove('dragover');
-            
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                handleImageUpload(file);
-            }
-        });
-        
-        elements.uploadArea.addEventListener('click', () => {
-            elements.fileInput.click();
-        });
-        
-        elements.fileInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                handleImageUpload(file);
-            }
-        });
+        localStorage.setItem('gridme-themes', JSON.stringify(gridData));
+        showToast('グリッドを保存しました', 'success');
     }
     
     // イベントリスナーの設定
     function setupEventListeners() {
-        elements.applyThemeBtn.addEventListener('click', applyTheme);
-        elements.themeInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                applyTheme();
-            }
-        });
+        // グリッドサイズ変更
+        elements.gridSizeSelect.addEventListener('change', handleGridSizeChange);
         
-        elements.suggestionChips.forEach(chip => {
-            chip.addEventListener('click', handleSuggestionClick);
-        });
+        // 共有ボタン
+        elements.mainShareBtn.addEventListener('click', shareGrid);
+        if (elements.shareBtn) {
+            elements.shareBtn.addEventListener('click', shareGrid);
+        }
         
-        elements.clearGridBtn.addEventListener('click', clearGrid);
-        elements.randomizeBtn.addEventListener('click', randomizeGrid);
-        elements.shareBtn.addEventListener('click', shareGrid);
-        elements.downloadBtn.addEventListener('click', downloadGrid);
-        elements.saveBtn.addEventListener('click', saveGrid);
-        
-        elements.modalClose.addEventListener('click', closeModal);
-        elements.uploadModal.addEventListener('click', (e) => {
-            if (e.target === elements.uploadModal) {
-                closeModal();
-            }
-        });
-        
-        // ESCキーでモーダルを閉じる
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && elements.uploadModal.classList.contains('active')) {
-                closeModal();
+        // 自動保存（入力時）
+        document.addEventListener('input', (e) => {
+            if (e.target.classList.contains('theme-input')) {
+                // デバウンス処理
+                clearTimeout(state.saveTimeout);
+                state.saveTimeout = setTimeout(() => {
+                    saveGrid();
+                }, 1000);
             }
         });
     }
     
+
     // 共有可能なURLを生成
     function generateShareableUrl(gridData) {
         const shareData = {
@@ -563,9 +591,7 @@
     function init() {
         initializeGrid();
         setupEventListeners();
-        setupDragAndDrop();
         loadSavedGrid();
-        loadHtml2Canvas();
     }
     
     // DOMContentLoadedで初期化
