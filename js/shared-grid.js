@@ -70,6 +70,11 @@
         state.gridSections = sharedData.sections || [];
         state.gridBgColor = sharedData.bgColor || '#FF8B25';
         
+        // ニックネームがある場合、タイトルとサブタイトルを更新
+        if (sharedData.nickname) {
+            updatePageTitles(sharedData.nickname);
+        }
+        
         // グリッドHTMLの生成
         elements.photoThemeGrid.innerHTML = '';
         elements.photoThemeGrid.style.gridTemplateColumns = `repeat(${state.gridSize}, 1fr)`;
@@ -135,6 +140,20 @@
             'modern': 'モダン'
         };
         return themeMap[theme] || 'デフォルト';
+    }
+    
+    // ページのタイトルとサブタイトルを更新
+    function updatePageTitles(nickname) {
+        const sharedTitle = document.querySelector('.shared-title');
+        const sharedSubtitle = document.querySelector('.shared-subtitle');
+        
+        if (sharedTitle) {
+            sharedTitle.textContent = `${nickname} Grid`;
+        }
+        
+        if (sharedSubtitle) {
+            sharedSubtitle.textContent = `Please add photos related to ${nickname}.`;
+        }
     }
     
     // 写真エリアのクリックハンドラー
