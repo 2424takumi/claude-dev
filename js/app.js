@@ -76,6 +76,9 @@ function toggleMobileMenu() {
 
 // スクロール処理
 function handleScroll() {
+    // navbar要素が存在しない場合は処理をスキップ
+    if (!elements.navbar) return;
+    
     const scrolled = window.scrollY > 50;
     
     if (scrolled !== state.scrolled) {
