@@ -114,7 +114,7 @@
         
         // プラスアイコン
         const addPhotoIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-        addPhotoIcon.className = 'add-photo-icon';
+        addPhotoIcon.setAttribute('class', 'add-photo-icon');
         addPhotoIcon.setAttribute('viewBox', '0 0 24 24');
         addPhotoIcon.setAttribute('fill', 'none');
         addPhotoIcon.setAttribute('stroke', 'currentColor');
