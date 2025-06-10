@@ -785,7 +785,7 @@ body {
 
 /* ===== 共有ボタンコンテナ ===== */
 .share-button-container {
-    margin-top: var(--spacing-8);
+    margin-top: 12px;
     margin-bottom: var(--spacing-4);
 }
 
