@@ -14,7 +14,7 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         gridSize: 2,
         gridSections: [],
         uploadedImages: {},
-        gridBgColor: '#000000' // デフォルトは黒
+        gridBgColor: '#FF8B25' // デフォルトは黒
     };
     
     // StorageManagerのインスタンスを作成
@@ -145,7 +145,7 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         
         state.gridSize = sharedData.size || 2;
         state.gridSections = sharedData.sections || [];
-        state.gridBgColor = sharedData.bgColor || '#000000';
+        state.gridBgColor = sharedData.bgColor || '#FF8B25';
         
         // 背景色入力を更新
         if (elements.gridBgColorInput) {

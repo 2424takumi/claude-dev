@@ -13,7 +13,7 @@
         gridSections: [], // グリッドセクションを格納
         saveTimeout: null,
         currentFocusedInput: null, // 現在フォーカスされている入力フィールド
-        gridBgColor: '#000000' // グリッド背景色のデフォルト値
+        gridBgColor: '#FF8B25' // グリッド背景色のデフォルト値
     };
     
     // テーマサジェスチョンのリスト
