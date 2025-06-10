@@ -111,7 +111,7 @@ export class GridRenderer {
     }
 
     // グリッドのエクスポート（画像として）
-    async exportAsImage(filename = 'grid.png') {
+    async exportAsImage(filename = 'grid.png', autoDownload = true) {
         if (typeof html2canvas === 'undefined') {
             console.error('html2canvas library is required for export');
             return null;
@@ -123,13 +123,17 @@ export class GridRenderer {
                 scale: 2 // 高解像度
             });
             
-            // ダウンロードリンクを作成
-            const link = document.createElement('a');
-            link.download = filename;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            const dataUrl = canvas.toDataURL('image/png');
             
-            return canvas.toDataURL('image/png');
+            // 自動ダウンロードが有効な場合のみダウンロード
+            if (autoDownload) {
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = dataUrl;
+                link.click();
+            }
+            
+            return dataUrl;
         } catch (error) {
             console.error('Export error:', error);
             return null;
