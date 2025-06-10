@@ -555,7 +555,7 @@ body {
 .app-header {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
-    padding: var(--spacing-1) 0;
+    padding: var(--spacing-2) 0;
     margin-bottom: 0;
 }
 
@@ -600,7 +600,7 @@ body {
 }
 
 .app-main {
-    padding-top: var(--spacing-1);
+    padding-top: var(--spacing-2);
     padding-bottom: var(--spacing-8);
     min-height: calc(100vh - 160px);
 }
@@ -712,7 +712,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: var(--spacing-8);
-    margin-bottom: 0;
+    margin-bottom: var(--spacing-2);
     flex-wrap: wrap;
 }
 
@@ -842,7 +842,7 @@ body {
     font-weight: var(--font-normal);
     font-family: inherit;
     transition: all var(--transition-base);
-    background: white; /* Pure white background */
+    background: transparent; /* Same as white background */
     color: var(--text-secondary);
     resize: none;
     overflow: hidden;
@@ -857,7 +857,7 @@ body {
 .section-title-input:focus {
     outline: none;
     box-shadow: none;
-    background: white; /* Keep white background on focus */
+    background: transparent; /* Keep transparent on focus */
 }
 
 /* セクションテーマ選択 */
@@ -1096,14 +1096,14 @@ body {
 }
 
 .dark-theme .section-title-input {
-    background: white; /* Pure white background in dark mode */
-    color: var(--text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent; /* Keep transparent in dark mode */
+    color: var(--text-primary);
+    border: none;
 }
 
 .dark-theme .section-title-input:focus {
-    background: white; /* Keep white background on focus */
-    border-color: rgba(255, 139, 37, 0.3);
+    background: transparent; /* Keep transparent on focus */
+    border: none;
 }
 
 /* ===== アクションセクション ===== */
