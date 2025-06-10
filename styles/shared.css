@@ -25,11 +25,11 @@
     gap: var(--spacing-4);
     max-width: 900px;
     margin: 0 auto var(--spacing-10);
-    background: #000000;
+    background: var(--bg-secondary);
     padding: var(--spacing-6);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
-    border: 2px solid #000000;
+    border: 2px solid var(--border-primary);
 }
 
 .photo-theme-item {
@@ -223,7 +223,7 @@
     }
     
     .photo-theme-grid {
-        border-color: #ffffff;
+        border-color: var(--border-primary);
     }
     
     .photo-display-area {
