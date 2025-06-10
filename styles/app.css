@@ -778,9 +778,14 @@ body {
     padding: var(--spacing-1) var(--spacing-2);
     font-size: var(--text-sm);
     font-weight: var(--font-normal);
+    font-family: inherit;
     transition: all var(--transition-base);
     background: rgba(0, 0, 0, 0.03); /* Lighter gray background */
     color: var(--text-secondary);
+    resize: none;
+    overflow: hidden;
+    line-height: 1.4;
+    min-height: 2.4em;
 }
 
 .section-title-input:focus {

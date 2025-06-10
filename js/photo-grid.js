@@ -105,14 +105,14 @@
         sectionContainer.className = 'grid-section-container';
         
         // タイトル入力（テーマ入力として使用）
-        const titleInput = document.createElement('input');
-        titleInput.type = 'text';
+        const titleInput = document.createElement('textarea');
         titleInput.className = 'section-title-input';
         titleInput.placeholder = 'テーマを入力';
         titleInput.maxLength = 30;
         titleInput.value = section.title;
         titleInput.dataset.index = index;
         titleInput.dataset.field = 'title';
+        titleInput.rows = 2;
         
         // イベントリスナーの追加
         titleInput.addEventListener('input', handleSectionUpdate);
