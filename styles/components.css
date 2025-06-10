@@ -221,9 +221,19 @@
 }
 
 /* Dark mode specific adjustments for inputs */
+.dark-theme .input {
+  background: var(--neutral-800); /* Match header button color */
+  border: 1px solid var(--neutral-700); /* Subtle border for visibility */
+}
+
+.dark-theme .input:focus {
+  background: var(--neutral-700); /* Slightly lighter on focus */
+  border-color: var(--primary-solid);
+}
+
 @media (prefers-color-scheme: dark) {
   .input {
-    background: #2d3748; /* Updated to requested dark mode color */
+    background: var(--neutral-800); /* Match header button color */
     border: 1px solid var(--neutral-700); /* Subtle border for visibility */
   }
   
