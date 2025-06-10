@@ -17,7 +17,8 @@
     // DOM要素
     const elements = {
         photoThemeGrid: document.getElementById('photo-theme-grid'),
-        downloadBtn: document.getElementById('download-grid-btn')
+        downloadBtn: document.getElementById('download-grid-btn'),
+        shareInstagramBtn: document.getElementById('share-instagram-stories-btn')
     };
     
     // URLパラメータからデータを取得
@@ -232,6 +233,103 @@
         }
     }
     
+    // Instagram Stories共有機能
+    function shareInstagramStories() {
+        // html2canvasライブラリを使用してグリッドをキャプチャ
+        if (typeof html2canvas === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = () => {
+                createInstagramStoriesImage();
+            };
+            document.head.appendChild(script);
+        } else {
+            createInstagramStoriesImage();
+        }
+    }
+    
+    // Instagram Stories用の画像を作成
+    function createInstagramStoriesImage() {
+        const gridContainer = elements.photoThemeGrid;
+        
+        // Create a temporary container for Instagram Stories format (9:16 aspect ratio)
+        const tempContainer = document.createElement('div');
+        tempContainer.style.position = 'fixed';
+        tempContainer.style.left = '-9999px';
+        tempContainer.style.width = '1080px';
+        tempContainer.style.height = '1920px';
+        tempContainer.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        tempContainer.style.display = 'flex';
+        tempContainer.style.flexDirection = 'column';
+        tempContainer.style.alignItems = 'center';
+        tempContainer.style.justifyContent = 'center';
+        tempContainer.style.padding = '80px';
+        tempContainer.style.boxSizing = 'border-box';
+        
+        // Add title
+        const title = document.createElement('h1');
+        title.textContent = 'GridMe フォトグリッド';
+        title.style.color = 'white';
+        title.style.fontSize = '64px';
+        title.style.marginBottom = '40px';
+        title.style.textAlign = 'center';
+        title.style.fontWeight = 'bold';
+        title.style.textShadow = '0 4px 6px rgba(0,0,0,0.3)';
+        
+        // Clone and style the grid
+        const gridClone = gridContainer.cloneNode(true);
+        gridClone.style.width = '920px';
+        gridClone.style.height = '920px';
+        gridClone.style.background = 'white';
+        gridClone.style.borderRadius = '24px';
+        gridClone.style.padding = '40px';
+        gridClone.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
+        
+        // Add URL footer
+        const footer = document.createElement('div');
+        footer.style.marginTop = '40px';
+        footer.style.color = 'white';
+        footer.style.fontSize = '32px';
+        footer.style.textAlign = 'center';
+        footer.innerHTML = 'Created with GridMe<br><span style="font-size: 24px; opacity: 0.8;">Share your photos!</span>';
+        
+        tempContainer.appendChild(title);
+        tempContainer.appendChild(gridClone);
+        tempContainer.appendChild(footer);
+        document.body.appendChild(tempContainer);
+        
+        // Generate image
+        html2canvas(tempContainer, {
+            width: 1080,
+            height: 1920,
+            scale: 1,
+            backgroundColor: null
+        }).then(canvas => {
+            // Remove temporary container
+            document.body.removeChild(tempContainer);
+            
+            // Convert to blob
+            canvas.toBlob((blob) => {
+                // Create download link
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `gridme-instagram-stories-${Date.now()}.png`;
+                link.href = url;
+                link.click();
+                
+                // Show instructions
+                showToast('画像をダウンロードしました。Instagramアプリでストーリーズに投稿してください！', 'success');
+                
+                // Clean up
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+            }, 'image/png');
+        }).catch(err => {
+            document.body.removeChild(tempContainer);
+            console.error('Instagram Stories画像の作成エラー:', err);
+            showToast('画像の作成に失敗しました', 'error');
+        });
+    }
+    
     // 実際のダウンロード処理
     function performDownload() {
         html2canvas(elements.photoThemeGrid).then(canvas => {
@@ -250,6 +348,10 @@
     function setupEventListeners() {
         if (elements.downloadBtn) {
             elements.downloadBtn.addEventListener('click', downloadGrid);
+        }
+        
+        if (elements.shareInstagramBtn) {
+            elements.shareInstagramBtn.addEventListener('click', shareInstagramStories);
         }
         
         // モーダル関連のイベント
