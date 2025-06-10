@@ -67,6 +67,20 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         return decodedData;
     }
     
+    // ページのタイトルとサブタイトルを更新
+    function updatePageTitles(nickname) {
+        const sharedTitle = document.querySelector('.shared-title');
+        const sharedSubtitle = document.querySelector('.shared-subtitle');
+        
+        if (sharedTitle) {
+            sharedTitle.textContent = `${nickname} Grid`;
+        }
+        
+        if (sharedSubtitle) {
+            sharedSubtitle.textContent = `Please add photos related to ${nickname}.`;
+        }
+    }
+    
     // グリッドレンダラーの初期化
     const gridRenderer = new GridRenderer('photo-theme-grid', {
         itemClass: 'grid-theme-item',
@@ -134,6 +148,11 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         state.gridSections = sharedData.sections || [];
         state.gridBgColor = sharedData.bgColor || '#FF8B25';
         
+
+        // ニックネームがある場合、タイトルとサブタイトルを更新
+        if (sharedData.nickname) {
+            updatePageTitles(sharedData.nickname);
+
         // ニックネームがある場合はタイトルとサブタイトルを更新
         if (sharedData.nickname) {
             const titleElement = document.querySelector('.shared-title');

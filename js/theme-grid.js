@@ -234,8 +234,36 @@
             return;
         }
         
-        // 共有URLを生成
-        const shareUrl = generateShareUrl();
+        // ニックネームを取得または入力を求める
+        let nickname = localStorage.getItem('gridme_nickname');
+        
+        if (!nickname) {
+            // ニックネーム入力モーダルを表示
+            showNicknameModal((enteredNickname) => {
+                nickname = enteredNickname;
+                localStorage.setItem('gridme_nickname', nickname);
+                proceedWithShare(nickname);
+            });
+        } else {
+            // 既存のニックネームを使用するか確認
+            showNicknameConfirmModal(nickname, () => {
+                // 既存のニックネームを使用
+                proceedWithShare(nickname);
+            }, () => {
+                // 新しいニックネームを入力
+                showNicknameModal((enteredNickname) => {
+                    nickname = enteredNickname;
+                    localStorage.setItem('gridme_nickname', nickname);
+                    proceedWithShare(nickname);
+                });
+            });
+        }
+    }
+    
+    // 共有処理を実行
+    function proceedWithShare(nickname) {
+        // 共有URLを生成（ニックネームを含める）
+        const shareUrl = generateShareUrl(nickname);
         
         // URLをモーダルに表示
         if (elements.shareUrlInput) {
@@ -247,13 +275,14 @@
     }
     
     // 共有URLを生成
-    function generateShareUrl() {
+    function generateShareUrl(nickname) {
         const shareData = {
             size: state.gridSize,
             sections: state.gridSections.map(section => ({
                 title: section.title
             })),
-            bgColor: state.gridBgColor
+            bgColor: state.gridBgColor,
+            nickname: nickname || null
         };
         
         // UTF-8文字列をBase64エンコード
@@ -689,10 +718,150 @@
         });
     }
     
+    // ニックネーム入力モーダルを表示
+    function showNicknameModal(onConfirm) {
+        // モーダルHTMLを作成
+        const modalHtml = `
+            <div id="nickname-modal" class="app-modal">
+                <div class="app-modal-content" style="max-width: 400px;">
+                    <div class="app-modal-header">
+                        <h3 class="app-modal-title">ニックネームを入力</h3>
+                        <button class="app-modal-close">×</button>
+                    </div>
+                    <div class="app-modal-body">
+                        <p style="margin-bottom: 16px;">共有グリッドで使用するニックネームを入力してください</p>
+                        <input type="text" id="nickname-input" class="input" placeholder="例: たけし" style="width: 100%;">
+                    </div>
+                    <div class="app-modal-footer">
+                        <button class="btn btn-secondary" data-action="cancel">キャンセル</button>
+                        <button class="btn btn-primary" data-action="confirm">決定</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // 一時的なモーダルを作成
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = modalHtml;
+        const modal = tempDiv.firstElementChild;
+        document.body.appendChild(modal);
+        
+        // モーダルを表示
+        setTimeout(() => {
+            modal.classList.add('active');
+            // 入力欄にフォーカス
+            document.getElementById('nickname-input').focus();
+        }, 10);
+        
+        // モーダルを閉じる関数
+        const closeModal = () => {
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
+        };
+        
+        // 確認処理
+        const handleConfirm = () => {
+            const nicknameInput = document.getElementById('nickname-input');
+            const nickname = nicknameInput.value.trim();
+            
+            if (!nickname) {
+                showToast('ニックネームを入力してください', 'warning');
+                return;
+            }
+            
+            closeModal();
+            if (onConfirm) onConfirm(nickname);
+        };
+        
+        // 閉じるボタン
+        modal.querySelector('.app-modal-close').addEventListener('click', closeModal);
+        
+        // 背景クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // キャンセルボタン
+        modal.querySelector('[data-action="cancel"]').addEventListener('click', closeModal);
+        
+        // 確認ボタン
+        modal.querySelector('[data-action="confirm"]').addEventListener('click', handleConfirm);
+        
+        // Enterキーで確認
+        document.getElementById('nickname-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleConfirm();
+            }
+        });
+    }
     
-    
-    
-    
+    // ニックネーム確認モーダルを表示
+    function showNicknameConfirmModal(currentNickname, onUseExisting, onUseNew) {
+        // モーダルHTMLを作成
+        const modalHtml = `
+            <div id="nickname-confirm-modal" class="app-modal">
+                <div class="app-modal-content" style="max-width: 400px;">
+                    <div class="app-modal-header">
+                        <h3 class="app-modal-title">ニックネームの確認</h3>
+                        <button class="app-modal-close">×</button>
+                    </div>
+                    <div class="app-modal-body">
+                        <p>現在のニックネーム: <strong>${currentNickname}</strong></p>
+                        <p style="margin-top: 12px;">このニックネームを使用しますか？</p>
+                    </div>
+                    <div class="app-modal-footer">
+                        <button class="btn btn-secondary" data-action="new">新しいニックネーム</button>
+                        <button class="btn btn-primary" data-action="use">このまま使用</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // 一時的なモーダルを作成
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = modalHtml;
+        const modal = tempDiv.firstElementChild;
+        document.body.appendChild(modal);
+        
+        // モーダルを表示
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+        
+        // モーダルを閉じる関数
+        const closeModal = () => {
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
+        };
+        
+        // 閉じるボタン
+        modal.querySelector('.app-modal-close').addEventListener('click', closeModal);
+        
+        // 背景クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // 新しいニックネームボタン
+        modal.querySelector('[data-action="new"]').addEventListener('click', () => {
+            closeModal();
+            if (onUseNew) onUseNew();
+        });
+        
+        // このまま使用ボタン
+        modal.querySelector('[data-action="use"]').addEventListener('click', () => {
+            closeModal();
+            if (onUseExisting) onUseExisting();
+        });
+    }
     
     
 
