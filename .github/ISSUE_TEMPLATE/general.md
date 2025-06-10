@@ -1,7 +1,7 @@
 ---
 name: 一般的な質問・相談
 about: バグでも機能リクエストでもない一般的な内容
-title: '[QUESTION] '
+title: '・ '
 labels: question
 assignees: ''
 
