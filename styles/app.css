@@ -702,7 +702,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: calc(100vh - 200px);
-    padding: var(--spacing-8) 0;
+    padding: var(--spacing-4) 0;
 }
 
 /* ===== グリッドサイズセレクター ===== */
