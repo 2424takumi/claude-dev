@@ -741,6 +741,12 @@ body {
     padding: 2px 6px;
 }
 
+/* Ensure select option text is visible */
+.grid-size-selector select option {
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+}
+
 /* ===== グリッド背景色セレクター ===== */
 .grid-bg-color-selector {
     display: flex;

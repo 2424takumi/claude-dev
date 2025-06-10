@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Test</title>
+    <link rel="stylesheet" href="styles/design-tokens.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/app.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Dropdown Test</h1>
+        
+        <div style="background: white; padding: 20px; margin: 20px 0;">
+            <h2>Light Background</h2>
+            <div class="grid-size-selector">
+                <label for="grid-size-light">グリッド数:</label>
+                <select id="grid-size-light" class="input">
+                    <option value="2">2x2</option>
+                    <option value="3" selected>3x3</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="background: black; padding: 20px; margin: 20px 0;">
+            <h2 style="color: white;">Dark Background</h2>
+            <div class="grid-size-selector">
+                <label for="grid-size-dark" style="color: white;">グリッド数:</label>
+                <select id="grid-size-dark" class="input">
+                    <option value="2">2x2</option>
+                    <option value="3" selected>3x3</option>
+                </select>
+            </div>
+        </div>
+        
+        <div style="padding: 20px; margin: 20px 0;">
+            <h2>Default Theme</h2>
+            <div class="grid-size-selector">
+                <label for="grid-size-default">グリッド数:</label>
+                <select id="grid-size-default" class="input">
+                    <option value="2">2x2</option>
+                    <option value="3" selected>3x3</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="dark-theme" style="background: var(--bg-primary); padding: 20px; margin: 20px 0;">
+            <h2>Dark Theme Class</h2>
+            <div class="grid-size-selector">
+                <label for="grid-size-dark-theme">グリッド数:</label>
+                <select id="grid-size-dark-theme" class="input">
+                    <option value="2">2x2</option>
+                    <option value="3" selected>3x3</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
