@@ -1,0 +1,141 @@
+/**
+ * Modal styles
+ * Modal dialogs, overlays, and related components
+ */
+
+/* ===== モーダル ===== */
+.app-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: var(--z-modal-backdrop);
+    align-items: center;
+    justify-content: center;
+}
+
+.app-modal.active {
+    display: flex;
+}
+
+.app-modal-content {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-2xl);
+    animation: slideUp var(--transition-slow);
+    z-index: var(--z-modal);
+}
+
+.app-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-6);
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.app-modal-header h3 {
+    margin: 0;
+}
+
+.app-modal-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-2);
+}
+
+.app-modal-body {
+    padding: var(--spacing-6);
+}
+
+.upload-area {
+    border: 2px dashed var(--border-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-12);
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.upload-area:hover {
+    background: var(--bg-secondary);
+    border-color: var(--primary-solid);
+}
+
+.upload-area.dragover {
+    background: var(--bg-tertiary);
+    border-color: var(--primary-solid);
+}
+
+/* ===== 共有モーダルのスタイル ===== */
+.share-options {
+    display: grid;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+}
+
+.share-option-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--neutral-50);
+    border: 1px solid var(--neutral-200);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--neutral-900);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.share-option-btn:hover {
+    background: var(--neutral-100);
+    border-color: var(--neutral-300);
+    transform: translateY(-1px);
+}
+
+.share-option-btn:active {
+    transform: translateY(0);
+}
+
+.share-option-btn svg {
+    flex-shrink: 0;
+}
+
+.share-url-preview {
+    padding-top: var(--spacing-3);
+    border-top: 1px solid var(--neutral-200);
+}
+
+.share-url-preview .input {
+    width: 100%;
+    font-size: var(--text-xs);
+    color: var(--neutral-600);
+}
+
+/* ===== ダークテーマ対応 ===== */
+.dark-theme .share-option-btn {
+    background: var(--neutral-800);
+    border-color: var(--neutral-700);
+    color: var(--neutral-100);
+}
+
+.dark-theme .share-option-btn:hover {
+    background: var(--neutral-700);
+    border-color: var(--neutral-600);
+}
+
+.dark-theme .share-url-preview {
+    border-color: var(--neutral-700);
+}

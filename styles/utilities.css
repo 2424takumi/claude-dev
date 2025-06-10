@@ -1,0 +1,78 @@
+/**
+ * Utility classes
+ * Common helper classes and utilities
+ */
+
+/* ===== コンテナとレイアウト ===== */
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-6);
+}
+
+.section {
+    padding: var(--spacing-20) 0;
+}
+
+.section-title {
+    font-size: var(--text-4xl);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--spacing-12);
+}
+
+/* ===== テキストユーティリティ ===== */
+.text-center {
+    text-align: center;
+}
+
+/* ===== 背景ユーティリティ ===== */
+.bg-secondary {
+    background: var(--bg-secondary);
+}
+
+/* ===== グリッドシステム ===== */
+.grid {
+    display: grid;
+    gap: var(--spacing-6);
+}
+
+.grid-3 {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+/* ===== ボタンサイズ ===== */
+.btn-sm {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--text-sm);
+}
+
+.btn-lg {
+    padding: var(--spacing-4) var(--spacing-8);
+    font-size: var(--text-lg);
+}
+
+/* ===== グラデーション背景 ===== */
+.gradient-bg {
+    background: var(--gradient-primary);
+}
+
+/* ===== バッジグループ ===== */
+.badge-group {
+    display: flex;
+    gap: var(--spacing-2);
+    flex-wrap: wrap;
+}
+
+/* ===== デモスタック ===== */
+.demo-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    align-items: flex-start;
+}
+
+/* ===== 共有ボタンコンテナ ===== */
+.share-button-container {
+    margin-top: var(--spacing-8);
+    margin-bottom: var(--spacing-8);
+}

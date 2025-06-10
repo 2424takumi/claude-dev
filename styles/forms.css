@@ -1,0 +1,213 @@
+/**
+ * Form and Input styles
+ * All form elements, inputs, selects, and textareas
+ */
+
+/* ===== テーマ入力セクション ===== */
+.theme-input-section {
+    margin-bottom: var(--spacing-10);
+}
+
+.theme-input-card {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-10);
+    text-align: center;
+}
+
+.theme-title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--spacing-3);
+}
+
+.theme-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-8);
+}
+
+.theme-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+}
+
+.input-group {
+    display: flex;
+    gap: var(--spacing-4);
+    align-items: center;
+}
+
+.input-lg {
+    padding: var(--spacing-4) var(--spacing-6);
+    font-size: var(--text-lg);
+}
+
+.theme-suggestions {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.suggestion-label {
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+}
+
+.suggestion-chip {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-full);
+    padding: var(--spacing-1) var(--spacing-3);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.suggestion-chip:hover {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+}
+
+/* ===== グリッドサイズセレクター ===== */
+.grid-size-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-6);
+    font-size: var(--text-lg);
+}
+
+.grid-size-selector label {
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+}
+
+.grid-size-selector select {
+    min-width: 120px;
+}
+
+/* ===== セクション入力要素 ===== */
+.section-title-input {
+    width: 100%;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-1) var(--spacing-2);
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    transition: all var(--transition-base);
+    background: rgba(0, 0, 0, 0.08);
+    color: var(--text-secondary);
+}
+
+.section-title-input:focus {
+    outline: none;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.12);
+}
+
+.section-theme-select {
+    width: 100%;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--text-sm);
+    transition: all var(--transition-base);
+    background: var(--neutral-200);
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.section-theme-select:focus {
+    outline: none;
+    border-color: var(--primary-solid);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+.section-content-input {
+    width: 100%;
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--text-sm);
+    transition: all var(--transition-base);
+    background: var(--neutral-200);
+    color: var(--text-primary);
+    resize: vertical;
+    min-height: 80px;
+    flex: 1;
+}
+
+.section-content-input:focus {
+    outline: none;
+    border-color: var(--primary-solid);
+    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+}
+
+/* ===== デモフォーム ===== */
+.demo-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    max-width: 400px;
+}
+
+/* ===== ダークモードスタイル ===== */
+@media (prefers-color-scheme: dark) {
+    .section-theme-select,
+    .section-content-input {
+        background: var(--neutral-900);
+        border-color: var(--neutral-800);
+    }
+    
+    .section-theme-select:focus,
+    .section-content-input:focus {
+        background: var(--neutral-800);
+        border-color: var(--primary-solid);
+    }
+    
+    .section-title-input {
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
+    }
+    
+    .section-title-input:focus {
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+/* ===== レスポンシブフォーム ===== */
+@media (max-width: 768px) {
+    .input-group {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .input-lg {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .theme-input {
+        padding: var(--spacing-2);
+        font-size: var(--text-sm);
+    }
+    
+    .section-title-input,
+    .section-theme-select,
+    .section-content-input {
+        font-size: var(--text-xs);
+        padding: var(--spacing-1) var(--spacing-2);
+    }
+    
+    .section-content-input {
+        min-height: 60px;
+    }
+    
+    .grid-size-selector {
+        font-size: var(--text-base);
+    }
+}

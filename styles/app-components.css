@@ -1,0 +1,208 @@
+/**
+ * App-specific component styles
+ * Features, cards, tabs, and other UI components specific to the app
+ */
+
+/* ===== 特徴カード ===== */
+.feature-card {
+    padding: var(--spacing-8);
+    text-align: center;
+    transition: all var(--transition-slow);
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+}
+
+.feature-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto var(--spacing-6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl);
+    color: white;
+}
+
+.feature-card h3 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--spacing-3);
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+}
+
+/* ===== コンポーネントデモ ===== */
+.component-demo {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-8);
+    box-shadow: var(--shadow-lg);
+}
+
+.demo-tabs {
+    display: flex;
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-6);
+    border-bottom: 2px solid var(--border-primary);
+}
+
+.demo-tab {
+    background: none;
+    border: none;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+}
+
+.demo-tab.active {
+    color: var(--primary-solid);
+    border-bottom-color: var(--primary-solid);
+}
+
+.demo-panel {
+    display: none;
+}
+
+.demo-panel.active {
+    display: block;
+    animation: fadeIn var(--transition-base);
+}
+
+/* ===== モックアップ ===== */
+.mock-browser {
+    width: 100%;
+    max-width: 280px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.browser-bar {
+    background: var(--bg-secondary);
+    padding: var(--spacing-2);
+    display: flex;
+    gap: var(--spacing-1);
+}
+
+.browser-bar span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--neutral-400);
+}
+
+.browser-bar span:first-child {
+    background: var(--error);
+}
+
+.browser-bar span:nth-child(2) {
+    background: var(--warning);
+}
+
+.browser-bar span:nth-child(3) {
+    background: var(--success);
+}
+
+.browser-content {
+    padding: var(--spacing-4);
+}
+
+.mini-hero {
+    height: 80px;
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-3);
+}
+
+.mini-bar {
+    height: 8px;
+    background: var(--neutral-200);
+    border-radius: var(--radius-full);
+    margin-bottom: var(--spacing-2);
+}
+
+.mini-bar.short {
+    width: 60%;
+}
+
+.mock-phone {
+    width: 160px;
+    height: 320px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    padding: var(--spacing-2);
+    box-shadow: var(--shadow-lg);
+}
+
+.phone-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-3);
+}
+
+.mini-nav {
+    height: 32px;
+    background: var(--gradient-primary);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-3);
+}
+
+.mini-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.mini-card {
+    height: 60px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+}
+
+.mock-dashboard {
+    width: 100%;
+    max-width: 320px;
+    height: 200px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    display: flex;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.dash-sidebar {
+    width: 60px;
+    background: var(--bg-secondary);
+}
+
+.dash-main {
+    flex: 1;
+    padding: var(--spacing-3);
+}
+
+.dash-chart {
+    height: 80px;
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-3);
+}
+
+.dash-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-2);
+}
+
+.stat-card {
+    height: 40px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}

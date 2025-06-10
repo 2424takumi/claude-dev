@@ -1,0 +1,265 @@
+/**
+ * Grid Layout styles
+ * Grid systems, photo grids, and layout components
+ */
+
+/* ===== フォトグリッドセクション ===== */
+.photo-grid-section {
+    margin-bottom: var(--spacing-10);
+}
+
+.grid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-6);
+}
+
+.grid-title {
+    font-size: var(--text-2xl);
+    margin: 0;
+}
+
+.grid-actions {
+    display: flex;
+    gap: var(--spacing-2);
+}
+
+/* ===== グリッドメインセクション ===== */
+.grid-main-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 200px);
+    padding: var(--spacing-8) 0;
+}
+
+/* ===== テーマグリッド ===== */
+.theme-grid {
+    display: grid;
+    gap: var(--spacing-4);
+    aspect-ratio: 1;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    background: var(--bg-secondary);
+    padding: var(--spacing-6);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    border: 2px solid var(--border-primary);
+}
+
+.grid-theme-item {
+    position: relative;
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3);
+    min-height: 100px;
+}
+
+.grid-theme-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* グリッドセクションコンテナ */
+.grid-section-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== テーマスタイル ===== */
+.theme-default {
+    background-color: #fafafa;
+}
+
+.theme-warm {
+    background-color: #fff5f0;
+}
+
+.theme-cool {
+    background-color: #f0f5ff;
+}
+
+.theme-nature {
+    background-color: #f0fdf0;
+}
+
+.theme-elegant {
+    background-color: #faf5ff;
+}
+
+.theme-modern {
+    background-color: #f5f5f5;
+}
+
+/* ===== テーマサジェスチョンチップス ===== */
+.theme-suggestions-container {
+    margin-top: var(--spacing-6);
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.suggestions-row {
+    position: relative;
+    height: 60px;
+    margin-bottom: var(--spacing-3);
+    overflow: hidden;
+}
+
+.suggestions-track {
+    display: flex;
+    gap: var(--spacing-3);
+    animation: slideLeft 30s linear infinite;
+    position: absolute;
+    white-space: nowrap;
+    padding: var(--spacing-1) 0;
+}
+
+.suggestions-row-2 .suggestions-track {
+    animation: slideRight 25s linear infinite;
+}
+
+.theme-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3) var(--spacing-5);
+    border-radius: 30px;
+    font-size: var(--text-lg);
+    font-weight: var(--font-medium);
+    color: white;
+    cursor: pointer;
+    transition: all var(--transition-base);
+    user-select: none;
+    min-width: 120px;
+    height: 50px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: var(--gradient-primary);
+}
+
+.theme-chip:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.theme-chip:active {
+    transform: scale(0.98);
+}
+
+/* チップのカラフルな背景色 */
+.chip-color-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+.chip-color-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important; }
+.chip-color-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important; }
+.chip-color-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important; }
+.chip-color-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important; }
+.chip-color-6 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%) !important; }
+.chip-color-7 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important; }
+.chip-color-8 { background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%) !important; }
+.chip-color-9 { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%) !important; }
+.chip-color-10 { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%) !important; }
+
+/* ===== ショーケース ===== */
+.showcase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--spacing-8);
+}
+
+.showcase-item {
+    text-align: center;
+}
+
+.showcase-preview {
+    margin-bottom: var(--spacing-4);
+    padding: var(--spacing-8);
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ===== ダークモード対応 ===== */
+@media (prefers-color-scheme: dark) {
+    .theme-default {
+        background-color: #1a1a1a;
+    }
+    
+    .theme-warm {
+        background-color: #2d1810;
+    }
+    
+    .theme-cool {
+        background-color: #101828;
+    }
+    
+    .theme-chip {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    
+    .theme-chip:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    }
+    
+    .theme-nature {
+        background-color: #0a1f0a;
+    }
+    
+    .theme-elegant {
+        background-color: #1f0a2d;
+    }
+    
+    .theme-modern {
+        background-color: #0f0f0f;
+    }
+    
+    .theme-grid {
+        border-color: var(--border-primary);
+        background: var(--bg-secondary);
+    }
+}
+
+/* ===== デモグリッド ===== */
+.demo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-4);
+}
+
+/* ===== レスポンシブグリッド ===== */
+@media (max-width: 768px) {
+    .grid-header {
+        flex-direction: column;
+        gap: var(--spacing-4);
+        align-items: flex-start;
+    }
+    
+    .theme-grid {
+        max-width: 90%;
+        padding: var(--spacing-4);
+        gap: var(--spacing-3);
+    }
+}
+
+@media (max-width: 480px) {
+    .theme-grid {
+        gap: var(--spacing-2);
+        padding: var(--spacing-3);
+    }
+    
+    .grid-theme-item {
+        min-height: 80px;
+    }
+}

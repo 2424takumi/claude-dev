@@ -1,0 +1,98 @@
+/**
+ * Hero section styles
+ * Hero sections and landing page components
+ */
+
+/* ===== ヒーローセクション ===== */
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    padding-top: 80px;
+}
+
+.hero-bg {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: var(--gradient-mesh);
+    filter: blur(100px);
+    opacity: 0.3;
+    animation: float 20s ease-in-out infinite;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-title {
+    font-size: clamp(var(--text-3xl), 5vw, var(--text-6xl));
+    font-weight: var(--font-extrabold);
+    line-height: 1.2;
+    margin-bottom: var(--spacing-6);
+}
+
+.hero-subtitle {
+    font-size: var(--text-xl);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-10);
+    line-height: var(--leading-relaxed);
+}
+
+.hero-actions {
+    display: flex;
+    gap: var(--spacing-4);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ===== CTAセクション ===== */
+.cta-section {
+    background: var(--bg-secondary);
+}
+
+.cta-content {
+    text-align: center;
+    padding: var(--spacing-12);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta-title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--spacing-4);
+}
+
+.cta-subtitle {
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-8);
+}
+
+.cta-actions {
+    display: flex;
+    gap: var(--spacing-4);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+/* ===== レスポンシブ ===== */
+@media (max-width: 768px) {
+    .hero-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .hero-actions .btn-primary,
+    .hero-actions .btn-ghost {
+        width: 100%;
+    }
+}
