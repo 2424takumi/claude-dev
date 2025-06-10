@@ -103,6 +103,23 @@ export class ShareManager {
         window.open(whatsappUrl, '_blank');
     }
 
+    // Instagram Stories で共有
+    shareOnInstagramStories(imageDataUrl) {
+        // Instagramアプリへの直接共有はWebからは制限されているため、
+        // 画像をダウンロードしてユーザーに手動でアップロードしてもらう
+        const link = document.createElement('a');
+        const filename = `gridme-instagram-${Date.now()}.png`;
+        link.download = filename;
+        link.href = imageDataUrl;
+        link.click();
+        
+        // ユーザーへの案内メッセージを返す
+        return {
+            success: true,
+            message: '画像がダウンロードされました。Instagramアプリを開いて、ストーリーズに画像をアップロードしてください。'
+        };
+    }
+
     // 共有データのエンコード
     encodeShareData(data) {
         try {

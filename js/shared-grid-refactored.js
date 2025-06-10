@@ -342,36 +342,37 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
     
     // Instagram Storiesで共有
     async function shareInstagramStories() {
-        // グリッドを画像として生成
-        const filename = `gridme-stories-${new Date().getTime()}.png`;
-        const dataUrl = await gridRenderer.exportAsImage(filename, false); // falseでダウンロードをスキップ
-        
-        if (dataUrl) {
-            // Instagram Storiesのガイドを表示
-            toast.info('生成された画像をダウンロードして、Instagramアプリで共有してください');
+        try {
+            // グリッドを画像として生成
+            const filename = `gridme-stories-${new Date().getTime()}.png`;
+            let dataUrl = await gridRenderer.exportAsImage(filename, false); // falseでダウンロードをスキップ
             
-            // 画像をダウンロード
-            const link = document.createElement('a');
-            link.download = filename;
-            link.href = dataUrl;
-            link.click();
-        } else {
-            // html2canvasライブラリがない場合は動的に読み込む
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            script.onload = async () => {
-                const dataUrl = await gridRenderer.exportAsImage(filename, false);
-                if (dataUrl) {
-                    toast.info('生成された画像をダウンロードして、Instagramアプリで共有してください');
-                    const link = document.createElement('a');
-                    link.download = filename;
-                    link.href = dataUrl;
-                    link.click();
-                } else {
-                    toast.error('画像の生成に失敗しました');
+            if (!dataUrl && typeof html2canvas === 'undefined') {
+                // html2canvasライブラリがない場合は動的に読み込む
+                await new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                    script.onload = resolve;
+                    script.onerror = reject;
+                    document.head.appendChild(script);
+                });
+                
+                // 再度画像生成を試行
+                dataUrl = await gridRenderer.exportAsImage(filename, false);
+            }
+            
+            if (dataUrl) {
+                // ShareManagerを使用してInstagram Storiesで共有
+                const result = share.shareOnInstagramStories(dataUrl);
+                if (result.success) {
+                    toast.success(result.message);
                 }
-            };
-            document.head.appendChild(script);
+            } else {
+                toast.error('画像の生成に失敗しました');
+            }
+        } catch (error) {
+            console.error('Instagram share error:', error);
+            toast.error('Instagram共有中にエラーが発生しました');
         }
     }
 
