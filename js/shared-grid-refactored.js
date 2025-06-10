@@ -4,7 +4,7 @@
  * モジュール化されたユーティリティを使用
  */
 
-import { toast, modal, share, GridRenderer, StorageManager } from './utils/index.js';
+import { toast, modal, share, GridRenderer, StorageManager, theme } from './utils/index.js';
 
 (function() {
     'use strict';
@@ -364,6 +364,12 @@ import { toast, modal, share, GridRenderer, StorageManager } from './utils/index
     function init() {
         initializeGrid();
         setupEventListeners();
+        
+        // テーマ切り替えボタンの設定
+        const themeToggle = document.querySelector('.theme-toggle');
+        if (themeToggle) {
+            theme.setToggleButton(themeToggle);
+        }
     }
     
     // DOMContentLoadedで初期化
