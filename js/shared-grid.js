@@ -175,10 +175,8 @@
     
     // 写真エリアのクリックハンドラー
     function handlePhotoAreaClick(e, index) {
-        // 画像がアップロードされていない場合のみモーダルを開く
-        if (!state.uploadedImages[index]) {
-            openUploadModal(index);
-        }
+        // Always open upload modal when clicking on photo area
+        openUploadModal(index);
     }
     
     // アップロードモーダルを開く
@@ -240,98 +238,11 @@
         photoArea.classList.add('has-image');
         gridItem.classList.add('has-image');
         
-        // 画像がある場合はテーマテキストを非表示
-        const themeText = gridItem.querySelector('.theme-text');
-        if (themeText) {
-            themeText.style.display = 'none';
-        }
-        
-        // メニューボタンを追加（透明な背景のオーバーレイ）
-        const menuButton = document.createElement('button');
-        menuButton.className = 'grid-menu-button grid-menu-overlay';
-        menuButton.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="5" r="1"/>
-                <circle cx="12" cy="12" r="1"/>
-                <circle cx="12" cy="19" r="1"/>
-            </svg>
-        `;
-        menuButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            showPhotoMenu(index);
-        });
-        
-        gridItem.appendChild(menuButton);
+        // Do not hide theme text when image is uploaded - keep it above the image
+        // grid-menu-button functionality removed as requested
     }
     
-    // 写真メニューを表示
-    function showPhotoMenu(index) {
-        // 既存のメニューを削除
-        const existingMenu = document.getElementById('photo-menu-modal');
-        if (existingMenu) {
-            existingMenu.remove();
-        }
-        
-        // メニューモーダルを作成
-        const menuModal = document.createElement('div');
-        menuModal.id = 'photo-menu-modal';
-        menuModal.className = 'app-modal active';
-        menuModal.innerHTML = `
-            <div class="app-modal-content card-glass" style="max-width: 300px;">
-                <div class="app-modal-header">
-                    <h3>写真の編集</h3>
-                    <button class="btn-icon app-modal-close" aria-label="閉じる">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="app-modal-body">
-                    <div class="edit-menu-options">
-                        <button class="edit-menu-option" data-action="change">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-                            </svg>
-                            <span>写真を変更</span>
-                        </button>
-                        <button class="edit-menu-option edit-menu-delete" data-action="delete">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"/>
-                                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                            </svg>
-                            <span>写真を削除</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(menuModal);
-        
-        // イベントリスナーを設定
-        const closeBtn = menuModal.querySelector('.app-modal-close');
-        closeBtn.addEventListener('click', () => menuModal.remove());
-        
-        menuModal.addEventListener('click', (e) => {
-            if (e.target === menuModal) {
-                menuModal.remove();
-            }
-        });
-        
-        // メニューアクション
-        menuModal.querySelector('[data-action="change"]').addEventListener('click', () => {
-            menuModal.remove();
-            openUploadModal(index);
-        });
-        
-        menuModal.querySelector('[data-action="delete"]').addEventListener('click', () => {
-            delete state.uploadedImages[index];
-            resetPhotoDisplay(index);
-            menuModal.remove();
-            showToast('写真を削除しました', 'success');
-        });
-    }
+    // Photo menu functionality removed as grid-menu-button is deleted
     
     // 写真表示をリセット
     function resetPhotoDisplay(index) {
@@ -342,17 +253,7 @@
         photoArea.classList.remove('has-image');
         gridItem.classList.remove('has-image');
         
-        // テーマテキストを再表示
-        const themeText = gridItem.querySelector('.theme-text');
-        if (themeText) {
-            themeText.style.display = '';
-        }
-        
-        // メニューボタンを削除
-        const menuButton = gridItem.querySelector('.grid-menu-button');
-        if (menuButton) {
-            menuButton.remove();
-        }
+        // Theme text remains visible as it's now positioned above the image area
         
         // コンテンツをリセット
         photoArea.innerHTML = '';

@@ -85,45 +85,53 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
     const gridRenderer = new GridRenderer('photo-theme-grid', {
         itemClass: 'grid-theme-item',
         renderItem: (gridItem, section, index) => {
+            // テーマテキストを上に表示
+            const themeText = document.createElement('div');
+            themeText.className = 'theme-text';
+            themeText.textContent = section.title || `テーマ ${index + 1}`;
+            gridItem.appendChild(themeText);
+            
             // セクションコンテナ
             const sectionContainer = document.createElement('div');
             sectionContainer.className = 'grid-section-container';
             
+            // 写真表示エリア
+            const photoArea = document.createElement('div');
+            photoArea.className = 'photo-display-area';
+            photoArea.dataset.index = index;
+            
             // 既に画像がアップロードされている場合
             if (state.uploadedImages[index]) {
                 // has-imageクラスを追加
+                photoArea.classList.add('has-image');
                 gridItem.classList.add('has-image');
                 
-                // 画像を表示（正方形にクロップ）
+                // 画像を表示
                 const img = document.createElement('img');
                 img.className = 'uploaded-image';
                 img.src = state.uploadedImages[index];
                 img.alt = `アップロードされた画像 ${index + 1}`;
-                sectionContainer.appendChild(img);
-                
-                // メニューボタンとプラスボタンは表示しない
+                photoArea.appendChild(img);
             } else {
-                // テーマテキストを表示
-                const themeText = document.createElement('div');
-                themeText.className = 'grid-theme-text';
-                themeText.textContent = section.title || `テーマ ${index + 1}`;
-                sectionContainer.appendChild(themeText);
-                
                 // プラスアイコン
-                const addButton = document.createElement('button');
-                addButton.className = 'grid-add-button';
-                addButton.innerHTML = `
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                `;
-                addButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openUploadModal(index);
-                });
-                sectionContainer.appendChild(addButton);
+                const addPhotoIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                addPhotoIcon.setAttribute('class', 'add-photo-icon');
+                addPhotoIcon.setAttribute('viewBox', '0 0 24 24');
+                addPhotoIcon.setAttribute('fill', 'none');
+                addPhotoIcon.setAttribute('stroke', 'currentColor');
+                addPhotoIcon.setAttribute('stroke-width', '2');
+                addPhotoIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
+                
+                photoArea.appendChild(addPhotoIcon);
             }
+            
+            // クリックイベントの設定
+            photoArea.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openUploadModal(index);
+            });
+            
+            sectionContainer.appendChild(photoArea);
             
             // テーマクラスを適用（存在する場合）
             if (section.theme) {
@@ -131,11 +139,6 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
             }
             
             gridItem.appendChild(sectionContainer);
-            
-            // クリックイベントの設定
-            if (!state.uploadedImages[index]) {
-                gridItem.addEventListener('click', () => openUploadModal(index));
-            }
         }
     });
     

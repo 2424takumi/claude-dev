@@ -113,10 +113,6 @@
         gridItem.className = 'grid-theme-item';
         gridItem.dataset.index = index;
         
-        // セクションコンテナ
-        const sectionContainer = document.createElement('div');
-        sectionContainer.className = 'grid-section-container';
-        
         // タイトル入力（テーマ入力として使用）
         const titleInput = document.createElement('textarea');
         titleInput.className = 'section-title-input';
@@ -141,8 +137,26 @@
             }, 200);
         });
         
-        // 要素の組み立て
-        sectionContainer.appendChild(titleInput);
+        // セクションコンテナ（プラスアイコン用）
+        const sectionContainer = document.createElement('div');
+        sectionContainer.className = 'grid-section-container';
+        
+        // プラスアイコン
+        const addIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        addIcon.setAttribute('class', 'add-photo-icon');
+        addIcon.setAttribute('viewBox', '0 0 24 24');
+        addIcon.setAttribute('fill', 'none');
+        addIcon.setAttribute('stroke', 'currentColor');
+        addIcon.setAttribute('stroke-width', '2');
+        addIcon.style.width = '48px';
+        addIcon.style.height = '48px';
+        addIcon.style.color = 'var(--text-tertiary)';
+        addIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
+        
+        sectionContainer.appendChild(addIcon);
+        
+        // 要素の組み立て - テキストを上に、コンテナを下に
+        gridItem.appendChild(titleInput);
         gridItem.appendChild(sectionContainer);
         
         return gridItem;
