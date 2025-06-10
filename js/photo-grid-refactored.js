@@ -348,6 +348,13 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         const chip = document.createElement('div');
         chip.className = `theme-chip chip-color-${colorIndex}`;
         chip.textContent = theme;
+        chip.style.opacity = '0';
+        chip.style.transition = 'opacity 0.3s ease-in-out';
+        
+        // フェードインアニメーション
+        setTimeout(() => {
+            chip.style.opacity = '1';
+        }, 50);
         
         chip.addEventListener('click', () => {
             if (state.currentFocusedInput) {
@@ -368,18 +375,27 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         const tracks = document.querySelectorAll('.suggestions-track');
         
         tracks.forEach((track, rowIndex) => {
-            const startIndex = rowIndex * Math.floor(themeSuggestions.length / 2);
-            const endIndex = startIndex + Math.floor(themeSuggestions.length / 2);
-            const rowThemes = themeSuggestions.slice(startIndex, endIndex);
+            // 既存のチップをクリア
+            track.innerHTML = '';
+            
+            // 各行に異なるテーマセットを割り当て
+            const themes = rowIndex === 0 
+                ? themeSuggestions.slice(0, Math.ceil(themeSuggestions.length / 2))
+                : themeSuggestions.slice(Math.ceil(themeSuggestions.length / 2));
             
             // アニメーションのために2セット作成
             for (let set = 0; set < 2; set++) {
-                rowThemes.forEach((theme, index) => {
-                    const colorIndex = ((startIndex + index) % 10) + 1;
+                themes.forEach((theme, index) => {
+                    const colorIndex = ((rowIndex * themes.length + index) % 10) + 1;
                     const chip = createThemeChip(theme, colorIndex);
                     track.appendChild(chip);
                 });
             }
+            
+            // トラックの幅を設定してアニメーションを安定化
+            const chipWidth = 120; // チップの推定幅（min-width + padding + gap）
+            const totalWidth = themes.length * chipWidth;
+            track.style.width = `${totalWidth * 2}px`;
         });
     }
     
@@ -402,6 +418,7 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         initializeGrid();
         setupEventListeners();
         loadSavedGrid();
+
         initializeThemeSuggestions();
         
         // テーマ切り替えボタンの設定
@@ -409,6 +426,10 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         if (themeToggle) {
             theme.setToggleButton(themeToggle);
         }
+        // DOM要素が完全に読み込まれてからチップを初期化
+        setTimeout(() => {
+            initializeThemeSuggestions();
+        }, 100);
     }
     
     // DOMContentLoadedで初期化

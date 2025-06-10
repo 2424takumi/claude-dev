@@ -24,7 +24,9 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
     const elements = {
         photoThemeGrid: document.getElementById('photo-theme-grid'),
         downloadBtn: document.getElementById('download-grid-btn'),
-        gridBgColorInput: document.getElementById('grid-bg-color')
+        gridBgColorInput: document.getElementById('grid-bg-color'),
+        themeToggle: document.querySelector('.theme-toggle'),
+        shareInstagramBtn: document.getElementById('share-instagram-stories-btn')
     };
     
     // 共有データを保存する変数
@@ -82,6 +84,11 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
             const photoArea = document.createElement('div');
             photoArea.className = 'photo-display-area';
             photoArea.dataset.index = index;
+            
+            // テーマクラスを適用（存在する場合）
+            if (section.theme) {
+                gridItem.classList.add(`theme-${section.theme}`);
+            }
             
             // フリップカードの内部構造
             const flipCardInner = document.createElement('div');
@@ -333,10 +340,52 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         });
     }
     
+    // Instagram Storiesで共有
+    async function shareInstagramStories() {
+        // グリッドを画像として生成
+        const filename = `gridme-stories-${new Date().getTime()}.png`;
+        const dataUrl = await gridRenderer.exportAsImage(filename, false); // falseでダウンロードをスキップ
+        
+        if (dataUrl) {
+            // Instagram Storiesのガイドを表示
+            toast.info('生成された画像をダウンロードして、Instagramアプリで共有してください');
+            
+            // 画像をダウンロード
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = dataUrl;
+            link.click();
+        } else {
+            // html2canvasライブラリがない場合は動的に読み込む
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = async () => {
+                const dataUrl = await gridRenderer.exportAsImage(filename, false);
+                if (dataUrl) {
+                    toast.info('生成された画像をダウンロードして、Instagramアプリで共有してください');
+                    const link = document.createElement('a');
+                    link.download = filename;
+                    link.href = dataUrl;
+                    link.click();
+                } else {
+                    toast.error('画像の生成に失敗しました');
+                }
+            };
+            document.head.appendChild(script);
+        }
+    }
+
     // イベントリスナーの設定
     function setupEventListeners() {
+        // テーマ切り替え
+        theme.setToggleButton(elements.themeToggle);
+        
         if (elements.downloadBtn) {
             elements.downloadBtn.addEventListener('click', downloadGrid);
+        }
+        
+        if (elements.shareInstagramBtn) {
+            elements.shareInstagramBtn.addEventListener('click', shareInstagramStories);
         }
         
         // 背景色変更

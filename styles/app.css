@@ -926,6 +926,7 @@ body {
     width: 100vw;
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
+    min-height: 100px; /* 最小高さを設定して両行が確実に表示されるように */
 }
 
 .suggestions-row {
@@ -942,10 +943,13 @@ body {
     position: absolute;
     white-space: nowrap;
     padding: var(--spacing-1) 0;
+    top: 0;
+    left: 0;
 }
 
 .suggestions-row-2 .suggestions-track {
     animation: slideRight 25s linear infinite;
+    animation-delay: -12.5s; /* 半分の時間を遅延させて、異なる位置から開始 */
 }
 
 @keyframes slideLeft {
@@ -982,6 +986,7 @@ body {
     height: 36px;
     /* 影を削除 */
     background: var(--primary-solid);
+    flex-shrink: 0; /* チップが縮まないようにする */
 }
 
 .theme-chip:hover {
