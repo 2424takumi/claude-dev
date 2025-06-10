@@ -238,8 +238,11 @@
         photoArea.classList.add('has-image');
         gridItem.classList.add('has-image');
         
-        // Do not hide theme text when image is uploaded - keep it above the image
-        // grid-menu-button functionality removed as requested
+        // Hide theme text when image is uploaded
+        const themeText = gridItem.querySelector('.theme-text');
+        if (themeText) {
+            themeText.style.display = 'none';
+        }
     }
     
     // Photo menu functionality removed as grid-menu-button is deleted
@@ -253,7 +256,11 @@
         photoArea.classList.remove('has-image');
         gridItem.classList.remove('has-image');
         
-        // Theme text remains visible as it's now positioned above the image area
+        // Show theme text again when image is removed
+        const themeText = gridItem.querySelector('.theme-text');
+        if (themeText) {
+            themeText.style.display = 'block';
+        }
         
         // コンテンツをリセット
         photoArea.innerHTML = '';
