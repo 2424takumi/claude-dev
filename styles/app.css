@@ -703,6 +703,7 @@ body {
     justify-content: center;
     min-height: calc(100vh - 200px);
     padding: 0 0 var(--spacing-4) 0;
+    background: var(--bg-primary);
 }
 
 /* ===== グリッドコントロール ===== */
@@ -1467,5 +1468,80 @@ body {
 
 .dark-theme .share-url-preview {
     border-color: var(--neutral-700);
+}
+
+/* ===== 追加のダークモード対応 ===== */
+
+/* メインコンテンツ領域のダークモード */
+@media (prefers-color-scheme: dark) {
+    /* 基本要素 */
+    body {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+    }
+    
+    /* セクション */
+    .section {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+    }
+    
+    /* タイトル要素 */
+    .section-title,
+    .theme-title,
+    .grid-title {
+        color: var(--text-primary);
+    }
+    
+    /* コンポーネントデモ */
+    .component-demo {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+    }
+    
+    /* モックアップ要素 */
+    .mock-browser,
+    .mock-phone,
+    .mock-dashboard {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+    }
+    
+    .mini-card {
+        background: var(--bg-secondary);
+    }
+    
+    /* メインセクション */
+    .app-main,
+    .grid-main-section,
+    .photo-grid-section,
+    .theme-input-section {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+    }
+    
+    /* テーマ入力カード */
+    .theme-input-card {
+        background: var(--card-bg);
+        border: 1px solid var(--card-border);
+    }
+    
+    /* テーマ説明テキスト */
+    .grid-main-section p {
+        color: var(--text-secondary) !important;
+    }
+    
+    /* サジェスチョンチップ */
+    .suggestion-chip {
+        background: var(--neutral-800);
+        border-color: var(--neutral-700);
+        color: var(--neutral-100);
+    }
+    
+    .suggestion-chip:hover {
+        background: var(--primary-solid);
+        color: white;
+        border-color: transparent;
+    }
 }
 

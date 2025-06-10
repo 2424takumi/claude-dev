@@ -313,6 +313,43 @@
     background: var(--bg-secondary);
 }
 
+/* ===== 追加のダークモード対応 ===== */
+@media (prefers-color-scheme: dark) {
+    /* 共有グリッドセクション */
+    .shared-grid-section {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+    }
+    
+    .shared-title {
+        color: var(--text-primary);
+    }
+    
+    .shared-subtitle {
+        color: var(--text-secondary);
+    }
+    
+    /* テーマテキスト */
+    .theme-text {
+        color: var(--text-primary);
+    }
+    
+    /* セクションタイトル */
+    .shared-section-title {
+        color: var(--text-primary);
+    }
+    
+    /* セクションコンテンツ */
+    .shared-section-content {
+        color: var(--text-secondary);
+    }
+    
+    /* グリッドテーマテキスト */
+    .grid-theme-text {
+        color: var(--text-primary);
+    }
+}
+
 /* ===== グリッドテーマテキスト ===== */
 .grid-theme-text {
     font-size: var(--text-base);
