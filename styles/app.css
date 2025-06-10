@@ -786,7 +786,7 @@ body {
 /* ===== 共有ボタンコンテナ ===== */
 .share-button-container {
     margin-top: var(--spacing-8);
-    margin-bottom: var(--spacing-8);
+    margin-bottom: var(--spacing-4);
 }
 
 /* ===== テーマグリッド ===== */
@@ -942,7 +942,7 @@ body {
 
 /* テーマサジェスチョンチップス */
 .theme-suggestions-container {
-    margin-top: var(--spacing-4);
+    margin-top: 0;
     margin-bottom: 0;
     overflow: hidden;
     position: relative;
