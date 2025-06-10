@@ -77,6 +77,9 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
             
             // 既に画像がアップロードされている場合
             if (state.uploadedImages[index]) {
+                // has-imageクラスを追加
+                gridItem.classList.add('has-image');
+                
                 // 画像を表示
                 const img = document.createElement('img');
                 img.className = 'uploaded-image';
