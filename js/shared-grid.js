@@ -18,9 +18,12 @@
     // DOM要素
     const elements = {
         photoThemeGrid: document.getElementById('photo-theme-grid'),
+        mainShareBtn: document.getElementById('main-share-btn'),
         downloadBtn: document.getElementById('download-grid-btn'),
-        shareInstagramBtn: document.getElementById('share-instagram-stories-btn'),
-        gridBgColorInput: document.getElementById('grid-bg-color-input')
+        shareInstagramBtn: document.getElementById('share-instagram-btn'),
+        gridBgColorInput: document.getElementById('grid-bg-color-input'),
+        shareModal: document.getElementById('share-modal'),
+        shareModalClose: null
     };
     
     // URLパラメータからデータを取得
@@ -247,6 +250,20 @@
         }
     }
     
+    // 共有モーダルを表示
+    function showShareModal() {
+        if (elements.shareModal) {
+            elements.shareModal.classList.add('active');
+        }
+    }
+    
+    // 共有モーダルを閉じる
+    function closeShareModal() {
+        if (elements.shareModal) {
+            elements.shareModal.classList.remove('active');
+        }
+    }
+    
     // Instagram Stories共有機能
     function shareInstagramStories() {
         // html2canvasライブラリを使用してグリッドをキャプチャ
@@ -360,12 +377,25 @@
     
     // イベントリスナーの設定
     function setupEventListeners() {
-        if (elements.downloadBtn) {
-            elements.downloadBtn.addEventListener('click', downloadGrid);
+        // 共有ボタン
+        if (elements.mainShareBtn) {
+            elements.mainShareBtn.addEventListener('click', showShareModal);
         }
         
+        // ダウンロードボタン（モーダル内）
+        if (elements.downloadBtn) {
+            elements.downloadBtn.addEventListener('click', () => {
+                downloadGrid();
+                closeShareModal();
+            });
+        }
+        
+        // Instagram Storiesボタン（モーダル内）
         if (elements.shareInstagramBtn) {
-            elements.shareInstagramBtn.addEventListener('click', shareInstagramStories);
+            elements.shareInstagramBtn.addEventListener('click', () => {
+                shareInstagramStories();
+                closeShareModal();
+            });
         }
         
         // カラーピッカーのイベント
@@ -373,7 +403,25 @@
             elements.gridBgColorInput.addEventListener('input', handleBgColorChange);
         }
         
-        // モーダル関連のイベント
+        // 共有モーダル関連
+        if (elements.shareModal) {
+            // モーダルの閉じるボタンを取得
+            elements.shareModalClose = elements.shareModal.querySelector('.app-modal-close');
+            
+            // モーダルを閉じる
+            if (elements.shareModalClose) {
+                elements.shareModalClose.addEventListener('click', closeShareModal);
+            }
+            
+            // モーダル背景クリックで閉じる
+            elements.shareModal.addEventListener('click', (e) => {
+                if (e.target === elements.shareModal) {
+                    closeShareModal();
+                }
+            });
+        }
+        
+        // アップロードモーダル関連のイベント
         const modal = document.getElementById('upload-modal');
         const modalClose = modal.querySelector('.app-modal-close');
         const uploadArea = document.getElementById('upload-area');
