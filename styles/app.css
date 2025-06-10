@@ -881,10 +881,9 @@ body {
     margin-bottom: var(--spacing-6);
     overflow: hidden;
     position: relative;
-    width: 100%;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
 }
 
 .suggestions-row {
