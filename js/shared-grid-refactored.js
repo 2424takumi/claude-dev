@@ -80,28 +80,14 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
                 // has-imageクラスを追加
                 gridItem.classList.add('has-image');
                 
-                // 画像を表示
+                // 画像を表示（正方形にクロップ）
                 const img = document.createElement('img');
                 img.className = 'uploaded-image';
                 img.src = state.uploadedImages[index];
                 img.alt = `アップロードされた画像 ${index + 1}`;
                 sectionContainer.appendChild(img);
                 
-                // 三点メニューアイコン
-                const menuButton = document.createElement('button');
-                menuButton.className = 'grid-menu-button';
-                menuButton.innerHTML = `
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="6" r="1"/>
-                        <circle cx="12" cy="12" r="1"/>
-                        <circle cx="12" cy="18" r="1"/>
-                    </svg>
-                `;
-                menuButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openEditMenu(index, section);
-                });
-                sectionContainer.appendChild(menuButton);
+                // メニューボタンとプラスボタンは表示しない
             } else {
                 // テーマテキストを表示
                 const themeText = document.createElement('div');
@@ -132,10 +118,8 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
             
             gridItem.appendChild(sectionContainer);
             
-            // クリックイベントの設定（画像がある場合のみ）
-            if (state.uploadedImages[index]) {
-                gridItem.addEventListener('click', () => openEditMenu(index, section));
-            } else {
+            // クリックイベントの設定
+            if (!state.uploadedImages[index]) {
                 gridItem.addEventListener('click', () => openUploadModal(index));
             }
         }
@@ -560,10 +544,10 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
             elements.shareInstagramBtn.addEventListener('click', shareInstagramStories);
         }
         
-        // 背景色変更
-        if (elements.gridBgColorInput) {
-            elements.gridBgColorInput.addEventListener('input', handleBgColorChange);
-        }
+        // 背景色変更は無効化（共有データの色のみ使用）
+        // if (elements.gridBgColorInput) {
+        //     elements.gridBgColorInput.addEventListener('input', handleBgColorChange);
+        // }
         
         setupDragAndDrop();
     }
