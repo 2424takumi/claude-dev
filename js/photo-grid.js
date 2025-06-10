@@ -9,7 +9,7 @@
     
     // 状態管理
     const state = {
-        gridSize: 2, // デフォルトを2x2に設定
+        gridSize: 3, // デフォルトを3x3に設定
         gridSections: [], // グリッドセクションを格納
         saveTimeout: null,
         currentFocusedInput: null // 現在フォーカスされている入力フィールド
@@ -23,6 +23,11 @@
         '国', '都市', '自然現象', '職業', '感情',
         '時代', '神話', '星座', '元素', 'ポケモン'
     ];
+    
+    // ランダムテーマを取得する関数
+    function getRandomTheme() {
+        return themeSuggestions[Math.floor(Math.random() * themeSuggestions.length)];
+    }
     
     // DOM要素
     const elements = {
@@ -61,7 +66,10 @@
         for (let i = 0; i < totalSections; i++) {
             const row = Math.floor(i / size);
             const col = i % size;
-            state.gridSections.push(new GridSection(i, row, col));
+            const section = new GridSection(i, row, col);
+            // ランダムテーマを初期値として設定
+            section.title = getRandomTheme();
+            state.gridSections.push(section);
         }
         
         // グリッドHTMLの生成
@@ -181,7 +189,7 @@
         const newSize = parseInt(e.target.value);
         
         // 確認ダイアログ
-        if (state.gridSections.some(section => section.title || section.content)) {
+        if (state.gridSections.some(section => section.title)) {
             if (!confirm('グリッドサイズを変更すると、現在の内容が失われます。続行しますか？')) {
                 e.target.value = state.gridSize;
                 return;
@@ -301,7 +309,7 @@
         if (savedData) {
             try {
                 const data = JSON.parse(savedData);
-                state.gridSize = data.size || 2;
+                state.gridSize = data.size || 3;
                 
                 // グリッドサイズセレクトを更新
                 if (elements.gridSizeSelect) {
