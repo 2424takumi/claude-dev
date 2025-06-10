@@ -496,7 +496,7 @@
 .tabs {
   display: flex;
   gap: var(--spacing-1);
-  border-bottom: 2px solid var(--border-primary);
+  border-bottom: none;
   margin-bottom: var(--spacing-6);
 }
 
