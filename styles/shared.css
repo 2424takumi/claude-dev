@@ -277,11 +277,41 @@
     .grid-theme-text {
         color: var(--text-primary);
     }
+    
+    /* テーマテキスト */
+    .theme-text {
+        background: rgba(0, 0, 0, 0.8);
+        color: var(--text-secondary);
+    }
 }
 
 /* ===== グリッドテーマテキスト ===== */
 .grid-theme-text {
     display: none; /* テキストを非表示に */
+}
+
+/* ===== テーマテキスト ===== */
+.theme-text {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.9);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    z-index: 1;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+/* ダークモード時のテーマテキスト */
+.dark-theme .theme-text {
+    background: rgba(0, 0, 0, 0.8);
+    color: var(--text-secondary);
 }
 
 /* ===== グリッドボタン ===== */
