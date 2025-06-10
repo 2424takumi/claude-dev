@@ -226,20 +226,124 @@
         // 既存のコンテンツをクリア
         photoArea.innerHTML = '';
         
+        // 画像コンテナを作成
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'image-container';
+        
         // 画像を追加
         const img = document.createElement('img');
         img.className = 'uploaded-image';
         img.src = state.uploadedImages[index];
         img.alt = `アップロードされた画像 ${index + 1}`;
         
-        photoArea.appendChild(img);
+        // 削除ボタンを作成
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'image-delete-button';
+        deleteButton.innerHTML = '&times;';
+        deleteButton.setAttribute('aria-label', '画像を削除');
+        deleteButton.style.display = 'none'; // 初期状態は非表示
+        
+        // 削除ボタンのクリックイベント
+        deleteButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteImage(index);
+        });
+        
+        imageContainer.appendChild(img);
+        imageContainer.appendChild(deleteButton);
+        photoArea.appendChild(imageContainer);
         
         // has-imageクラスを追加
         photoArea.classList.add('has-image');
         gridItem.classList.add('has-image');
         
+        // 長押し検出の設定
+        setupLongPressDetection(img, deleteButton);
+        
         // Do not hide theme text when image is uploaded - keep it above the image
         // grid-menu-button functionality removed as requested
+    }
+    
+    // 長押し検出の設定
+    function setupLongPressDetection(img, deleteButton) {
+        let pressTimer = null;
+        let isLongPress = false;
+        
+        // タッチイベント（モバイル用）
+        img.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                deleteButton.style.display = 'block';
+                // 5秒後に自動的に非表示
+                setTimeout(() => {
+                    if (deleteButton.style.display === 'block') {
+                        deleteButton.style.display = 'none';
+                    }
+                }, 5000);
+            }, 500); // 500ms = 0.5秒の長押し
+        });
+        
+        img.addEventListener('touchend', () => {
+            clearTimeout(pressTimer);
+            if (!isLongPress) {
+                // 短いタップの場合は何もしない
+            }
+            isLongPress = false;
+        });
+        
+        img.addEventListener('touchmove', () => {
+            clearTimeout(pressTimer);
+            isLongPress = false;
+        });
+        
+        // マウスイベント（デスクトップ用）
+        img.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                deleteButton.style.display = 'block';
+                // 5秒後に自動的に非表示
+                setTimeout(() => {
+                    if (deleteButton.style.display === 'block') {
+                        deleteButton.style.display = 'none';
+                    }
+                }, 5000);
+            }, 500); // 500ms = 0.5秒の長押し
+        });
+        
+        img.addEventListener('mouseup', () => {
+            clearTimeout(pressTimer);
+            if (!isLongPress) {
+                // 短いクリックの場合は何もしない
+            }
+            isLongPress = false;
+        });
+        
+        img.addEventListener('mouseleave', () => {
+            clearTimeout(pressTimer);
+            isLongPress = false;
+        });
+        
+        // 画像の外側をクリックしたら削除ボタンを非表示
+        document.addEventListener('click', (e) => {
+            if (!img.contains(e.target) && !deleteButton.contains(e.target)) {
+                deleteButton.style.display = 'none';
+            }
+        });
+    }
+    
+    // 画像を削除
+    function deleteImage(index) {
+        if (confirm('この画像を削除しますか？')) {
+            // 画像データを削除
+            delete state.uploadedImages[index];
+            
+            // 表示をリセット
+            resetPhotoDisplay(index);
+            
+            showToast('画像を削除しました', 'success');
+        }
     }
     
     // Photo menu functionality removed as grid-menu-button is deleted
