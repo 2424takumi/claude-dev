@@ -556,7 +556,7 @@ body {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
     padding: var(--spacing-4) 0;
-    margin-bottom: 28px;
+    margin-bottom: 18px;
 }
 
 /* ダークモード時のヘッダー背景を黒に */
@@ -702,7 +702,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: calc(100vh - 200px);
-    padding: var(--spacing-4) 0;
+    padding: 0 0 var(--spacing-4) 0;
 }
 
 /* ===== グリッドコントロール ===== */
