@@ -21,6 +21,11 @@
         mainShareBtn: document.getElementById('main-share-btn'),
         downloadBtn: document.getElementById('download-grid-btn'),
         shareInstagramBtn: document.getElementById('share-instagram-btn'),
+        copyUrlBtn: document.getElementById('copy-url-btn'),
+        shareTwitterBtn: document.getElementById('share-twitter-btn'),
+        shareFacebookBtn: document.getElementById('share-facebook-btn'),
+        shareLineBtn: document.getElementById('share-line-btn'),
+        shareUrlInput: document.getElementById('share-url-input'),
         gridBgColorInput: document.getElementById('grid-bg-color'),
         shareModal: document.getElementById('share-modal'),
         shareModalClose: null
@@ -339,6 +344,11 @@
         if (elements.shareModal) {
             elements.shareModal.classList.add('active');
         }
+        
+        // 現在のURLを共有URLとして設定
+        if (elements.shareUrlInput) {
+            elements.shareUrlInput.value = window.location.href;
+        }
     }
     
     // 共有モーダルを閉じる
@@ -346,6 +356,42 @@
         if (elements.shareModal) {
             elements.shareModal.classList.remove('active');
         }
+    }
+    
+    // URLをコピー
+    async function copyShareUrl() {
+        const shareUrl = window.location.href;
+        
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            showToast('URLをコピーしました', 'success');
+        } catch (err) {
+            console.error('コピーエラー:', err);
+            showToast('URLのコピーに失敗しました', 'error');
+        }
+    }
+    
+    // Twitterで共有
+    function shareOnTwitter() {
+        const shareUrl = window.location.href;
+        const text = encodeURIComponent('GridMe!!でフォトグリッドを作成しました！');
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}`;
+        window.open(twitterUrl, '_blank', 'width=600,height=400');
+    }
+    
+    // Facebookで共有
+    function shareOnFacebook() {
+        const shareUrl = window.location.href;
+        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+        window.open(facebookUrl, '_blank', 'width=600,height=400');
+    }
+    
+    // LINEで共有
+    function shareOnLine() {
+        const shareUrl = window.location.href;
+        const text = encodeURIComponent('GridMe!!でフォトグリッドを作成しました！');
+        const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${text}`;
+        window.open(lineUrl, '_blank', 'width=600,height=400');
     }
     
     // Instagram Stories共有機能
@@ -479,6 +525,31 @@
             elements.shareInstagramBtn.addEventListener('click', () => {
                 shareInstagramStories();
                 closeShareModal();
+            });
+        }
+        
+        // 新しいSNS共有ボタンのイベントリスナー
+        if (elements.copyUrlBtn) {
+            elements.copyUrlBtn.addEventListener('click', () => {
+                copyShareUrl();
+            });
+        }
+        
+        if (elements.shareTwitterBtn) {
+            elements.shareTwitterBtn.addEventListener('click', () => {
+                shareOnTwitter();
+            });
+        }
+        
+        if (elements.shareFacebookBtn) {
+            elements.shareFacebookBtn.addEventListener('click', () => {
+                shareOnFacebook();
+            });
+        }
+        
+        if (elements.shareLineBtn) {
+            elements.shareLineBtn.addEventListener('click', () => {
+                shareOnLine();
             });
         }
         
