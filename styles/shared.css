@@ -78,6 +78,8 @@
     flex-direction: column;
     position: relative;
     padding: 0;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
 }
 
 /* 共有セクションタイトル */
@@ -190,6 +192,15 @@
     height: 100%;
     object-fit: cover;
     border-radius: var(--radius-lg);
+}
+
+/* 画像がある場合のグリッドアイテム */
+.grid-theme-item.has-image {
+    padding: 0;
+}
+
+.grid-theme-item.has-image .grid-section-container {
+    padding: 0;
 }
 
 /* テーマテキスト（カードの裏面） */
@@ -359,6 +370,7 @@
     position: absolute;
     top: 0;
     left: 0;
+    aspect-ratio: 1;
 }
 
 /* ===== 編集メニューオプション ===== */
