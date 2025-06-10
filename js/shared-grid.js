@@ -21,7 +21,7 @@
         mainShareBtn: document.getElementById('main-share-btn'),
         downloadBtn: document.getElementById('download-grid-btn'),
         shareInstagramBtn: document.getElementById('share-instagram-btn'),
-        gridBgColorInput: document.getElementById('grid-bg-color-input'),
+        gridBgColorInput: document.getElementById('grid-bg-color'),
         shareModal: document.getElementById('share-modal'),
         shareModalClose: null
     };
