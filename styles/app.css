@@ -840,7 +840,7 @@ body {
     font-weight: var(--font-normal);
     font-family: inherit;
     transition: all var(--transition-base);
-    background: rgba(0, 0, 0, 0.03); /* Lighter gray background */
+    background: white; /* Pure white background */
     color: var(--text-secondary);
     resize: none;
     overflow: hidden;
@@ -855,7 +855,7 @@ body {
 .section-title-input:focus {
     outline: none;
     box-shadow: none;
-    background: rgba(0, 0, 0, 0.05); /* Slightly darker on focus */
+    background: white; /* Keep white background on focus */
 }
 
 /* セクションテーマ選択 */
@@ -1094,13 +1094,13 @@ body {
 }
 
 .dark-theme .section-title-input {
-    background: rgba(255, 255, 255, 0.08); /* More visible in dark mode */
-    color: var(--text-primary);
+    background: white; /* Pure white background in dark mode */
+    color: var(--text-secondary);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dark-theme .section-title-input:focus {
-    background: rgba(255, 255, 255, 0.12); /* More noticeable on focus */
+    background: white; /* Keep white background on focus */
     border-color: rgba(255, 139, 37, 0.3);
 }
 
