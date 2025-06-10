@@ -555,7 +555,6 @@ body {
 .app-header {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-primary);
     padding: var(--spacing-4) 0;
 }
 
