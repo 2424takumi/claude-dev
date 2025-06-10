@@ -218,6 +218,9 @@
         img.alt = `アップロードされた画像 ${index + 1}`;
         
         flipCardFront.appendChild(img);
+        
+        // has-imageクラスを追加
+        photoArea.classList.add('has-image');
     }
     
     // アップロードモーダルを閉じる
