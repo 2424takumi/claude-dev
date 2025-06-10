@@ -20,14 +20,20 @@
     const themeSuggestions = [
         '動物', 'キャラクター', '花', 'MBTI', '植物',
         '宝石', '季節', '天気', '食べ物', '飲み物',
-        '色', '音楽ジャンル', '映画ジャンル', 'スポーツ', '趣味',
+        '色', 'ファッションスタイル', 'お菓子', 'スポーツ', '趣味',
         '国', '都市', '自然現象', '職業', '感情',
-        '時代', '神話', '星座', '元素', 'ポケモン'
+        '表情', 'ブランド', '家電', 'ゲーム', 'ポケモン'
     ];
     
     // ランダムテーマを取得する関数
     function getRandomTheme() {
         return themeSuggestions[Math.floor(Math.random() * themeSuggestions.length)];
+    }
+    
+    // ユニークなランダムテーマを取得する関数
+    function getUniqueRandomThemes(count) {
+        const shuffled = [...themeSuggestions].sort(() => Math.random() - 0.5);
+        return shuffled.slice(0, Math.min(count, shuffled.length));
     }
     
     // DOM要素
@@ -64,14 +70,17 @@
         const size = state.gridSize;
         const totalSections = size * size;
         
+        // ユニークなテーマを取得
+        const uniqueThemes = getUniqueRandomThemes(totalSections);
+        
         // グリッドセクション配列の初期化
         state.gridSections = [];
         for (let i = 0; i < totalSections; i++) {
             const row = Math.floor(i / size);
             const col = i % size;
             const section = new GridSection(i, row, col);
-            // ランダムテーマを初期値として設定
-            section.title = getRandomTheme();
+            // ユニークなテーマを初期値として設定
+            section.title = uniqueThemes[i] || '';
             state.gridSections.push(section);
         }
         
