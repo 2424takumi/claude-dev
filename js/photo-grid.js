@@ -148,11 +148,35 @@
         
         state.gridSections[index][field] = value;
         
+        // フォトグリッドのタイトルも更新
+        updatePhotoGridTitle(index, value);
+        
         // 全てのセクションが完了しているかチェック
         checkAllSectionsCompleted();
         
         // 自動保存
         autoSave();
+    }
+    
+    // フォトグリッドのタイトルを更新
+    function updatePhotoGridTitle(index, title) {
+        const photoGrid = document.getElementById('photo-theme-grid');
+        if (!photoGrid) return;
+        
+        const photoItem = photoGrid.querySelector(`[data-index="${index}"]`);
+        if (!photoItem) return;
+        
+        // タイトル表示を更新
+        const titleDiv = photoItem.querySelector('.shared-section-title');
+        if (titleDiv) {
+            titleDiv.textContent = title || `テーマ ${index + 1}`;
+        }
+        
+        // フリップカードの裏面のテキストも更新
+        const themeText = photoItem.querySelector('.theme-text');
+        if (themeText) {
+            themeText.textContent = title || `テーマ ${index + 1}`;
+        }
     }
     
     // セクションにテーマを適用
@@ -204,6 +228,7 @@
                 // 確認された場合
                 state.gridSize = newSize;
                 initializeGrid();
+                updatePhotoGrid();
                 showToast(`グリッドサイズを${newSize}x${newSize}に変更しました`, 'success');
             }, () => {
                 // キャンセルされた場合
@@ -215,6 +240,7 @@
         
         state.gridSize = newSize;
         initializeGrid();
+        updatePhotoGrid();
         showToast(`グリッドサイズを${newSize}x${newSize}に変更しました`, 'success');
     }
     
@@ -410,6 +436,11 @@
         if (elements.themeGrid) {
             elements.themeGrid.style.backgroundColor = state.gridBgColor;
         }
+        // フォトグリッドにも背景色を適用
+        const photoThemeGrid = document.getElementById('photo-theme-grid');
+        if (photoThemeGrid) {
+            photoThemeGrid.style.backgroundColor = state.gridBgColor;
+        }
     }
     
     // 背景色変更ハンドラー
@@ -433,6 +464,7 @@
             size: state.gridSize,
             sections: state.gridSections,
             bgColor: state.gridBgColor,
+            uploadedImages: state.uploadedImages || {},
             timestamp: new Date().toISOString()
         };
         
@@ -472,10 +504,23 @@
                     }
                 }
                 
+                // アップロードされた画像を復元
+                if (data.uploadedImages) {
+                    state.uploadedImages = data.uploadedImages;
+                }
+                
                 // グリッドを再描画
                 renderGrid();
                 applyGridBackgroundColor();
                 checkAllSectionsCompleted();
+                
+                // フォトグリッドも初期化（画像を含む）
+                initializePhotoGrid();
+                if (state.uploadedImages) {
+                    Object.keys(state.uploadedImages).forEach(index => {
+                        updatePhotoDisplay(parseInt(index));
+                    });
+                }
             } catch (err) {
                 console.error('保存データの読み込みエラー:', err);
             }
@@ -535,6 +580,58 @@
         // 背景色変更
         if (elements.gridBgColorInput) {
             elements.gridBgColorInput.addEventListener('input', handleBgColorChange);
+        }
+        
+        // アップロードモーダルのイベント設定
+        const uploadModal = document.getElementById('upload-modal');
+        if (uploadModal) {
+            // 閉じるボタン
+            const uploadModalClose = uploadModal.querySelector('.app-modal-close');
+            if (uploadModalClose) {
+                uploadModalClose.addEventListener('click', () => {
+                    uploadModal.classList.remove('active');
+                });
+            }
+            
+            // 背景クリックで閉じる
+            uploadModal.addEventListener('click', (e) => {
+                if (e.target === uploadModal) {
+                    uploadModal.classList.remove('active');
+                }
+            });
+            
+            // アップロードエリアのクリック
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('file-input');
+            if (uploadArea && fileInput) {
+                uploadArea.addEventListener('click', () => {
+                    fileInput.click();
+                });
+                
+                // ドラッグ&ドロップのサポート
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+                
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+                
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0 && files[0].type.startsWith('image/')) {
+                        const targetIndex = uploadArea.dataset.targetIndex;
+                        if (targetIndex !== undefined) {
+                            fileInput.files = files;
+                            handlePhotoFileSelect({ target: { files } }, parseInt(targetIndex));
+                        }
+                    }
+                });
+            }
         }
     }
     
@@ -667,6 +764,185 @@
         });
     }
     
+    // フォトグリッドの初期化
+    function initializePhotoGrid() {
+        const photoThemeGrid = document.getElementById('photo-theme-grid');
+        if (!photoThemeGrid) return;
+        
+        // 現在のグリッドサイズとセクションを使用
+        const size = state.gridSize;
+        const sections = state.gridSections;
+        
+        // グリッドスタイルの設定
+        photoThemeGrid.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+        photoThemeGrid.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+        
+        // 各セクションに対してフォトグリッドアイテムを作成
+        sections.forEach((section, index) => {
+            const photoItem = createPhotoGridItem(section, index);
+            photoThemeGrid.appendChild(photoItem);
+        });
+        
+        // 背景色を適用
+        const bgColor = document.getElementById('grid-bg-color').value;
+        photoThemeGrid.style.backgroundColor = bgColor;
+    }
+    
+    // フォトグリッドアイテムの作成
+    function createPhotoGridItem(section, index) {
+        const gridItem = document.createElement('div');
+        gridItem.className = 'photo-theme-item';
+        gridItem.dataset.index = index;
+        
+        // セクションコンテナ
+        const sectionContainer = document.createElement('div');
+        sectionContainer.className = 'shared-section-container';
+        
+        // タイトル表示
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'shared-section-title';
+        titleDiv.textContent = section.title || `テーマ ${index + 1}`;
+        
+        // 写真表示エリア
+        const photoArea = document.createElement('div');
+        photoArea.className = 'photo-display-area';
+        photoArea.dataset.index = index;
+        
+        // フリップカードの内部構造
+        const flipCardInner = document.createElement('div');
+        flipCardInner.className = 'flip-card-inner';
+        
+        // カードの表面（写真またはプラスアイコン）
+        const flipCardFront = document.createElement('div');
+        flipCardFront.className = 'flip-card-front';
+        
+        // プラスアイコン
+        const addPhotoIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        addPhotoIcon.className = 'add-photo-icon';
+        addPhotoIcon.setAttribute('viewBox', '0 0 24 24');
+        addPhotoIcon.setAttribute('fill', 'none');
+        addPhotoIcon.setAttribute('stroke', 'currentColor');
+        addPhotoIcon.setAttribute('stroke-width', '2');
+        addPhotoIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
+        
+        flipCardFront.appendChild(addPhotoIcon);
+        
+        // カードの裏面（テーマテキスト）
+        const flipCardBack = document.createElement('div');
+        flipCardBack.className = 'flip-card-back';
+        
+        const themeText = document.createElement('div');
+        themeText.className = 'theme-text';
+        themeText.textContent = section.title || `テーマ ${index + 1}`;
+        
+        flipCardBack.appendChild(themeText);
+        
+        // 要素の組み立て
+        flipCardInner.appendChild(flipCardFront);
+        flipCardInner.appendChild(flipCardBack);
+        photoArea.appendChild(flipCardInner);
+        
+        sectionContainer.appendChild(titleDiv);
+        sectionContainer.appendChild(photoArea);
+        gridItem.appendChild(sectionContainer);
+        
+        // クリックイベントの設定
+        photoArea.addEventListener('click', (e) => handlePhotoAreaClick(e, index));
+        
+        return gridItem;
+    }
+    
+    // 写真エリアのクリックハンドラー
+    function handlePhotoAreaClick(e, index) {
+        const photoArea = e.currentTarget;
+        
+        // 画像がアップロードされている場合はフリップ
+        if (state.uploadedImages && state.uploadedImages[index]) {
+            photoArea.classList.toggle('flipped');
+        } else {
+            // 画像がない場合はアップロードモーダルを開く
+            openPhotoUploadModal(index);
+        }
+    }
+    
+    // フォトアップロードモーダルを開く
+    function openPhotoUploadModal(index) {
+        const modal = document.getElementById('upload-modal');
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        
+        // 現在のインデックスを保存
+        uploadArea.dataset.targetIndex = index;
+        
+        // モーダルを表示
+        modal.classList.add('active');
+        
+        // ファイル選択イベント
+        fileInput.onchange = (e) => handlePhotoFileSelect(e, index);
+    }
+    
+    // フォトファイル選択処理
+    function handlePhotoFileSelect(e, index) {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                // uploadedImagesが未定義の場合は初期化
+                if (!state.uploadedImages) {
+                    state.uploadedImages = {};
+                }
+                
+                // 画像を保存
+                state.uploadedImages[index] = e.target.result;
+                
+                // 画像を表示
+                updatePhotoDisplay(index);
+                
+                // モーダルを閉じる
+                const modal = document.getElementById('upload-modal');
+                modal.classList.remove('active');
+                
+                showToast('画像をアップロードしました', 'success');
+                
+                // 画像を保存
+                autoSave();
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    // 写真表示を更新
+    function updatePhotoDisplay(index) {
+        const photoArea = document.querySelector(`.photo-display-area[data-index="${index}"]`);
+        const flipCardFront = photoArea.querySelector('.flip-card-front');
+        
+        // 既存のコンテンツをクリア
+        flipCardFront.innerHTML = '';
+        
+        // 画像を追加
+        const img = document.createElement('img');
+        img.className = 'uploaded-image';
+        img.src = state.uploadedImages[index];
+        img.alt = `アップロードされた画像 ${index + 1}`;
+        
+        flipCardFront.appendChild(img);
+        
+        // has-imageクラスを追加
+        photoArea.classList.add('has-image');
+    }
+    
+    // フォトグリッドの更新（グリッドサイズ変更時）
+    function updatePhotoGrid() {
+        const photoThemeGrid = document.getElementById('photo-theme-grid');
+        if (!photoThemeGrid) return;
+        
+        // グリッドをクリアして再初期化
+        photoThemeGrid.innerHTML = '';
+        initializePhotoGrid();
+    }
+
     // 初期化
     function init() {
         initializeGrid();
@@ -674,6 +950,7 @@
         loadSavedGrid();
         initializeThemeSuggestions();
         applyGridBackgroundColor();
+        initializePhotoGrid();
     }
     
     // DOMContentLoadedで初期化
