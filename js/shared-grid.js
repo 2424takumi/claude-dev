@@ -563,13 +563,33 @@
     
     // 実際のダウンロード処理
     function performDownload() {
-        html2canvas(elements.photoThemeGrid).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `gridme-${new Date().getTime()}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            showToast('ダウンロードを開始しました', 'success');
+        // グリッドに背景色を一時的に設定
+        const originalBg = elements.photoThemeGrid.style.backgroundColor;
+        elements.photoThemeGrid.style.backgroundColor = state.gridBgColor;
+        
+        html2canvas(elements.photoThemeGrid, {
+            backgroundColor: state.gridBgColor,
+            scale: 2 // 高解像度
+        }).then(canvas => {
+            // 元の背景色に戻す
+            elements.photoThemeGrid.style.backgroundColor = originalBg;
+            
+            // ブラウザのデフォルトダウンロードを使用（アルバム保存は自動的に処理される場合がある）
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `gridme-${new Date().getTime()}.png`;
+                link.href = url;
+                link.click();
+                
+                // リソースをクリーンアップ
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+                
+                showToast('ダウンロードを開始しました', 'success');
+            }, 'image/png');
         }).catch(err => {
+            // 元の背景色に戻す
+            elements.photoThemeGrid.style.backgroundColor = originalBg;
             console.error('ダウンロードエラー:', err);
             showToast('ダウンロードに失敗しました', 'error');
         });
