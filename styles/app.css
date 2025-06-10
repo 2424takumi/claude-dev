@@ -859,7 +859,7 @@ body {
     padding: var(--spacing-2) var(--spacing-3);
     font-size: var(--text-sm);
     transition: all var(--transition-base);
-    background: var(--neutral-200); /* Changed to match input styling */
+    background: var(--bg-primary); /* Changed to match surrounding white area */
     color: var(--text-primary);
     cursor: pointer;
 }
@@ -878,7 +878,7 @@ body {
     padding: var(--spacing-2) var(--spacing-3);
     font-size: var(--text-sm);
     transition: all var(--transition-base);
-    background: var(--neutral-200); /* Changed to match input styling */
+    background: var(--bg-primary); /* Changed to match surrounding white area */
     color: var(--text-primary);
     resize: vertical;
     min-height: 80px;
@@ -895,13 +895,13 @@ body {
 @media (prefers-color-scheme: dark) {
     .section-theme-select,
     .section-content-input {
-        background: var(--neutral-900); /* Closer to background */
-        border-color: var(--neutral-800);
+        background: var(--bg-primary); /* Match surrounding dark area */
+        border-color: var(--border-primary);
     }
     
     .section-theme-select:focus,
     .section-content-input:focus {
-        background: var(--neutral-800);
+        background: var(--bg-primary); /* Keep same background on focus */
         border-color: var(--primary-solid);
     }
 }
