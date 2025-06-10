@@ -1363,3 +1363,87 @@ body {
 .dark-theme .share-url-preview {
     border-color: var(--neutral-700);
 }
+
+/* ===== チームセクション ===== */
+.team-sections {
+    width: 100%;
+    max-width: 1200px;
+    margin: var(--spacing-8) auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-6);
+}
+
+.team-section {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-6);
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border-primary);
+    transition: all var(--transition-base);
+}
+
+.team-section:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.team-title {
+    font-size: var(--text-xl);
+    font-weight: var(--font-bold);
+    margin-bottom: var(--spacing-4);
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.team-members {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+}
+
+.team-member {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    padding: var(--spacing-2);
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+}
+
+.team-member:hover {
+    background: var(--bg-tertiary);
+}
+
+.member-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    background: var(--gradient-primary);
+    flex-shrink: 0;
+}
+
+.member-name {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+}
+
+/* チームセクションのレスポンシブ */
+@media (max-width: 968px) {
+    .team-sections {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-4);
+    }
+}
+
+@media (max-width: 768px) {
+    .team-section {
+        padding: var(--spacing-4);
+    }
+    
+    .team-title {
+        font-size: var(--text-lg);
+    }
+}
