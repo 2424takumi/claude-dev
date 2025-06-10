@@ -13,7 +13,8 @@ import { toast, modal, share, GridRenderer, StorageManager } from './utils/index
     const state = {
         gridSize: 2,
         gridSections: [],
-        uploadedImages: {}
+        uploadedImages: {},
+        gridBgColor: '#000000' // デフォルトは黒
     };
     
     // StorageManagerのインスタンスを作成
@@ -22,7 +23,8 @@ import { toast, modal, share, GridRenderer, StorageManager } from './utils/index
     // DOM要素
     const elements = {
         photoThemeGrid: document.getElementById('photo-theme-grid'),
-        downloadBtn: document.getElementById('download-grid-btn')
+        downloadBtn: document.getElementById('download-grid-btn'),
+        gridBgColorInput: document.getElementById('grid-bg-color')
     };
     
     // 共有データを保存する変数
@@ -139,11 +141,20 @@ import { toast, modal, share, GridRenderer, StorageManager } from './utils/index
         
         state.gridSize = sharedData.size || 2;
         state.gridSections = sharedData.sections || [];
+        state.gridBgColor = sharedData.bgColor || '#000000';
+        
+        // 背景色入力を更新
+        if (elements.gridBgColorInput) {
+            elements.gridBgColorInput.value = state.gridBgColor;
+        }
         
         // グリッドをレンダリング
         gridRenderer.setSize(state.gridSize);
         gridRenderer.render(state.gridSections);
         
+
+        // 背景色を適用
+        applyGridBackgroundColor();
         // 保存された画像を読み込み
         loadImagesFromStorage();
     }
@@ -328,7 +339,25 @@ import { toast, modal, share, GridRenderer, StorageManager } from './utils/index
             elements.downloadBtn.addEventListener('click', downloadGrid);
         }
         
+        // 背景色変更
+        if (elements.gridBgColorInput) {
+            elements.gridBgColorInput.addEventListener('input', handleBgColorChange);
+        }
+        
         setupDragAndDrop();
+    }
+    
+    // 背景色を適用
+    function applyGridBackgroundColor() {
+        if (elements.photoThemeGrid) {
+            elements.photoThemeGrid.style.backgroundColor = state.gridBgColor;
+        }
+    }
+    
+    // 背景色変更ハンドラー
+    function handleBgColorChange(e) {
+        state.gridBgColor = e.target.value;
+        applyGridBackgroundColor();
     }
     
     // 初期化
