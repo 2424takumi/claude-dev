@@ -35,46 +35,47 @@
 }
 
 /* ===== フォトテーマグリッド ===== */
-.photo-theme-grid {
+.theme-grid {
     display: grid;
-    grid-template-columns: repeat(var(--grid-size, 3), 1fr);
-    grid-template-rows: repeat(var(--grid-size, 3), 1fr);
     gap: var(--spacing-4);
-    max-width: 900px;
-    min-height: 600px; /* 最小高さを設定 */
-    margin: 0 auto var(--spacing-10);
+    aspect-ratio: 1;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
     background: var(--bg-secondary);
     padding: var(--spacing-6);
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
-    border: 2px solid var(--border-primary);
 }
 
-.photo-theme-item {
+/* グリッドアイテムスタイル（index.htmlと同じ） */
+.grid-theme-item {
     position: relative;
     background: var(--bg-primary);
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
-    min-height: 250px;
     display: flex;
-    flex-direction: column;
-    padding: var(--spacing-4);
-    aspect-ratio: 1;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-3);
+    min-height: 100px;
 }
 
-.photo-theme-item:hover {
-    transform: translateY(-4px);
+.grid-theme-item:hover {
+    transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
 
-/* 共有セクションコンテナ */
-.shared-section-container {
+/* グリッドセクションコンテナ */
+.grid-section-container {
     width: 100%;
     height: 100%;
     display: flex;
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
-    gap: var(--spacing-3);
+    position: relative;
 }
 
 /* 共有セクションタイトル */
@@ -198,31 +199,54 @@
 }
 
 /* テーマ別スタイル（共有ページ） */
-.photo-theme-item.theme-default {
+.grid-theme-item.theme-default {
     background-color: #fafafa;
 }
 
-.photo-theme-item.theme-warm {
+.grid-theme-item.theme-warm {
     background-color: #fff5f0;
 }
 
-.photo-theme-item.theme-cool {
+.grid-theme-item.theme-cool {
     background-color: #f0f5ff;
 }
 
-.photo-theme-item.theme-nature {
+.grid-theme-item.theme-nature {
     background-color: #f0fdf0;
 }
 
-.photo-theme-item.theme-elegant {
+.grid-theme-item.theme-elegant {
     background-color: #faf5ff;
 }
 
-.photo-theme-item.theme-modern {
+.grid-theme-item.theme-modern {
     background-color: #f5f5f5;
 }
 
 /* ダークモード対応 */
+.dark-theme .grid-theme-item.theme-default {
+    background-color: #1a1a1a;
+}
+
+.dark-theme .grid-theme-item.theme-warm {
+    background-color: #2d1810;
+}
+
+.dark-theme .grid-theme-item.theme-cool {
+    background-color: #101828;
+}
+
+.dark-theme .grid-theme-item.theme-nature {
+    background-color: #0a1f0a;
+}
+
+.dark-theme .grid-theme-item.theme-elegant {
+    background-color: #1f0a2d;
+}
+
+.dark-theme .grid-theme-item.theme-modern {
+    background-color: #0f0f0f;
+
 .dark-theme .photo-theme-item.theme-default {
     background-color: #2a2a2a;
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -271,23 +295,95 @@
     background: var(--bg-secondary);
 }
 
-/* ===== テーマラベル ===== */
-.theme-label {
+/* ===== グリッドテーマテキスト ===== */
+.grid-theme-text {
+    font-size: var(--text-base);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: var(--spacing-4);
+}
+
+/* ===== グリッドボタン ===== */
+.grid-add-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-tertiary);
+    transition: all var(--transition-base);
+    padding: var(--spacing-2);
+}
+
+.grid-add-button:hover {
+    color: var(--primary-solid);
+    transform: scale(1.1);
+}
+
+.grid-menu-button {
+    position: absolute;
+    top: var(--spacing-2);
+    right: var(--spacing-2);
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: var(--radius-full);
+    padding: var(--spacing-1);
+    cursor: pointer;
+    color: white;
+    transition: all var(--transition-base);
+    z-index: 10;
+}
+
+.grid-menu-button:hover {
+    background: rgba(0, 0, 0, 0.8);
+    transform: scale(1.1);
+}
+
+/* ===== アップロードされた画像 ===== */
+.uploaded-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-md);
     position: absolute;
     top: 0;
     left: 0;
-    right: 0;
+}
+
+/* ===== 編集メニューオプション ===== */
+.edit-menu-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+}
+
+.edit-menu-option {
     display: flex;
     align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.7);
-    color: white;
-    padding: var(--spacing-2) var(--spacing-3);
+    gap: var(--spacing-3);
+    width: 100%;
+    padding: var(--spacing-3) var(--spacing-4);
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--radius-md);
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
-    text-align: center;
-    z-index: 10;
-    backdrop-filter: blur(4px);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.edit-menu-option:hover {
+    background: var(--bg-tertiary);
+    border-color: var(--primary-solid);
+}
+
+.edit-menu-delete {
+    color: var(--error);
+}
+
+.edit-menu-delete:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: var(--error);
 }
 
 /* ===== 写真プレースホルダー ===== */
@@ -322,17 +418,10 @@
 
 /* ===== レスポンシブ ===== */
 @media (max-width: 768px) {
-    .photo-theme-grid {
-        grid-template-columns: repeat(min(var(--grid-size, 3), 2), 1fr);
-        grid-template-rows: auto;
-        gap: var(--spacing-3);
+    .theme-grid {
+        max-width: 90%;
         padding: var(--spacing-4);
-        max-width: 95%;
-    }
-    
-    .theme-label {
-        font-size: var(--text-xs);
-        padding: var(--spacing-1) var(--spacing-2);
+        gap: var(--spacing-3);
     }
     
     .shared-actions {
@@ -347,34 +436,16 @@
 }
 
 @media (max-width: 480px) {
-    .photo-theme-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(var(--grid-size, 3), minmax(200px, 1fr));
+    .theme-grid {
         gap: var(--spacing-2);
         padding: var(--spacing-3);
-        min-height: auto; /* モバイルでは自動高さ */
     }
     
-    .photo-placeholder svg {
-        width: 32px;
-        height: 32px;
+    .grid-theme-text {
+        font-size: var(--text-sm);
     }
     
-    .photo-placeholder span {
-        font-size: var(--text-xs);
-    }
-    
-    .add-photo-icon {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .theme-text {
-        font-size: var(--text-base);
-    }
-    
-    .photo-theme-item {
-        min-height: 200px;
-        aspect-ratio: 1; /* モバイルでも正方形を維持 */
+    .grid-theme-item {
+        min-height: 80px;
     }
 }
