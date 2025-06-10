@@ -779,14 +779,14 @@ body {
     font-size: var(--text-sm);
     font-weight: var(--font-normal);
     transition: all var(--transition-base);
-    background: rgba(0, 0, 0, 0.08); /* More gray/visible in light mode */
+    background: rgba(0, 0, 0, 0.03); /* Lighter gray background */
     color: var(--text-secondary);
 }
 
 .section-title-input:focus {
     outline: none;
     box-shadow: none;
-    background: rgba(0, 0, 0, 0.12); /* Darker on focus */
+    background: rgba(0, 0, 0, 0.05); /* Slightly darker on focus */
 }
 
 /* セクションテーマ選択 */
@@ -999,12 +999,12 @@ body {
     }
     
     .section-title-input {
-        background: rgba(255, 255, 255, 0.03); /* Much closer to background, less prominent */
+        background: rgba(255, 255, 255, 0.02); /* Even lighter in dark mode */
         color: var(--text-secondary);
     }
     
     .section-title-input:focus {
-        background: rgba(255, 255, 255, 0.05); /* Subtle increase on focus */
+        background: rgba(255, 255, 255, 0.04); /* Very subtle increase on focus */
     }
     
 }
