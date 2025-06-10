@@ -40,8 +40,10 @@
         }
         
         try {
-            const decodedData = decodeURIComponent(escape(atob(encodedData)));
-            return JSON.parse(decodedData);
+            // photo-grid.jsでのエンコード: btoa(unescape(encodeURIComponent(JSON.stringify(shareData))))
+            // 対応するデコード: JSON.parse(decodeURIComponent(escape(atob(encodedData))))
+            const decodedString = decodeURIComponent(escape(atob(encodedData)));
+            return JSON.parse(decodedString);
         } catch (err) {
             console.error('データのデコードエラー:', err);
             showToast('共有データの読み込みに失敗しました', 'error');
