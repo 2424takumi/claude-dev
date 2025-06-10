@@ -44,8 +44,7 @@
         shareFacebookBtn: document.getElementById('share-facebook-btn'),
         shareLineBtn: document.getElementById('share-line-btn'),
         shareInstagramBtn: document.getElementById('share-instagram-btn'),
-        shareUrlInput: document.getElementById('share-url-input'),
-        photoThemeGrid: document.getElementById('photo-theme-grid')
+        shareUrlInput: document.getElementById('share-url-input')
     };
     
     // グリッドセクションクラス
@@ -309,7 +308,7 @@
     
     // Instagram Stories用の画像を作成
     function createInstagramStoriesImage() {
-        const gridContainer = elements.photoThemeGrid;
+        const gridContainer = elements.themeGrid;
         
         // Create a temporary container for Instagram Stories format (9:16 aspect ratio)
         const tempContainer = document.createElement('div');
