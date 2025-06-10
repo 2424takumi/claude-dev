@@ -239,7 +239,7 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         if (elements.shareTwitterBtn) {
             elements.shareTwitterBtn.addEventListener('click', () => {
                 const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
-                share.shareOnTwitter(shareUrl, 'GridMeで作成したテーマグリッドを共有します！', ['GridMe']);
+                share.shareOnTwitter(shareUrl, 'GridMe!!私ってどんな感じ？', ['GridMe']);
             });
         }
         
@@ -253,7 +253,7 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         if (elements.shareLineBtn) {
             elements.shareLineBtn.addEventListener('click', () => {
                 const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
-                share.shareOnLine(shareUrl, 'GridMeで作成したテーマグリッドを見てください！');
+                share.shareOnLine(shareUrl, 'GridMe!!私ってどんな感じ？');
             });
         }
     }
