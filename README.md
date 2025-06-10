@@ -254,10 +254,6 @@ git push origin feature/your-feature-name
 - Edge (最新)
 - モバイルブラウザ (iOS Safari, Chrome for Android)
 
-## 👥 チーム
-
-- **開発者**: [@2424takumi](https://github.com/2424takumi)
-- **デザインシステム**: GridMe Design Team
 
 ## 📞 お問い合わせ
 
