@@ -87,30 +87,22 @@
     // グリッドアイテムの作成
     function createGridItem(section, index) {
         const gridItem = document.createElement('div');
-        gridItem.className = 'photo-theme-item';
+        gridItem.className = 'grid-theme-item';
         gridItem.dataset.index = index;
         
         // セクションコンテナ
         const sectionContainer = document.createElement('div');
-        sectionContainer.className = 'shared-section-container';
-        
-        // タイトル表示
-        const titleDiv = document.createElement('div');
-        titleDiv.className = 'shared-section-title';
-        titleDiv.textContent = section.title || `テーマ ${index + 1}`;
+        sectionContainer.className = 'grid-section-container';
         
         // 写真表示エリア
         const photoArea = document.createElement('div');
         photoArea.className = 'photo-display-area';
         photoArea.dataset.index = index;
         
-        // フリップカードの内部構造
-        const flipCardInner = document.createElement('div');
-        flipCardInner.className = 'flip-card-inner';
-        
-        // カードの表面（写真またはプラスアイコン）
-        const flipCardFront = document.createElement('div');
-        flipCardFront.className = 'flip-card-front';
+        // テーマテキスト
+        const themeText = document.createElement('div');
+        themeText.className = 'grid-theme-text';
+        themeText.textContent = section.title || `テーマ ${index + 1}`;
         
         // プラスアイコン
         const addPhotoIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -121,24 +113,9 @@
         addPhotoIcon.setAttribute('stroke-width', '2');
         addPhotoIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
         
-        flipCardFront.appendChild(addPhotoIcon);
+        photoArea.appendChild(addPhotoIcon);
         
-        // カードの裏面（テーマテキスト）
-        const flipCardBack = document.createElement('div');
-        flipCardBack.className = 'flip-card-back';
-        
-        const themeText = document.createElement('div');
-        themeText.className = 'theme-text';
-        themeText.textContent = section.title || `テーマ ${index + 1}`;
-        
-        flipCardBack.appendChild(themeText);
-        
-        // 要素の組み立て
-        flipCardInner.appendChild(flipCardFront);
-        flipCardInner.appendChild(flipCardBack);
-        photoArea.appendChild(flipCardInner);
-        
-        sectionContainer.appendChild(titleDiv);
+        sectionContainer.appendChild(themeText);
         sectionContainer.appendChild(photoArea);
         gridItem.appendChild(sectionContainer);
         
@@ -163,13 +140,8 @@
     
     // 写真エリアのクリックハンドラー
     function handlePhotoAreaClick(e, index) {
-        const photoArea = e.currentTarget;
-        
-        // 画像がアップロードされている場合はフリップ
-        if (state.uploadedImages[index]) {
-            photoArea.classList.toggle('flipped');
-        } else {
-            // 画像がない場合はアップロードモーダルを開く
+        // 画像がアップロードされていない場合のみモーダルを開く
+        if (!state.uploadedImages[index]) {
             openUploadModal(index);
         }
     }
@@ -216,10 +188,10 @@
     // 写真表示を更新
     function updatePhotoDisplay(index) {
         const photoArea = document.querySelector(`.photo-display-area[data-index="${index}"]`);
-        const flipCardFront = photoArea.querySelector('.flip-card-front');
+        const gridItem = photoArea.closest('.grid-theme-item');
         
         // 既存のコンテンツをクリア
-        flipCardFront.innerHTML = '';
+        photoArea.innerHTML = '';
         
         // 画像を追加
         const img = document.createElement('img');
@@ -227,10 +199,121 @@
         img.src = state.uploadedImages[index];
         img.alt = `アップロードされた画像 ${index + 1}`;
         
-        flipCardFront.appendChild(img);
+        photoArea.appendChild(img);
         
         // has-imageクラスを追加
         photoArea.classList.add('has-image');
+        gridItem.classList.add('has-image');
+        
+        // メニューボタンを追加
+        const menuButton = document.createElement('button');
+        menuButton.className = 'grid-menu-button';
+        menuButton.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="5" r="1"/>
+                <circle cx="12" cy="12" r="1"/>
+                <circle cx="12" cy="19" r="1"/>
+            </svg>
+        `;
+        menuButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showPhotoMenu(index);
+        });
+        
+        photoArea.appendChild(menuButton);
+    }
+    
+    // 写真メニューを表示
+    function showPhotoMenu(index) {
+        // 既存のメニューを削除
+        const existingMenu = document.getElementById('photo-menu-modal');
+        if (existingMenu) {
+            existingMenu.remove();
+        }
+        
+        // メニューモーダルを作成
+        const menuModal = document.createElement('div');
+        menuModal.id = 'photo-menu-modal';
+        menuModal.className = 'app-modal active';
+        menuModal.innerHTML = `
+            <div class="app-modal-content card-glass" style="max-width: 300px;">
+                <div class="app-modal-header">
+                    <h3>写真の編集</h3>
+                    <button class="btn-icon app-modal-close" aria-label="閉じる">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+                <div class="app-modal-body">
+                    <div class="edit-menu-options">
+                        <button class="edit-menu-option" data-action="change">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                            </svg>
+                            <span>写真を変更</span>
+                        </button>
+                        <button class="edit-menu-option edit-menu-delete" data-action="delete">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"/>
+                                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                            </svg>
+                            <span>写真を削除</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(menuModal);
+        
+        // イベントリスナーを設定
+        const closeBtn = menuModal.querySelector('.app-modal-close');
+        closeBtn.addEventListener('click', () => menuModal.remove());
+        
+        menuModal.addEventListener('click', (e) => {
+            if (e.target === menuModal) {
+                menuModal.remove();
+            }
+        });
+        
+        // メニューアクション
+        menuModal.querySelector('[data-action="change"]').addEventListener('click', () => {
+            menuModal.remove();
+            openUploadModal(index);
+        });
+        
+        menuModal.querySelector('[data-action="delete"]').addEventListener('click', () => {
+            delete state.uploadedImages[index];
+            resetPhotoDisplay(index);
+            menuModal.remove();
+            showToast('写真を削除しました', 'success');
+        });
+    }
+    
+    // 写真表示をリセット
+    function resetPhotoDisplay(index) {
+        const photoArea = document.querySelector(`.photo-display-area[data-index="${index}"]`);
+        const gridItem = photoArea.closest('.grid-theme-item');
+        
+        // クラスを削除
+        photoArea.classList.remove('has-image');
+        gridItem.classList.remove('has-image');
+        
+        // コンテンツをリセット
+        photoArea.innerHTML = '';
+        
+        // プラスアイコンを再追加
+        const addPhotoIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        addPhotoIcon.setAttribute('class', 'add-photo-icon');
+        addPhotoIcon.setAttribute('viewBox', '0 0 24 24');
+        addPhotoIcon.setAttribute('fill', 'none');
+        addPhotoIcon.setAttribute('stroke', 'currentColor');
+        addPhotoIcon.setAttribute('stroke-width', '2');
+        addPhotoIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
+        
+        photoArea.appendChild(addPhotoIcon);
     }
     
     // アップロードモーダルを閉じる
@@ -469,8 +552,8 @@
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 
-                reader.onload = (e) => {
-                    state.uploadedImages[index] = e.target.result;
+                reader.onload = (evt) => {
+                    state.uploadedImages[index] = evt.target.result;
                     updatePhotoDisplay(index);
                     closeUploadModal();
                     showToast('画像をアップロードしました', 'success');
