@@ -255,7 +255,7 @@
                 return String.fromCharCode('0x' + p1);
             });
         const encodedData = btoa(utf8Bytes);
-        return `${window.location.origin}${window.location.pathname.replace('index.html', '')}shared.html?data=${encodedData}`;
+        return `${window.location.origin}${window.location.pathname.replace('index.html', '')}shared.html?data=${encodeURIComponent(encodedData)}`;
     }
     
     // モーダルを表示

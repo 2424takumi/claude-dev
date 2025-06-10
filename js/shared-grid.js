@@ -40,8 +40,10 @@
         }
         
         try {
+            // URLパラメータは自動的にデコードされるが、念のため再度デコード
+            const decodedUrlData = decodeURIComponent(encodedData);
             // Base64デコード後、UTF-8として解釈
-            const decodedBase64 = atob(encodedData);
+            const decodedBase64 = atob(decodedUrlData);
             // UTF-8バイト列を文字列に変換
             const decodedString = decodeURIComponent(decodedBase64.split('').map(function(c) {
                 return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
