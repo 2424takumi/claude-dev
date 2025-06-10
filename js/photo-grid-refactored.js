@@ -15,7 +15,7 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         gridSections: [],
         saveTimeout: null,
         currentFocusedInput: null,
-        gridBgColor: '#000000' // デフォルトは黒
+        gridBgColor: '#FF8B25' // デフォルトは黒
     };
     
     // テーマサジェスチョンのリスト
@@ -283,7 +283,7 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         
         if (savedData) {
             state.gridSize = savedData.size || 3;
-            state.gridBgColor = savedData.bgColor || '#000000';
+            state.gridBgColor = savedData.bgColor || '#FF8B25';
             
             // グリッドサイズセレクトを更新
             if (elements.gridSizeSelect) {

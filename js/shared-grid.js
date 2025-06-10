@@ -12,7 +12,7 @@
         gridSize: 2,
         gridSections: [],
         uploadedImages: {}, // インデックスをキーとして画像を保存
-        gridBgColor: '#000000' // グリッド背景色のデフォルト値
+        gridBgColor: '#FF8B25' // グリッド背景色のデフォルト値
     };
     
     // DOM要素
@@ -53,7 +53,7 @@
         
         state.gridSize = sharedData.size || 2;
         state.gridSections = sharedData.sections || [];
-        state.gridBgColor = sharedData.bgColor || '#000000';
+        state.gridBgColor = sharedData.bgColor || '#FF8B25';
         
         // グリッドHTMLの生成
         elements.photoThemeGrid.innerHTML = '';
