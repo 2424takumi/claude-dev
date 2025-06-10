@@ -10,13 +10,13 @@
 
 .shared-title {
     font-size: var(--text-3xl);
-    margin-bottom: var(--spacing-4);
+    margin-bottom: 18px;
 }
 
 .shared-subtitle {
     font-size: var(--text-lg);
     color: var(--text-secondary);
-    margin-bottom: 0;
+    margin-bottom: var(--spacing-2);
 }
 
 /* ===== 共有ページの背景色セレクター ===== */
