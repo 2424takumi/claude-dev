@@ -70,6 +70,19 @@
         state.gridSections = sharedData.sections || [];
         state.gridBgColor = sharedData.bgColor || '#FF8B25';
         
+        // ニックネームがある場合はタイトルとサブタイトルを更新
+        if (sharedData.nickname) {
+            const titleElement = document.querySelector('.shared-title');
+            const subtitleElement = document.querySelector('.shared-subtitle');
+            
+            if (titleElement) {
+                titleElement.textContent = `${sharedData.nickname} をGridしましょう`;
+            }
+            if (subtitleElement) {
+                subtitleElement.textContent = `${sharedData.nickname}にあった画像を追加してね`;
+            }
+        }
+        
         // グリッドHTMLの生成
         elements.photoThemeGrid.innerHTML = '';
         elements.photoThemeGrid.style.gridTemplateColumns = `repeat(${state.gridSize}, 1fr)`;

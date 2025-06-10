@@ -134,6 +134,19 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         state.gridSections = sharedData.sections || [];
         state.gridBgColor = sharedData.bgColor || '#FF8B25';
         
+        // ニックネームがある場合はタイトルとサブタイトルを更新
+        if (sharedData.nickname) {
+            const titleElement = document.querySelector('.shared-title');
+            const subtitleElement = document.querySelector('.shared-subtitle');
+            
+            if (titleElement) {
+                titleElement.textContent = `${sharedData.nickname} をGridしましょう`;
+            }
+            if (subtitleElement) {
+                subtitleElement.textContent = `${sharedData.nickname}にあった画像を追加してね`;
+            }
+        }
+        
         // 背景色入力を更新
         if (elements.gridBgColorInput) {
             elements.gridBgColorInput.value = state.gridBgColor;
