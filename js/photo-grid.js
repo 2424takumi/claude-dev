@@ -192,10 +192,21 @@
         
         // 確認ダイアログ
         if (state.gridSections.some(section => section.title)) {
-            if (!confirm('グリッドサイズを変更すると、現在の内容が失われます。続行しますか？')) {
-                e.target.value = state.gridSize;
-                return;
-            }
+            // 元の値を保存
+            const originalSize = state.gridSize;
+            
+            // カスタム確認モーダルを表示
+            showGridSizeConfirmModal(() => {
+                // 確認された場合
+                state.gridSize = newSize;
+                initializeGrid();
+                showToast(`グリッドサイズを${newSize}x${newSize}に変更しました`, 'success');
+            }, () => {
+                // キャンセルされた場合
+                e.target.value = originalSize;
+            });
+            
+            return;
         }
         
         state.gridSize = newSize;
@@ -552,6 +563,73 @@
                     track.appendChild(chip);
                 });
             }
+        });
+    }
+    
+    // グリッドサイズ変更確認モーダルを表示
+    function showGridSizeConfirmModal(onConfirm, onCancel) {
+        // モーダルHTMLを作成
+        const modalHtml = `
+            <div id="grid-size-confirm-modal" class="app-modal">
+                <div class="app-modal-content">
+                    <div class="app-modal-header">
+                        <h3 class="app-modal-title">確認</h3>
+                        <button class="app-modal-close">×</button>
+                    </div>
+                    <div class="app-modal-body">
+                        <p>グリッドサイズを変更すると、現在の内容が失われます。続行しますか？</p>
+                    </div>
+                    <div class="app-modal-footer">
+                        <button class="btn btn-secondary" data-action="cancel">キャンセル</button>
+                        <button class="btn btn-primary" data-action="confirm">変更する</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // 一時的なモーダルを作成
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = modalHtml;
+        const modal = tempDiv.firstElementChild;
+        document.body.appendChild(modal);
+        
+        // モーダルを表示
+        setTimeout(() => {
+            modal.classList.add('active');
+        }, 10);
+        
+        // モーダルを閉じる関数
+        const closeModal = () => {
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
+        };
+        
+        // 閉じるボタン
+        modal.querySelector('.app-modal-close').addEventListener('click', () => {
+            closeModal();
+            if (onCancel) onCancel();
+        });
+        
+        // 背景クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+                if (onCancel) onCancel();
+            }
+        });
+        
+        // キャンセルボタン
+        modal.querySelector('[data-action="cancel"]').addEventListener('click', () => {
+            closeModal();
+            if (onCancel) onCancel();
+        });
+        
+        // 確認ボタン
+        modal.querySelector('[data-action="confirm"]').addEventListener('click', () => {
+            closeModal();
+            if (onConfirm) onConfirm();
         });
     }
     
