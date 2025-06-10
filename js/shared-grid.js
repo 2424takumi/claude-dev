@@ -95,6 +95,14 @@
         gridItem.className = 'grid-theme-item';
         gridItem.dataset.index = index;
         
+        // テーマテキストを追加
+        if (section.title) {
+            const themeText = document.createElement('div');
+            themeText.className = 'theme-text';
+            themeText.textContent = section.title;
+            gridItem.appendChild(themeText);
+        }
+        
         // セクションコンテナ
         const sectionContainer = document.createElement('div');
         sectionContainer.className = 'grid-section-container';
@@ -204,6 +212,12 @@
         photoArea.classList.add('has-image');
         gridItem.classList.add('has-image');
         
+        // 画像がある場合はテーマテキストを非表示
+        const themeText = gridItem.querySelector('.theme-text');
+        if (themeText) {
+            themeText.style.display = 'none';
+        }
+        
         // メニューボタンを追加（透明な背景のオーバーレイ）
         const menuButton = document.createElement('button');
         menuButton.className = 'grid-menu-button grid-menu-overlay';
@@ -299,6 +313,18 @@
         // クラスを削除
         photoArea.classList.remove('has-image');
         gridItem.classList.remove('has-image');
+        
+        // テーマテキストを再表示
+        const themeText = gridItem.querySelector('.theme-text');
+        if (themeText) {
+            themeText.style.display = '';
+        }
+        
+        // メニューボタンを削除
+        const menuButton = gridItem.querySelector('.grid-menu-button');
+        if (menuButton) {
+            menuButton.remove();
+        }
         
         // コンテンツをリセット
         photoArea.innerHTML = '';
