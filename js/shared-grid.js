@@ -99,11 +99,6 @@
         photoArea.className = 'photo-display-area';
         photoArea.dataset.index = index;
         
-        // テーマテキスト
-        const themeText = document.createElement('div');
-        themeText.className = 'grid-theme-text';
-        themeText.textContent = section.title || `テーマ ${index + 1}`;
-        
         // プラスアイコン
         const addPhotoIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         addPhotoIcon.setAttribute('class', 'add-photo-icon');
@@ -115,7 +110,6 @@
         
         photoArea.appendChild(addPhotoIcon);
         
-        sectionContainer.appendChild(themeText);
         sectionContainer.appendChild(photoArea);
         gridItem.appendChild(sectionContainer);
         
@@ -205,9 +199,9 @@
         photoArea.classList.add('has-image');
         gridItem.classList.add('has-image');
         
-        // メニューボタンを追加
+        // メニューボタンを追加（透明な背景のオーバーレイ）
         const menuButton = document.createElement('button');
-        menuButton.className = 'grid-menu-button';
+        menuButton.className = 'grid-menu-button grid-menu-overlay';
         menuButton.innerHTML = `
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="5" r="1"/>
@@ -220,7 +214,7 @@
             showPhotoMenu(index);
         });
         
-        photoArea.appendChild(menuButton);
+        gridItem.appendChild(menuButton);
     }
     
     // 写真メニューを表示
