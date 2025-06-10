@@ -114,6 +114,55 @@ export class ThemeManager {
                 background: rgba(255, 255, 255, 0.05);
                 border: 1px solid rgba(255, 255, 255, 0.1);
             }
+            
+            /* テーマ別スタイル（ダークモード） */
+            .dark-theme .grid-theme-item.theme-default {
+                background-color: #1a1a1a;
+            }
+            
+            .dark-theme .grid-theme-item.theme-warm {
+                background-color: #2d1810;
+            }
+            
+            .dark-theme .grid-theme-item.theme-cool {
+                background-color: #101828;
+            }
+            
+            .dark-theme .grid-theme-item.theme-nature {
+                background-color: #0a1f0a;
+            }
+            
+            .dark-theme .grid-theme-item.theme-elegant {
+                background-color: #1f0a2d;
+            }
+            
+            .dark-theme .grid-theme-item.theme-modern {
+                background-color: #0f0f0f;
+            }
+            
+            .dark-theme .photo-theme-item.theme-default {
+                background-color: #1a1a1a;
+            }
+            
+            .dark-theme .photo-theme-item.theme-warm {
+                background-color: #2d1810;
+            }
+            
+            .dark-theme .photo-theme-item.theme-cool {
+                background-color: #101828;
+            }
+            
+            .dark-theme .photo-theme-item.theme-nature {
+                background-color: #0a1f0a;
+            }
+            
+            .dark-theme .photo-theme-item.theme-elegant {
+                background-color: #1f0a2d;
+            }
+            
+            .dark-theme .photo-theme-item.theme-modern {
+                background-color: #0f0f0f;
+            }
         `;
         document.head.appendChild(style);
     }

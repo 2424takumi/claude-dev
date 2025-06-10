@@ -197,48 +197,46 @@
 }
 
 /* ダークモード対応 */
-@media (prefers-color-scheme: dark) {
-    .photo-theme-item.theme-default {
-        background-color: #1a1a1a;
-    }
-    
-    .photo-theme-item.theme-warm {
-        background-color: #2d1810;
-    }
-    
-    .photo-theme-item.theme-cool {
-        background-color: #101828;
-    }
-    
-    .photo-theme-item.theme-nature {
-        background-color: #0a1f0a;
-    }
-    
-    .photo-theme-item.theme-elegant {
-        background-color: #1f0a2d;
-    }
-    
-    .photo-theme-item.theme-modern {
-        background-color: #0f0f0f;
-    }
-    
-    .photo-theme-grid {
-        border-color: var(--border-primary);
-    }
-    
-    .photo-display-area {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.2);
-    }
-    
-    .photo-display-area:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.3);
-    }
-    
-    .flip-card-back {
-        background: var(--bg-secondary);
-    }
+.dark-theme .photo-theme-item.theme-default {
+    background-color: #1a1a1a;
+}
+
+.dark-theme .photo-theme-item.theme-warm {
+    background-color: #2d1810;
+}
+
+.dark-theme .photo-theme-item.theme-cool {
+    background-color: #101828;
+}
+
+.dark-theme .photo-theme-item.theme-nature {
+    background-color: #0a1f0a;
+}
+
+.dark-theme .photo-theme-item.theme-elegant {
+    background-color: #1f0a2d;
+}
+
+.dark-theme .photo-theme-item.theme-modern {
+    background-color: #0f0f0f;
+}
+
+.dark-theme .photo-theme-grid {
+    border-color: var(--border-primary);
+}
+
+.dark-theme .photo-display-area {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.dark-theme .photo-display-area:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.dark-theme .flip-card-back {
+    background: var(--bg-secondary);
 }
 
 /* ===== テーマラベル ===== */
