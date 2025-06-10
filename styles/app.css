@@ -556,7 +556,7 @@ body {
     background: rgba(255, 255, 255, 0.9);
     backdrop-filter: blur(10px);
     padding: var(--spacing-4) 0;
-    margin-bottom: 28px;
+    margin-bottom: 18px;
 }
 
 /* ダークモード時のヘッダー背景を黒に */
@@ -702,7 +702,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: calc(100vh - 200px);
-    padding: var(--spacing-4) 0;
+    padding: 0 0 var(--spacing-4) 0;
 }
 
 /* ===== グリッドコントロール ===== */
@@ -859,7 +859,7 @@ body {
     padding: var(--spacing-2) var(--spacing-3);
     font-size: var(--text-sm);
     transition: all var(--transition-base);
-    background: var(--neutral-200); /* Changed to match input styling */
+    background: var(--bg-primary); /* Changed to match surrounding white area */
     color: var(--text-primary);
     cursor: pointer;
 }
@@ -878,7 +878,7 @@ body {
     padding: var(--spacing-2) var(--spacing-3);
     font-size: var(--text-sm);
     transition: all var(--transition-base);
-    background: var(--neutral-200); /* Changed to match input styling */
+    background: var(--bg-primary); /* Changed to match surrounding white area */
     color: var(--text-primary);
     resize: vertical;
     min-height: 80px;
@@ -895,13 +895,13 @@ body {
 @media (prefers-color-scheme: dark) {
     .section-theme-select,
     .section-content-input {
-        background: var(--neutral-900); /* Closer to background */
-        border-color: var(--neutral-800);
+        background: var(--bg-primary); /* Match surrounding dark area */
+        border-color: var(--border-primary);
     }
     
     .section-theme-select:focus,
     .section-content-input:focus {
-        background: var(--neutral-800);
+        background: var(--bg-primary); /* Keep same background on focus */
         border-color: var(--primary-solid);
     }
 }
@@ -1025,17 +1025,38 @@ body {
 .chip-color-9 { background: #EC4899 !important; }
 .chip-color-10 { background: #10B981 !important; }
 
+/* Dark mode adjustments for better visibility */
+.dark-theme .chip-color-1 { background: #7c8ff0 !important; }
+.dark-theme .chip-color-2 { background: #f2a1fc !important; }
+.dark-theme .chip-color-3 { background: #5fb8ff !important; }
+.dark-theme .chip-color-4 { background: #51f088 !important; }
+.dark-theme .chip-color-5 { background: #fb7ea8 !important; }
+.dark-theme .chip-color-6 { background: #3edede !important; }
+.dark-theme .chip-color-7 { background: #ff9d42 !important; }
+.dark-theme .chip-color-8 { background: #17c7e5 !important; }
+.dark-theme .chip-color-9 { background: #ef59a8 !important; }
+.dark-theme .chip-color-10 { background: #1ecd8f !important; }
+
+/* Ensure text contrast in dark mode */
+.dark-theme .theme-chip {
+    color: rgba(0, 0, 0, 0.9);
+    font-weight: var(--font-semibold);
+}
+
 /* ダークモード対応 */
 .dark-theme .grid-theme-item.theme-default {
-    background-color: #1a1a1a;
+    background-color: #2a2a2a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dark-theme .grid-theme-item.theme-warm {
-    background-color: #2d1810;
+    background-color: #3d2820;
+    border: 1px solid rgba(255, 139, 37, 0.2);
 }
 
 .dark-theme .grid-theme-item.theme-cool {
-    background-color: #101828;
+    background-color: #202838;
+    border: 1px solid rgba(6, 182, 212, 0.2);
 }
 
 .dark-theme .theme-chip {
@@ -1047,15 +1068,18 @@ body {
 }
 
 .dark-theme .grid-theme-item.theme-nature {
-    background-color: #0a1f0a;
+    background-color: #1a2f1a;
+    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .dark-theme .grid-theme-item.theme-elegant {
-    background-color: #1f0a2d;
+    background-color: #2f1a3d;
+    border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .dark-theme .grid-theme-item.theme-modern {
-    background-color: #0f0f0f;
+    background-color: #1f1f1f;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dark-theme .theme-grid {
@@ -1063,12 +1087,14 @@ body {
 }
 
 .dark-theme .section-title-input {
-    background: rgba(255, 255, 255, 0.02); /* Even lighter in dark mode */
-    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.08); /* More visible in dark mode */
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dark-theme .section-title-input:focus {
-    background: rgba(255, 255, 255, 0.04); /* Very subtle increase on focus */
+    background: rgba(255, 255, 255, 0.12); /* More noticeable on focus */
+    border-color: rgba(255, 139, 37, 0.3);
 }
 
 /* ===== アクションセクション ===== */
@@ -1156,6 +1182,13 @@ body {
 
 .app-modal-body {
     padding: var(--spacing-6);
+}
+
+.app-modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: 0 var(--spacing-6) var(--spacing-6) var(--spacing-6);
 }
 
 .upload-area {
