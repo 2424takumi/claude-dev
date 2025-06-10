@@ -117,51 +117,63 @@ export class ThemeManager {
             
             /* テーマ別スタイル（ダークモード） */
             .dark-theme .grid-theme-item.theme-default {
-                background-color: #1a1a1a;
+                background-color: #2a2a2a;
+                border: 1px solid rgba(255, 255, 255, 0.1);
             }
             
             .dark-theme .grid-theme-item.theme-warm {
-                background-color: #2d1810;
+                background-color: #3d2820;
+                border: 1px solid rgba(255, 139, 37, 0.2);
             }
             
             .dark-theme .grid-theme-item.theme-cool {
-                background-color: #101828;
+                background-color: #202838;
+                border: 1px solid rgba(6, 182, 212, 0.2);
             }
             
             .dark-theme .grid-theme-item.theme-nature {
-                background-color: #0a1f0a;
+                background-color: #1a2f1a;
+                border: 1px solid rgba(16, 185, 129, 0.2);
             }
             
             .dark-theme .grid-theme-item.theme-elegant {
-                background-color: #1f0a2d;
+                background-color: #2f1a3d;
+                border: 1px solid rgba(139, 92, 246, 0.2);
             }
             
             .dark-theme .grid-theme-item.theme-modern {
-                background-color: #0f0f0f;
+                background-color: #1f1f1f;
+                border: 1px solid rgba(255, 255, 255, 0.1);
             }
             
             .dark-theme .photo-theme-item.theme-default {
-                background-color: #1a1a1a;
+                background-color: #2a2a2a;
+                border: 1px solid rgba(255, 255, 255, 0.1);
             }
             
             .dark-theme .photo-theme-item.theme-warm {
-                background-color: #2d1810;
+                background-color: #3d2820;
+                border: 1px solid rgba(255, 139, 37, 0.2);
             }
             
             .dark-theme .photo-theme-item.theme-cool {
-                background-color: #101828;
+                background-color: #202838;
+                border: 1px solid rgba(6, 182, 212, 0.2);
             }
             
             .dark-theme .photo-theme-item.theme-nature {
-                background-color: #0a1f0a;
+                background-color: #1a2f1a;
+                border: 1px solid rgba(16, 185, 129, 0.2);
             }
             
             .dark-theme .photo-theme-item.theme-elegant {
-                background-color: #1f0a2d;
+                background-color: #2f1a3d;
+                border: 1px solid rgba(139, 92, 246, 0.2);
             }
             
             .dark-theme .photo-theme-item.theme-modern {
-                background-color: #0f0f0f;
+                background-color: #1f1f1f;
+                border: 1px solid rgba(255, 255, 255, 0.1);
             }
         `;
         document.head.appendChild(style);
