@@ -726,10 +726,13 @@ body {
 .grid-size-selector label {
     font-weight: var(--font-medium);
     color: var(--text-secondary);
+    line-height: 40px;
 }
 
 .grid-size-selector select {
     min-width: 120px;
+    height: 40px;
+    padding: 0 var(--spacing-3);
 }
 
 /* ===== グリッド背景色セレクター ===== */
@@ -743,6 +746,7 @@ body {
 .grid-bg-color-selector label {
     font-weight: var(--font-medium);
     color: var(--text-secondary);
+    line-height: 40px;
 }
 
 .color-input {
