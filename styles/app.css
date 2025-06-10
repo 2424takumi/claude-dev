@@ -65,7 +65,7 @@ body {
     right: 0;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--border-primary);
+    border-bottom: none;
     z-index: var(--z-sticky);
     transition: all var(--transition-base);
 }
@@ -254,7 +254,7 @@ body {
     display: flex;
     gap: var(--spacing-2);
     margin-bottom: var(--spacing-6);
-    border-bottom: 2px solid var(--border-primary);
+    border-bottom: none;
 }
 
 .demo-tab {
@@ -1133,7 +1133,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: var(--spacing-6);
-    border-bottom: 1px solid var(--border-primary);
+    border-bottom: none;
 }
 
 .app-modal-header h3 {
