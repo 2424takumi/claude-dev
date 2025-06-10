@@ -313,7 +313,7 @@
     // Twitterで共有
     function shareOnTwitter() {
         const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
-        const text = encodeURIComponent('GridMeで作成したテーマグリッドを共有します！');
+        const text = encodeURIComponent('GridMe!!私ってどんな感じ？');
         const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}`;
         window.open(twitterUrl, '_blank', 'width=600,height=400');
     }
@@ -328,7 +328,7 @@
     // LINEで共有
     function shareOnLine() {
         const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
-        const text = encodeURIComponent('GridMeで作成したテーマグリッドを見てください！');
+        const text = encodeURIComponent('GridMe!!私ってどんな感じ？');
         const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${text}`;
         window.open(lineUrl, '_blank', 'width=600,height=400');
     }
