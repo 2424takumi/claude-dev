@@ -43,7 +43,6 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         shareModal: document.getElementById('share-modal'),
         copyUrlBtn: document.getElementById('copy-url-btn'),
         shareTwitterBtn: document.getElementById('share-twitter-btn'),
-        shareFacebookBtn: document.getElementById('share-facebook-btn'),
         shareLineBtn: document.getElementById('share-line-btn'),
         shareUrlInput: document.getElementById('share-url-input'),
         gridBgColorInput: document.getElementById('grid-bg-color')
@@ -288,12 +287,6 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
             });
         }
         
-        if (elements.shareFacebookBtn) {
-            elements.shareFacebookBtn.addEventListener('click', () => {
-                const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
-                share.shareOnFacebook(shareUrl);
-            });
-        }
         
         if (elements.shareLineBtn) {
             elements.shareLineBtn.addEventListener('click', () => {
