@@ -123,8 +123,13 @@ export class ShareManager {
     // 共有データのエンコード
     encodeShareData(data) {
         try {
+            // UTF-8文字列をBase64エンコード
             const jsonString = JSON.stringify(data);
-            return btoa(unescape(encodeURIComponent(jsonString)));
+            const utf8Bytes = encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+                function(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+                });
+            return btoa(utf8Bytes);
         } catch (error) {
             console.error('Share data encode error:', error);
             return null;
@@ -134,8 +139,13 @@ export class ShareManager {
     // 共有データのデコード
     decodeShareData(encodedData) {
         try {
-            const jsonString = decodeURIComponent(escape(atob(encodedData)));
-            return JSON.parse(jsonString);
+            // Base64デコード後、UTF-8として解釈
+            const decodedBase64 = atob(encodedData);
+            // UTF-8バイト列を文字列に変換
+            const decodedString = decodeURIComponent(decodedBase64.split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            return JSON.parse(decodedString);
         } catch (error) {
             console.error('Share data decode error:', error);
             return null;
