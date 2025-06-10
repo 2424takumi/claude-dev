@@ -413,6 +413,12 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
     function init() {
         initializeGrid();
         setupEventListeners();
+        
+        // テーマ切り替えボタンの設定
+        const themeToggle = document.querySelector('.theme-toggle');
+        if (themeToggle) {
+            theme.setToggleButton(themeToggle);
+        }
     }
     
     // DOMContentLoadedで初期化
