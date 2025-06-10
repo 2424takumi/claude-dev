@@ -19,6 +19,21 @@
     margin-bottom: var(--spacing-10);
 }
 
+/* ===== 共有ページの背景色セレクター ===== */
+.shared-color-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-6);
+    font-size: var(--text-lg);
+    justify-content: center;
+}
+
+.shared-color-selector label {
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+}
+
 /* ===== フォトテーマグリッド ===== */
 .photo-theme-grid {
     display: grid;

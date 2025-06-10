@@ -14,7 +14,8 @@ import { toast, modal, storage, share, GridRenderer } from './utils/index.js';
         gridSize: 3,
         gridSections: [],
         saveTimeout: null,
-        currentFocusedInput: null
+        currentFocusedInput: null,
+        gridBgColor: '#000000' // デフォルトは黒
     };
     
     // テーマサジェスチョンのリスト
@@ -44,7 +45,8 @@ import { toast, modal, storage, share, GridRenderer } from './utils/index.js';
         shareTwitterBtn: document.getElementById('share-twitter-btn'),
         shareFacebookBtn: document.getElementById('share-facebook-btn'),
         shareLineBtn: document.getElementById('share-line-btn'),
-        shareUrlInput: document.getElementById('share-url-input')
+        shareUrlInput: document.getElementById('share-url-input'),
+        gridBgColorInput: document.getElementById('grid-bg-color')
     };
     
     // グリッドセクションクラス
@@ -113,6 +115,9 @@ import { toast, modal, storage, share, GridRenderer } from './utils/index.js';
         // グリッドをレンダリング
         gridRenderer.setSize(size);
         gridRenderer.render(state.gridSections);
+        
+        // 背景色を適用
+        applyGridBackgroundColor();
         
         // 初期状態でボタンを無効化
         checkAllSectionsCompleted();
@@ -209,7 +214,8 @@ import { toast, modal, storage, share, GridRenderer } from './utils/index.js';
             size: state.gridSize,
             sections: state.gridSections.map(section => ({
                 title: section.title
-            }))
+            })),
+            bgColor: state.gridBgColor
         };
         
         const baseUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}shared.html`;
@@ -264,7 +270,8 @@ import { toast, modal, storage, share, GridRenderer } from './utils/index.js';
     function saveGrid() {
         const gridData = {
             size: state.gridSize,
-            sections: state.gridSections
+            sections: state.gridSections,
+            bgColor: state.gridBgColor
         };
         
         storage.set('sections', gridData);
@@ -276,10 +283,16 @@ import { toast, modal, storage, share, GridRenderer } from './utils/index.js';
         
         if (savedData) {
             state.gridSize = savedData.size || 3;
+            state.gridBgColor = savedData.bgColor || '#000000';
             
             // グリッドサイズセレクトを更新
             if (elements.gridSizeSelect) {
                 elements.gridSizeSelect.value = state.gridSize;
+            }
+            
+            // 背景色を更新
+            if (elements.gridBgColorInput) {
+                elements.gridBgColorInput.value = state.gridBgColor;
             }
             
             // セクションデータを復元
@@ -296,6 +309,7 @@ import { toast, modal, storage, share, GridRenderer } from './utils/index.js';
             // グリッドを再描画
             gridRenderer.setSize(state.gridSize);
             gridRenderer.render(state.gridSections);
+            applyGridBackgroundColor();
             checkAllSectionsCompleted();
         }
     }
@@ -322,6 +336,11 @@ import { toast, modal, storage, share, GridRenderer } from './utils/index.js';
         
         // ソーシャル共有
         setupShareHandlers();
+        
+        // 背景色変更
+        if (elements.gridBgColorInput) {
+            elements.gridBgColorInput.addEventListener('input', handleBgColorChange);
+        }
     }
     
     // テーマサジェスチョンチップを作成
@@ -362,6 +381,20 @@ import { toast, modal, storage, share, GridRenderer } from './utils/index.js';
                 });
             }
         });
+    }
+    
+    // 背景色を適用
+    function applyGridBackgroundColor() {
+        if (elements.themeGrid) {
+            elements.themeGrid.style.backgroundColor = state.gridBgColor;
+        }
+    }
+    
+    // 背景色変更ハンドラー
+    function handleBgColorChange(e) {
+        state.gridBgColor = e.target.value;
+        applyGridBackgroundColor();
+        autoSave();
     }
     
     // 初期化

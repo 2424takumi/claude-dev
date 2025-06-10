@@ -723,6 +723,41 @@ body {
     min-width: 120px;
 }
 
+/* ===== グリッド背景色セレクター ===== */
+.grid-bg-color-selector {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-6);
+    font-size: var(--text-lg);
+}
+
+.grid-bg-color-selector label {
+    font-weight: var(--font-medium);
+    color: var(--text-secondary);
+}
+
+.color-input {
+    width: 60px;
+    height: 40px;
+    border: 2px solid var(--border-primary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-base);
+    background: transparent;
+}
+
+.color-input:hover {
+    border-color: var(--primary-solid);
+    transform: scale(1.05);
+}
+
+.color-input:focus {
+    outline: none;
+    border-color: var(--primary-solid);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
 /* ===== 共有ボタンコンテナ ===== */
 .share-button-container {
     margin-top: var(--spacing-8);

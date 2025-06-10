@@ -11,14 +11,16 @@
     const state = {
         gridSize: 2,
         gridSections: [],
-        uploadedImages: {} // インデックスをキーとして画像を保存
+        uploadedImages: {}, // インデックスをキーとして画像を保存
+        gridBgColor: '#000000' // グリッド背景色のデフォルト値
     };
     
     // DOM要素
     const elements = {
         photoThemeGrid: document.getElementById('photo-theme-grid'),
         downloadBtn: document.getElementById('download-grid-btn'),
-        shareInstagramBtn: document.getElementById('share-instagram-stories-btn')
+        shareInstagramBtn: document.getElementById('share-instagram-stories-btn'),
+        gridBgColorInput: document.getElementById('grid-bg-color-input')
     };
     
     // URLパラメータからデータを取得
@@ -51,6 +53,7 @@
         
         state.gridSize = sharedData.size || 2;
         state.gridSections = sharedData.sections || [];
+        state.gridBgColor = sharedData.bgColor || '#000000';
         
         // グリッドHTMLの生成
         elements.photoThemeGrid.innerHTML = '';
@@ -61,6 +64,14 @@
             const gridItem = createGridItem(section, index);
             elements.photoThemeGrid.appendChild(gridItem);
         });
+        
+        // 背景色を適用
+        applyGridBackgroundColor();
+        
+        // カラーピッカーの値を設定
+        if (elements.gridBgColorInput) {
+            elements.gridBgColorInput.value = state.gridBgColor;
+        }
     }
     
     // グリッドアイテムの作成
@@ -354,6 +365,11 @@
             elements.shareInstagramBtn.addEventListener('click', shareInstagramStories);
         }
         
+        // カラーピッカーのイベント
+        if (elements.gridBgColorInput) {
+            elements.gridBgColorInput.addEventListener('input', handleBgColorChange);
+        }
+        
         // モーダル関連のイベント
         const modal = document.getElementById('upload-modal');
         const modalClose = modal.querySelector('.app-modal-close');
@@ -425,6 +441,19 @@
                 }, 300);
             }, 3000);
         }
+    }
+    
+    // グリッド背景色を適用
+    function applyGridBackgroundColor() {
+        if (elements.photoThemeGrid) {
+            elements.photoThemeGrid.style.backgroundColor = state.gridBgColor;
+        }
+    }
+    
+    // 背景色変更ハンドラー
+    function handleBgColorChange(e) {
+        state.gridBgColor = e.target.value;
+        applyGridBackgroundColor();
     }
     
     // 初期化

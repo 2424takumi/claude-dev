@@ -13,13 +13,15 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
     const state = {
         gridSize: 2,
         gridSections: [],
-        uploadedImages: {}
+        uploadedImages: {},
+        gridBgColor: '#000000' // デフォルトは黒
     };
     
     // DOM要素
     const elements = {
         photoThemeGrid: document.getElementById('photo-theme-grid'),
-        downloadBtn: document.getElementById('download-grid-btn')
+        downloadBtn: document.getElementById('download-grid-btn'),
+        gridBgColorInput: document.getElementById('grid-bg-color')
     };
     
     // URLパラメータからデータを取得
@@ -120,10 +122,19 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
         
         state.gridSize = sharedData.size || 2;
         state.gridSections = sharedData.sections || [];
+        state.gridBgColor = sharedData.bgColor || '#000000';
+        
+        // 背景色入力を更新
+        if (elements.gridBgColorInput) {
+            elements.gridBgColorInput.value = state.gridBgColor;
+        }
         
         // グリッドをレンダリング
         gridRenderer.setSize(state.gridSize);
         gridRenderer.render(state.gridSections);
+        
+        // 背景色を適用
+        applyGridBackgroundColor();
     }
     
     // 写真エリアのクリックハンドラー
@@ -277,7 +288,25 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
             elements.downloadBtn.addEventListener('click', downloadGrid);
         }
         
+        // 背景色変更
+        if (elements.gridBgColorInput) {
+            elements.gridBgColorInput.addEventListener('input', handleBgColorChange);
+        }
+        
         setupDragAndDrop();
+    }
+    
+    // 背景色を適用
+    function applyGridBackgroundColor() {
+        if (elements.photoThemeGrid) {
+            elements.photoThemeGrid.style.backgroundColor = state.gridBgColor;
+        }
+    }
+    
+    // 背景色変更ハンドラー
+    function handleBgColorChange(e) {
+        state.gridBgColor = e.target.value;
+        applyGridBackgroundColor();
     }
     
     // 初期化

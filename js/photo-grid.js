@@ -12,7 +12,8 @@
         gridSize: 3, // デフォルトを3x3に設定
         gridSections: [], // グリッドセクションを格納
         saveTimeout: null,
-        currentFocusedInput: null // 現在フォーカスされている入力フィールド
+        currentFocusedInput: null, // 現在フォーカスされている入力フィールド
+        gridBgColor: '#000000' // グリッド背景色のデフォルト値
     };
     
     // テーマサジェスチョンのリスト
@@ -44,7 +45,8 @@
         shareFacebookBtn: document.getElementById('share-facebook-btn'),
         shareLineBtn: document.getElementById('share-line-btn'),
         shareInstagramBtn: document.getElementById('share-instagram-btn'),
-        shareUrlInput: document.getElementById('share-url-input')
+        shareUrlInput: document.getElementById('share-url-input'),
+        gridBgColorInput: document.getElementById('grid-bg-color-input')
     };
     
     // グリッドセクションクラス
@@ -75,6 +77,9 @@
         
         // グリッドHTMLの生成
         renderGrid();
+        
+        // 背景色を適用
+        applyGridBackgroundColor();
         
         // 初期状態でボタンを無効化
         checkAllSectionsCompleted();
@@ -238,7 +243,8 @@
             size: state.gridSize,
             sections: state.gridSections.map(section => ({
                 title: section.title
-            }))
+            })),
+            bgColor: state.gridBgColor
         };
         
         const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
@@ -399,6 +405,20 @@
         });
     }
     
+    // グリッド背景色を適用
+    function applyGridBackgroundColor() {
+        if (elements.themeGrid) {
+            elements.themeGrid.style.backgroundColor = state.gridBgColor;
+        }
+    }
+    
+    // 背景色変更ハンドラー
+    function handleBgColorChange(e) {
+        state.gridBgColor = e.target.value;
+        applyGridBackgroundColor();
+        autoSave();
+    }
+    
     // 自動保存
     function autoSave() {
         clearTimeout(state.saveTimeout);
@@ -412,6 +432,7 @@
         const gridData = {
             size: state.gridSize,
             sections: state.gridSections,
+            bgColor: state.gridBgColor,
             timestamp: new Date().toISOString()
         };
         
@@ -443,8 +464,17 @@
                     });
                 }
                 
+                // 背景色を復元
+                if (data.bgColor) {
+                    state.gridBgColor = data.bgColor;
+                    if (elements.gridBgColorInput) {
+                        elements.gridBgColorInput.value = state.gridBgColor;
+                    }
+                }
+                
                 // グリッドを再描画
                 renderGrid();
+                applyGridBackgroundColor();
                 checkAllSectionsCompleted();
             } catch (err) {
                 console.error('保存データの読み込みエラー:', err);
@@ -500,6 +530,11 @@
         }
         if (elements.shareInstagramBtn) {
             elements.shareInstagramBtn.addEventListener('click', shareOnInstagram);
+        }
+        
+        // 背景色変更
+        if (elements.gridBgColorInput) {
+            elements.gridBgColorInput.addEventListener('input', handleBgColorChange);
         }
     }
     
@@ -638,6 +673,7 @@
         setupEventListeners();
         loadSavedGrid();
         initializeThemeSuggestions();
+        applyGridBackgroundColor();
     }
     
     // DOMContentLoadedで初期化
