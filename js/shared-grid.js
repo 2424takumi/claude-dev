@@ -10,7 +10,8 @@
     // 状態管理
     const state = {
         gridSize: 2,
-        gridSections: []
+        gridSections: [],
+        uploadedImages: {} // インデックスをキーとして画像を保存
     };
     
     // DOM要素
@@ -79,11 +80,48 @@
         // 写真表示エリア
         const photoArea = document.createElement('div');
         photoArea.className = 'photo-display-area';
+        photoArea.dataset.index = index;
+        
+        // フリップカードの内部構造
+        const flipCardInner = document.createElement('div');
+        flipCardInner.className = 'flip-card-inner';
+        
+        // カードの表面（写真またはプラスアイコン）
+        const flipCardFront = document.createElement('div');
+        flipCardFront.className = 'flip-card-front';
+        
+        // プラスアイコン
+        const addPhotoIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        addPhotoIcon.className = 'add-photo-icon';
+        addPhotoIcon.setAttribute('viewBox', '0 0 24 24');
+        addPhotoIcon.setAttribute('fill', 'none');
+        addPhotoIcon.setAttribute('stroke', 'currentColor');
+        addPhotoIcon.setAttribute('stroke-width', '2');
+        addPhotoIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
+        
+        flipCardFront.appendChild(addPhotoIcon);
+        
+        // カードの裏面（テーマテキスト）
+        const flipCardBack = document.createElement('div');
+        flipCardBack.className = 'flip-card-back';
+        
+        const themeText = document.createElement('div');
+        themeText.className = 'theme-text';
+        themeText.textContent = section.title || `テーマ ${index + 1}`;
+        
+        flipCardBack.appendChild(themeText);
         
         // 要素の組み立て
+        flipCardInner.appendChild(flipCardFront);
+        flipCardInner.appendChild(flipCardBack);
+        photoArea.appendChild(flipCardInner);
+        
         sectionContainer.appendChild(titleDiv);
         sectionContainer.appendChild(photoArea);
         gridItem.appendChild(sectionContainer);
+        
+        // クリックイベントの設定
+        photoArea.addEventListener('click', (e) => handlePhotoAreaClick(e, index));
         
         return gridItem;
     }
@@ -99,6 +137,84 @@
             'modern': 'モダン'
         };
         return themeMap[theme] || 'デフォルト';
+    }
+    
+    // 写真エリアのクリックハンドラー
+    function handlePhotoAreaClick(e, index) {
+        const photoArea = e.currentTarget;
+        
+        // 画像がアップロードされている場合はフリップ
+        if (state.uploadedImages[index]) {
+            photoArea.classList.toggle('flipped');
+        } else {
+            // 画像がない場合はアップロードモーダルを開く
+            openUploadModal(index);
+        }
+    }
+    
+    // アップロードモーダルを開く
+    function openUploadModal(index) {
+        const modal = document.getElementById('upload-modal');
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        
+        // 現在のインデックスを保存
+        uploadArea.dataset.targetIndex = index;
+        
+        // モーダルを表示
+        modal.classList.add('active');
+        
+        // ファイル選択イベント
+        fileInput.onchange = (e) => handleFileSelect(e, index);
+    }
+    
+    // ファイル選択処理
+    function handleFileSelect(e, index) {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                // 画像を保存
+                state.uploadedImages[index] = e.target.result;
+                
+                // 画像を表示
+                updatePhotoDisplay(index);
+                
+                // モーダルを閉じる
+                closeUploadModal();
+                
+                showToast('画像をアップロードしました', 'success');
+            };
+            
+            reader.readAsDataURL(file);
+        }
+    }
+    
+    // 写真表示を更新
+    function updatePhotoDisplay(index) {
+        const photoArea = document.querySelector(`.photo-display-area[data-index="${index}"]`);
+        const flipCardFront = photoArea.querySelector('.flip-card-front');
+        
+        // 既存のコンテンツをクリア
+        flipCardFront.innerHTML = '';
+        
+        // 画像を追加
+        const img = document.createElement('img');
+        img.className = 'uploaded-image';
+        img.src = state.uploadedImages[index];
+        img.alt = `アップロードされた画像 ${index + 1}`;
+        
+        flipCardFront.appendChild(img);
+    }
+    
+    // アップロードモーダルを閉じる
+    function closeUploadModal() {
+        const modal = document.getElementById('upload-modal');
+        const fileInput = document.getElementById('file-input');
+        
+        modal.classList.remove('active');
+        fileInput.value = '';
     }
     
     // ダウンロード機能
@@ -135,6 +251,58 @@
         if (elements.downloadBtn) {
             elements.downloadBtn.addEventListener('click', downloadGrid);
         }
+        
+        // モーダル関連のイベント
+        const modal = document.getElementById('upload-modal');
+        const modalClose = modal.querySelector('.app-modal-close');
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        
+        // モーダルを閉じる
+        modalClose.addEventListener('click', closeUploadModal);
+        
+        // モーダルの背景クリックで閉じる
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeUploadModal();
+            }
+        });
+        
+        // アップロードエリアのクリック
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // ドラッグ＆ドロップの処理
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const index = parseInt(uploadArea.dataset.targetIndex);
+            const file = e.dataTransfer.files[0];
+            
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                
+                reader.onload = (e) => {
+                    state.uploadedImages[index] = e.target.result;
+                    updatePhotoDisplay(index);
+                    closeUploadModal();
+                    showToast('画像をアップロードしました', 'success');
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
     }
     
     // トースト通知を表示
