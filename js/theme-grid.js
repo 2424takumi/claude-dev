@@ -52,7 +52,7 @@
         shareLineBtn: document.getElementById('share-line-btn'),
         shareInstagramBtn: document.getElementById('share-instagram-btn'),
         shareUrlInput: document.getElementById('share-url-input'),
-        gridBgColorInput: document.getElementById('grid-bg-color-input')
+        gridBgColorInput: document.getElementById('grid-bg-color')
     };
     
     // グリッドセクションクラス
