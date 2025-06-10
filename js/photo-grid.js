@@ -9,7 +9,7 @@
     
     // 状態管理
     const state = {
-        gridSize: 2, // デフォルトを2x2に設定
+        gridSize: 3, // デフォルトを3x3に設定
         gridSections: [], // グリッドセクションを格納
         saveTimeout: null,
         currentFocusedInput: null, // 現在フォーカスされている入力フィールド
