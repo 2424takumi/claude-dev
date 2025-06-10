@@ -702,7 +702,7 @@ body {
     align-items: center;
     justify-content: center;
     min-height: calc(100vh - 200px);
-    padding: var(--spacing-8) 0;
+    padding: var(--spacing-4) 0;
 }
 
 /* ===== グリッドサイズセレクター ===== */
@@ -916,10 +916,9 @@ body {
     margin-bottom: var(--spacing-6);
     overflow: hidden;
     position: relative;
-    width: 100%;
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
 }
 
 .suggestions-row {

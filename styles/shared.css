@@ -41,6 +41,7 @@
     grid-template-rows: repeat(var(--grid-size, 3), 1fr);
     gap: var(--spacing-4);
     max-width: 900px;
+    min-height: 600px; /* 最小高さを設定 */
     margin: 0 auto var(--spacing-10);
     background: var(--bg-secondary);
     padding: var(--spacing-6);
@@ -333,9 +334,10 @@
 @media (max-width: 480px) {
     .photo-theme-grid {
         grid-template-columns: 1fr;
-        grid-template-rows: auto;
+        grid-template-rows: repeat(var(--grid-size, 3), minmax(200px, 1fr));
         gap: var(--spacing-2);
         padding: var(--spacing-3);
+        min-height: auto; /* モバイルでは自動高さ */
     }
     
     .photo-placeholder svg {
@@ -358,6 +360,6 @@
     
     .photo-theme-item {
         min-height: 200px;
-        aspect-ratio: auto;
+        aspect-ratio: 1; /* モバイルでも正方形を維持 */
     }
 }

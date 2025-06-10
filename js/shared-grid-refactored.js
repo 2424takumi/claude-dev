@@ -4,7 +4,7 @@
  * モジュール化されたユーティリティを使用
  */
 
-import { toast, modal, share, GridRenderer } from './utils/index.js';
+import { toast, modal, share, GridRenderer, StorageManager } from './utils/index.js';
 
 (function() {
     'use strict';
@@ -17,6 +17,9 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
         gridBgColor: '#000000' // デフォルトは黒
     };
     
+    // StorageManagerのインスタンスを作成
+    const storage = new StorageManager();
+    
     // DOM要素
     const elements = {
         photoThemeGrid: document.getElementById('photo-theme-grid'),
@@ -24,8 +27,16 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
         gridBgColorInput: document.getElementById('grid-bg-color')
     };
     
+    // 共有データを保存する変数
+    let sharedDataCache = null;
+    
     // URLパラメータからデータを取得
     function getSharedData() {
+        // キャッシュがあればそれを返す
+        if (sharedDataCache) {
+            return sharedDataCache;
+        }
+        
         const urlParams = new URLSearchParams(window.location.search);
         const encodedData = urlParams.get('data');
         
@@ -42,6 +53,14 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
             toast.error('共有データの読み込みに失敗しました');
             return null;
         }
+        
+        // IDがない場合は生成
+        if (!decodedData.id) {
+            decodedData.id = `grid_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        }
+        
+        // キャッシュに保存
+        sharedDataCache = decodedData;
         
         return decodedData;
     }
@@ -133,8 +152,11 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
         gridRenderer.setSize(state.gridSize);
         gridRenderer.render(state.gridSections);
         
+
         // 背景色を適用
         applyGridBackgroundColor();
+        // 保存された画像を読み込み
+        loadImagesFromStorage();
     }
     
     // 写真エリアのクリックハンドラー
@@ -183,6 +205,9 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
                 // 画像を保存
                 state.uploadedImages[index] = e.target.result;
                 
+                // localStorageに保存
+                saveImagesToStorage();
+                
                 // 画像を表示
                 updatePhotoDisplay(index);
                 
@@ -211,6 +236,31 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
         img.alt = `アップロードされた画像 ${index + 1}`;
         
         flipCardFront.appendChild(img);
+    }
+    
+    // 画像をlocalStorageに保存
+    function saveImagesToStorage() {
+        const sharedData = getSharedData();
+        if (sharedData && sharedData.id) {
+            const storageKey = `shared_images_${sharedData.id}`;
+            storage.set(storageKey, state.uploadedImages);
+        }
+    }
+    
+    // localStorageから画像を読み込み
+    function loadImagesFromStorage() {
+        const sharedData = getSharedData();
+        if (sharedData && sharedData.id) {
+            const storageKey = `shared_images_${sharedData.id}`;
+            const savedImages = storage.get(storageKey);
+            if (savedImages) {
+                state.uploadedImages = savedImages;
+                // 保存された画像を表示
+                Object.keys(savedImages).forEach(index => {
+                    updatePhotoDisplay(parseInt(index));
+                });
+            }
+        }
     }
     
     // ダウンロード機能
@@ -272,6 +322,7 @@ import { toast, modal, share, GridRenderer } from './utils/index.js';
                 
                 reader.onload = (e) => {
                     state.uploadedImages[index] = e.target.result;
+                    saveImagesToStorage();
                     updatePhotoDisplay(index);
                     uploadModal.close();
                     toast.success('画像をアップロードしました');
