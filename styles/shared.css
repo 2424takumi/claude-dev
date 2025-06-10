@@ -16,7 +16,7 @@
 .shared-subtitle {
     font-size: var(--text-lg);
     color: var(--text-secondary);
-    margin-bottom: var(--spacing-10);
+    margin-bottom: 0;
 }
 
 /* ===== 共有ページの背景色セレクター ===== */
