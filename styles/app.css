@@ -1158,6 +1158,13 @@ body {
     padding: var(--spacing-6);
 }
 
+.app-modal-footer {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-4);
+    padding: 0 var(--spacing-6) var(--spacing-6) var(--spacing-6);
+}
+
 .upload-area {
     border: 2px dashed var(--border-secondary);
     border-radius: var(--radius-lg);
