@@ -40,9 +40,12 @@
         }
         
         try {
-            // photo-grid.jsでのエンコード: btoa(unescape(encodeURIComponent(JSON.stringify(shareData))))
-            // 対応するデコード: JSON.parse(decodeURIComponent(escape(atob(encodedData))))
-            const decodedString = decodeURIComponent(escape(atob(encodedData)));
+            // Base64デコード後、UTF-8として解釈
+            const decodedBase64 = atob(encodedData);
+            // UTF-8バイト列を文字列に変換
+            const decodedString = decodeURIComponent(decodedBase64.split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
             return JSON.parse(decodedString);
         } catch (err) {
             console.error('データのデコードエラー:', err);

@@ -273,7 +273,13 @@
             bgColor: state.gridBgColor
         };
         
-        const encodedData = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+        // UTF-8文字列をBase64エンコード
+        const jsonString = JSON.stringify(shareData);
+        const utf8Bytes = encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+            function(match, p1) {
+                return String.fromCharCode('0x' + p1);
+            });
+        const encodedData = btoa(utf8Bytes);
         return `${window.location.origin}${window.location.pathname.replace('index.html', '')}shared.html?data=${encodedData}`;
     }
     
