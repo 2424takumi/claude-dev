@@ -1161,6 +1161,27 @@ body {
     }
 }
 
+/* ===== モバイルでのインプットズーム防止 ===== */
+@media (max-width: 768px) {
+    /* 全ての入力フィールドで最小16pxのフォントサイズを確保 */
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="search"],
+    input[type="password"],
+    textarea,
+    select {
+        font-size: 16px !important;
+    }
+    
+    /* 特定のクラスに対する上書き */
+    .section-title-input {
+        font-size: 16px !important;
+    }
+}
+
 /* ===== レスポンシブ ===== */
 @media (max-width: 768px) {
     .nav-menu {
