@@ -852,7 +852,7 @@ body {
 .section-theme-select:focus {
     outline: none;
     border-color: var(--primary-solid);
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+    box-shadow: 0 0 0 3px rgba(255, 139, 37, 0.1);
 }
 
 /* セクションコンテンツ入力 */
@@ -873,7 +873,7 @@ body {
 .section-content-input:focus {
     outline: none;
     border-color: var(--primary-solid);
-    box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+    box-shadow: 0 0 0 3px rgba(255, 139, 37, 0.1);
 }
 
 /* Dark mode styles for section inputs */
@@ -1000,7 +1000,7 @@ body {
 .chip-color-4 { background: #43e97b !important; }
 .chip-color-5 { background: #fa709a !important; }
 .chip-color-6 { background: #30cfd0 !important; }
-.chip-color-7 { background: #FF6B35 !important; }
+.chip-color-7 { background: #FF8B25 !important; }
 .chip-color-8 { background: #06B6D4 !important; }
 .chip-color-9 { background: #EC4899 !important; }
 .chip-color-10 { background: #10B981 !important; }
