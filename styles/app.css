@@ -800,7 +800,7 @@ main {
 /* ===== テーマグリッド ===== */
 .theme-grid {
     display: grid;
-    gap: 6px;
+    gap: 12px;
     aspect-ratio: 1;
     max-width: 780px;
     width: calc(100% - 32px);
@@ -813,8 +813,8 @@ main {
 
 .grid-theme-item {
     position: relative;
-    background: var(--bg-primary);
-    border: 12px solid var(--bg-secondary);
+    background: white;
+    border: none;
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
@@ -1067,6 +1067,10 @@ main {
 /* ダークモード対応 */
 .dark-theme .grid-theme-item.theme-default {
     background-color: #2a2a2a;
+}
+
+.dark-theme .grid-theme-item {
+    background: #1a1a1a;
 }
 
 .dark-theme .grid-theme-item.theme-warm {
@@ -1367,7 +1371,7 @@ main {
         max-width: 780px;
         width: calc(100% - 32px);
         padding: 12px;
-        gap: 6px;
+        gap: 12px;
     }
     
     .action-buttons {
@@ -1382,7 +1386,7 @@ main {
 
 @media (max-width: 480px) {
     .theme-grid {
-        gap: 6px;
+        gap: 12px;
         padding: 12px;
         width: calc(100% - 32px);
         max-width: 780px;
