@@ -1126,6 +1126,7 @@ body {
     padding: var(--spacing-6) 0;
     text-align: center;
     border-top: 1px solid var(--border-primary);
+    margin-bottom: 90px; /* 広告バナーの高さ分の余白 */
 }
 
 .app-footer p {
@@ -1140,6 +1141,36 @@ body {
 
 .app-footer a:hover {
     text-decoration: underline;
+}
+
+/* ===== Google AdSense ===== */
+.adsense-container {
+    background: var(--bg-secondary);
+    padding: var(--spacing-4) 0;
+    border-top: 1px solid var(--border-primary);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.adsense-wrapper {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-6);
+    text-align: center;
+}
+
+.adsbygoogle {
+    background: transparent;
+    min-height: 50px;
+}
+
+/* フッターの下部余白を追加（広告バナー分） */
+body {
+    padding-bottom: 90px; /* 広告バナーの高さ分 */
 }
 
 /* ===== モーダル ===== */
