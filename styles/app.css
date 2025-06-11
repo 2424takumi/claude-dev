@@ -798,7 +798,7 @@ body {
     width: calc(100% - 32px);
     margin: 0 auto;
     background: var(--bg-secondary);
-    padding: 6px;
+    padding: 12px;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
 }
@@ -1363,7 +1363,7 @@ body {
     .theme-grid {
         max-width: 780px;
         width: calc(100% - 32px);
-        padding: 6px;
+        padding: 12px;
         gap: 6px;
     }
     
@@ -1380,7 +1380,7 @@ body {
 @media (max-width: 480px) {
     .theme-grid {
         gap: 6px;
-        padding: 6px;
+        padding: 12px;
         width: calc(100% - 32px);
         max-width: 780px;
     }
