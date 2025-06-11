@@ -459,26 +459,35 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         }
     }
     
-    // ダウンロード機能
+    // ダウンロード機能（写真アルバムへの保存）
     async function downloadGrid() {
         const filename = `gridme-${new Date().getTime()}.png`;
-        const dataUrl = await gridRenderer.exportAsImage(filename);
         
-        if (dataUrl) {
-            toast.success('ダウンロードを開始しました');
-        } else {
-            // html2canvasライブラリがない場合は動的に読み込む
+        // html2canvasが読み込まれているか確認
+        if (typeof html2canvas === 'undefined') {
+            // html2canvasライブラリを動的に読み込む
             const script = document.createElement('script');
             script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
             script.onload = async () => {
-                const dataUrl = await gridRenderer.exportAsImage(filename);
-                if (dataUrl) {
-                    toast.success('ダウンロードを開始しました');
-                } else {
-                    toast.error('ダウンロードに失敗しました');
-                }
+                await performSaveToAlbum(filename);
             };
             document.head.appendChild(script);
+        } else {
+            await performSaveToAlbum(filename);
+        }
+    }
+    
+    // 実際の保存処理
+    async function performSaveToAlbum(filename) {
+        const result = await gridRenderer.saveAsPhoto(filename);
+        
+        if (result === true) {
+            toast.success('画像を保存しました');
+        } else if (result === false) {
+            // ユーザーがキャンセルした場合
+            toast.info('保存をキャンセルしました');
+        } else {
+            toast.error('保存に失敗しました');
         }
     }
     
