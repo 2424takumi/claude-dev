@@ -37,7 +37,7 @@
 /* ===== フォトテーマグリッド ===== */
 #photo-theme-grid {
     display: grid;
-    gap: 6px;
+    gap: 12px;
     aspect-ratio: 1;
     max-width: 780px;
     width: calc(100% - 32px);
@@ -51,8 +51,8 @@
 /* グリッドアイテムスタイル（index.htmlと同じ） */
 .grid-theme-item {
     position: relative;
-    background: var(--bg-primary);
-    border: 12px solid var(--bg-secondary);
+    background: white;
+    border: none;
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
@@ -156,27 +156,27 @@
 
 /* テーマ別スタイル（共有ページ） */
 .grid-theme-item.theme-default {
-    background-color: #fafafa;
+    background-color: white;
 }
 
 .grid-theme-item.theme-warm {
-    background-color: #fff5f0;
+    background-color: white;
 }
 
 .grid-theme-item.theme-cool {
-    background-color: #f0f5ff;
+    background-color: white;
 }
 
 .grid-theme-item.theme-nature {
-    background-color: #f0fdf0;
+    background-color: white;
 }
 
 .grid-theme-item.theme-elegant {
-    background-color: #faf5ff;
+    background-color: white;
 }
 
 .grid-theme-item.theme-modern {
-    background-color: #f5f5f5;
+    background-color: white;
 }
 
 /* ダークモード対応 */
@@ -456,7 +456,7 @@
         max-width: 780px;
         width: calc(100% - 32px);
         padding: 12px;
-        gap: 6px;
+        gap: 12px;
     }
     
     .shared-actions {
@@ -472,7 +472,7 @@
 
 @media (max-width: 480px) {
     .theme-grid {
-        gap: 6px;
+        gap: 12px;
         padding: 12px;
         width: calc(100% - 32px);
         max-width: 780px;
