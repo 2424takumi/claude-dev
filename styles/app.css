@@ -564,7 +564,7 @@ main {
     background: color-mix(in srgb, var(--bg-primary) 90%, transparent);
     backdrop-filter: blur(10px);
     padding: var(--spacing-1) 0;
-    margin-bottom: 0;
+    margin: 12px;
 }
 
 /* ダークモード時のヘッダー背景を黒に */
