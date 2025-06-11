@@ -23,6 +23,12 @@ body {
     transition: background-color var(--transition-base), color var(--transition-base);
 }
 
+main {
+    background: var(--bg-primary);
+    min-height: 100vh;
+    padding-top: 80px; /* Account for fixed navbar */
+}
+
 .container {
     max-width: 1280px;
     margin: 0 auto;
@@ -63,7 +69,8 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--bg-primary);
+    background: color-mix(in srgb, var(--bg-primary) 95%, transparent);
     backdrop-filter: blur(10px);
     border-bottom: none;
     z-index: var(--z-sticky);
@@ -553,7 +560,8 @@ body {
 
 /* ===== アプリケーションスタイル ===== */
 .app-header {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--bg-primary);
+    background: color-mix(in srgb, var(--bg-primary) 90%, transparent);
     backdrop-filter: blur(10px);
     padding: var(--spacing-2) 0;
     margin-bottom: 0;
@@ -792,29 +800,34 @@ body {
 /* ===== テーマグリッド ===== */
 .theme-grid {
     display: grid;
-    gap: 6px;
+    gap: 12px;
     aspect-ratio: 1;
     max-width: 780px;
     width: calc(100% - 32px);
     margin: 0 auto;
-    background: var(--bg-secondary);
-    padding: 6px;
+    background: #FF8B25;
+    padding: 12px;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
 }
 
 .grid-theme-item {
     position: relative;
-    background: var(--bg-primary);
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.1);
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     padding: var(--spacing-3);
     min-height: 100px;
     aspect-ratio: 1;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .grid-theme-item:hover {
@@ -825,21 +838,21 @@ body {
 /* グリッドセクションコンテナ */
 .grid-section-container {
     width: 100%;
-    height: 100%;
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    aspect-ratio: 1;
+    background: transparent;
 }
 
 /* セクションタイトル入力 */
 .section-title-input {
     width: 100%;
-    border: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: var(--radius-md);
     padding: var(--spacing-2) var(--spacing-2);
     font-size: var(--text-sm);
-    font-weight: var(--font-normal);
+    font-weight: var(--font-medium);
     font-family: inherit;
     transition: all var(--transition-base);
     background: transparent; /* Same as white background */
@@ -847,17 +860,25 @@ body {
     resize: none;
     overflow: hidden;
     line-height: 1.4;
-    min-height: 2.4em;
     text-align: center;
+    margin-bottom: var(--spacing-2);
+    height: 2.2em; /* デフォルトは1行分の高さ */
     vertical-align: middle;
     display: block;
     margin: auto;
+    overflow-wrap: break-word; /* 長い単語を折り返す */
+    word-wrap: break-word; /* 古いブラウザ対応 */
 }
 
 .section-title-input:focus {
     outline: none;
     box-shadow: none;
     background: transparent; /* Keep transparent on focus */
+}
+
+.section-title-input::placeholder {
+    color: var(--text-tertiary);
+    opacity: 1;
 }
 
 /* セクションテーマ選択 */
@@ -1055,17 +1076,19 @@ body {
 /* ダークモード対応 */
 .dark-theme .grid-theme-item.theme-default {
     background-color: #2a2a2a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .grid-theme-item {
+    background: rgba(40, 40, 40, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .dark-theme .grid-theme-item.theme-warm {
     background-color: #3d2820;
-    border: 1px solid rgba(255, 139, 37, 0.2);
 }
 
 .dark-theme .grid-theme-item.theme-cool {
     background-color: #202838;
-    border: 1px solid rgba(6, 182, 212, 0.2);
 }
 
 .dark-theme .theme-chip {
@@ -1078,21 +1101,18 @@ body {
 
 .dark-theme .grid-theme-item.theme-nature {
     background-color: #1a2f1a;
-    border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .dark-theme .grid-theme-item.theme-elegant {
     background-color: #2f1a3d;
-    border: 1px solid rgba(139, 92, 246, 0.2);
 }
 
 .dark-theme .grid-theme-item.theme-modern {
     background-color: #1f1f1f;
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dark-theme .theme-grid {
-    background: var(--bg-secondary);
+    background: #FF8B25;
 }
 
 .dark-theme .section-title-input {
@@ -1198,6 +1218,12 @@ body {
     justify-content: center;
     gap: var(--spacing-4);
     padding: 0 var(--spacing-6) var(--spacing-6) var(--spacing-6);
+}
+
+/* ニックネーム確認モーダルのボタンを同じ幅に */
+.app-modal-footer .btn {
+    flex: 1;
+    min-width: 120px;
 }
 
 .upload-area {
@@ -1360,8 +1386,8 @@ body {
     .theme-grid {
         max-width: 780px;
         width: calc(100% - 32px);
-        padding: 6px;
-        gap: 6px;
+        padding: 12px;
+        gap: 12px;
     }
     
     .action-buttons {
@@ -1376,8 +1402,8 @@ body {
 
 @media (max-width: 480px) {
     .theme-grid {
-        gap: 6px;
-        padding: 6px;
+        gap: 12px;
+        padding: 12px;
         width: calc(100% - 32px);
         max-width: 780px;
     }
@@ -1469,6 +1495,32 @@ body {
 
 .dark-theme .share-url-preview {
     border-color: var(--neutral-700);
+}
+
+/* ===== グリッド画像の強制的なアスペクト比維持 ===== */
+/* 全てのグリッド実装で画像が正方形にクロップされるようにする */
+.grid-theme-item .uploaded-image,
+.theme-grid .uploaded-image,
+.photo-theme-grid .uploaded-image {
+    object-fit: cover !important;
+    object-position: center !important;
+    -webkit-object-fit: cover !important;
+    -moz-object-fit: cover !important;
+    -o-object-fit: cover !important;
+}
+
+.grid-theme-item .image-container,
+.theme-grid .image-container,
+.photo-theme-grid .image-container {
+    overflow: hidden !important;
+    aspect-ratio: 1 !important;
+}
+
+.grid-theme-item .photo-display-area,
+.theme-grid .photo-display-area,
+.photo-theme-grid .photo-display-area {
+    aspect-ratio: 1 !important;
+    overflow: hidden !important;
 }
 
 /* ===== 追加のダークモード対応 ===== */

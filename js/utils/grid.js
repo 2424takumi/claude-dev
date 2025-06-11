@@ -120,7 +120,24 @@ export class GridRenderer {
         try {
             const canvas = await html2canvas(this.container, {
                 backgroundColor: null,
-                scale: 2 // 高解像度
+                scale: 2, // 高解像度
+                useCORS: true, // CORS画像のサポート
+                allowTaint: true, // 外部画像の許可
+                logging: false, // デバッグログを無効化
+                imageTimeout: 0, // 画像タイムアウトを無効化
+                onclone: (clonedDoc) => {
+                    // クローンされたドキュメントで画像のスタイルを確実に適用
+                    const clonedImages = clonedDoc.querySelectorAll('.uploaded-image');
+                    clonedImages.forEach(img => {
+                        img.style.objectFit = 'cover';
+                        img.style.objectPosition = 'center';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.position = 'absolute';
+                        img.style.top = '0';
+                        img.style.left = '0';
+                    });
+                }
             });
             
             const dataUrl = canvas.toDataURL('image/png');
@@ -136,6 +153,72 @@ export class GridRenderer {
             return dataUrl;
         } catch (error) {
             console.error('Export error:', error);
+            return null;
+        }
+    }
+
+    // グリッドを写真として保存（写真アルバムへ）
+    async saveAsPhoto(filename = 'grid.png') {
+        if (typeof html2canvas === 'undefined') {
+            console.error('html2canvas library is required for export');
+            return null;
+        }
+
+        try {
+            const canvas = await html2canvas(this.container, {
+                backgroundColor: null,
+                scale: 2, // 高解像度
+                useCORS: true, // CORS画像のサポート
+                allowTaint: true, // 外部画像の許可
+                logging: false, // デバッグログを無効化
+                imageTimeout: 0, // 画像タイムアウトを無効化
+                onclone: (clonedDoc) => {
+                    // クローンされたドキュメントで画像のスタイルを確実に適用
+                    const clonedImages = clonedDoc.querySelectorAll('.uploaded-image');
+                    clonedImages.forEach(img => {
+                        img.style.objectFit = 'cover';
+                        img.style.objectPosition = 'center';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.position = 'absolute';
+                        img.style.top = '0';
+                        img.style.left = '0';
+                    });
+                }
+            });
+            
+            // CanvasをBlobに変換
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            
+            // Web Share APIをサポートしているかチェック
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/png' })] })) {
+                // Web Share APIを使用して写真を共有（モバイルでは写真アルバムに保存可能）
+                const file = new File([blob], filename, { type: 'image/png' });
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'GridMe',
+                        text: 'GridMeで作成した画像'
+                    });
+                    return true;
+                } catch (err) {
+                    // ユーザーがキャンセルした場合
+                    if (err.name === 'AbortError') {
+                        return false;
+                    }
+                    throw err;
+                }
+            } else {
+                // Web Share APIがサポートされていない場合は従来のダウンロード
+                const dataUrl = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = dataUrl;
+                link.click();
+                return true;
+            }
+        } catch (error) {
+            console.error('Save as photo error:', error);
             return null;
         }
     }

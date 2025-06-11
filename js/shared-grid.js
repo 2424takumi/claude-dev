@@ -12,7 +12,8 @@
         gridSize: 2,
         gridSections: [],
         uploadedImages: {}, // インデックスをキーとして画像を保存
-        gridBgColor: '#FF8B25' // グリッド背景色のデフォルト値
+        gridBgColor: '#FF8B25', // グリッド背景色のデフォルト値
+        nickname: '' // ニックネームを保存
     };
     
     // DOM要素
@@ -20,10 +21,8 @@
         photoThemeGrid: document.getElementById('photo-theme-grid'),
         mainShareBtn: document.getElementById('main-share-btn'),
         downloadBtn: document.getElementById('download-grid-btn'),
-        shareInstagramBtn: document.getElementById('share-instagram-btn'),
         copyUrlBtn: document.getElementById('copy-url-btn'),
         shareTwitterBtn: document.getElementById('share-twitter-btn'),
-        shareFacebookBtn: document.getElementById('share-facebook-btn'),
         shareLineBtn: document.getElementById('share-line-btn'),
         shareUrlInput: document.getElementById('share-url-input'),
         gridBgColorInput: document.getElementById('grid-bg-color'),
@@ -61,6 +60,23 @@
         }
     }
     
+    // サブタイトルテキストを更新
+    function updateSubtitleText() {
+        const subtitleElement = document.querySelector('.shared-subtitle');
+        if (!subtitleElement || !state.nickname) return;
+        
+        // アップロードされた画像の数をカウント
+        const imageCount = Object.keys(state.uploadedImages).length;
+        
+        if (imageCount > 0) {
+            // 画像がある場合：長押しで削除できることを案内
+            subtitleElement.textContent = '画像を長押しすると画像を削除できるよ';
+        } else {
+            // 画像がない場合：元のメッセージ
+            subtitleElement.textContent = `${state.nickname}にあった画像を追加してね`;
+        }
+    }
+    
     // グリッドの初期化
     function initializeGrid() {
         const sharedData = getSharedData();
@@ -69,6 +85,19 @@
         state.gridSize = sharedData.size || 2;
         state.gridSections = sharedData.sections || [];
         state.gridBgColor = sharedData.bgColor || '#FF8B25';
+        state.nickname = sharedData.nickname || '';
+        
+
+        // ニックネームがある場合はタイトルとサブタイトルを更新
+        if (sharedData.nickname) {
+            const titleElement = document.querySelector('.shared-title');
+            const subtitleElement = document.querySelector('.shared-subtitle');
+            
+            if (titleElement) {
+                titleElement.textContent = `${sharedData.nickname} をGridしましょう`;
+            }
+            updateSubtitleText();
+        }
         
         // グリッドHTMLの生成
         elements.photoThemeGrid.innerHTML = '';
@@ -94,6 +123,14 @@
         const gridItem = document.createElement('div');
         gridItem.className = 'grid-theme-item';
         gridItem.dataset.index = index;
+        
+        // テーマテキストを追加
+        if (section.title) {
+            const themeText = document.createElement('div');
+            themeText.className = 'theme-text';
+            themeText.textContent = section.title;
+            gridItem.appendChild(themeText);
+        }
         
         // セクションコンテナ
         const sectionContainer = document.createElement('div');
@@ -137,12 +174,24 @@
         return themeMap[theme] || 'デフォルト';
     }
     
+    // ページのタイトルとサブタイトルを更新
+    function updatePageTitles(nickname) {
+        const sharedTitle = document.querySelector('.shared-title');
+        const sharedSubtitle = document.querySelector('.shared-subtitle');
+        
+        if (sharedTitle) {
+            sharedTitle.textContent = `${nickname} Grid`;
+        }
+        
+        if (sharedSubtitle) {
+            sharedSubtitle.textContent = `Please add photos related to ${nickname}.`;
+        }
+    }
+    
     // 写真エリアのクリックハンドラー
     function handlePhotoAreaClick(e, index) {
-        // 画像がアップロードされていない場合のみモーダルを開く
-        if (!state.uploadedImages[index]) {
-            openUploadModal(index);
-        }
+        // Always open upload modal when clicking on photo area
+        openUploadModal(index);
     }
     
     // アップロードモーダルを開く
@@ -192,104 +241,140 @@
         // 既存のコンテンツをクリア
         photoArea.innerHTML = '';
         
+        // 画像コンテナを作成
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'image-container';
+        
         // 画像を追加
         const img = document.createElement('img');
         img.className = 'uploaded-image';
         img.src = state.uploadedImages[index];
         img.alt = `アップロードされた画像 ${index + 1}`;
         
-        photoArea.appendChild(img);
+        // 削除ボタンを作成
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'image-delete-button';
+        deleteButton.innerHTML = '&times;';
+        deleteButton.setAttribute('aria-label', '画像を削除');
+        deleteButton.style.display = 'none'; // 初期状態は非表示
+        
+        // 削除ボタンのクリックイベント
+        deleteButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            deleteImage(index);
+        });
+        
+        imageContainer.appendChild(img);
+        imageContainer.appendChild(deleteButton);
+        photoArea.appendChild(imageContainer);
         
         // has-imageクラスを追加
         photoArea.classList.add('has-image');
         gridItem.classList.add('has-image');
         
-        // メニューボタンを追加（透明な背景のオーバーレイ）
-        const menuButton = document.createElement('button');
-        menuButton.className = 'grid-menu-button grid-menu-overlay';
-        menuButton.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="5" r="1"/>
-                <circle cx="12" cy="12" r="1"/>
-                <circle cx="12" cy="19" r="1"/>
-            </svg>
-        `;
-        menuButton.addEventListener('click', (e) => {
-            e.stopPropagation();
-            showPhotoMenu(index);
-        });
+        // 長押し検出の設定
+        setupLongPressDetection(img, deleteButton);
         
-        gridItem.appendChild(menuButton);
-    }
-    
-    // 写真メニューを表示
-    function showPhotoMenu(index) {
-        // 既存のメニューを削除
-        const existingMenu = document.getElementById('photo-menu-modal');
-        if (existingMenu) {
-            existingMenu.remove();
+        // Do not hide theme text when image is uploaded - keep it above the image
+        // grid-menu-button functionality removed as requested
+
+        // Hide theme text when image is uploaded
+        const themeText = gridItem.querySelector('.theme-text');
+        if (themeText) {
+            themeText.style.display = 'none';
         }
         
-        // メニューモーダルを作成
-        const menuModal = document.createElement('div');
-        menuModal.id = 'photo-menu-modal';
-        menuModal.className = 'app-modal active';
-        menuModal.innerHTML = `
-            <div class="app-modal-content card-glass" style="max-width: 300px;">
-                <div class="app-modal-header">
-                    <h3>写真の編集</h3>
-                    <button class="btn-icon app-modal-close" aria-label="閉じる">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="app-modal-body">
-                    <div class="edit-menu-options">
-                        <button class="edit-menu-option" data-action="change">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
-                            </svg>
-                            <span>写真を変更</span>
-                        </button>
-                        <button class="edit-menu-option edit-menu-delete" data-action="delete">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="3 6 5 6 21 6"/>
-                                <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                            </svg>
-                            <span>写真を削除</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
+        // サブタイトルテキストを更新
+        updateSubtitleText();
+
+    }
+    
+    // 長押し検出の設定
+    function setupLongPressDetection(img, deleteButton) {
+        let pressTimer = null;
+        let isLongPress = false;
         
-        document.body.appendChild(menuModal);
+        // タッチイベント（モバイル用）
+        img.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                deleteButton.style.display = 'block';
+                // 5秒後に自動的に非表示
+                setTimeout(() => {
+                    if (deleteButton.style.display === 'block') {
+                        deleteButton.style.display = 'none';
+                    }
+                }, 5000);
+            }, 500); // 500ms = 0.5秒の長押し
+        });
         
-        // イベントリスナーを設定
-        const closeBtn = menuModal.querySelector('.app-modal-close');
-        closeBtn.addEventListener('click', () => menuModal.remove());
+        img.addEventListener('touchend', () => {
+            clearTimeout(pressTimer);
+            if (!isLongPress) {
+                // 短いタップの場合は何もしない
+            }
+            isLongPress = false;
+        });
         
-        menuModal.addEventListener('click', (e) => {
-            if (e.target === menuModal) {
-                menuModal.remove();
+        img.addEventListener('touchmove', () => {
+            clearTimeout(pressTimer);
+            isLongPress = false;
+        });
+        
+        // マウスイベント（デスクトップ用）
+        img.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            pressTimer = setTimeout(() => {
+                isLongPress = true;
+                deleteButton.style.display = 'block';
+                // 5秒後に自動的に非表示
+                setTimeout(() => {
+                    if (deleteButton.style.display === 'block') {
+                        deleteButton.style.display = 'none';
+                    }
+                }, 5000);
+            }, 500); // 500ms = 0.5秒の長押し
+        });
+        
+        img.addEventListener('mouseup', () => {
+            clearTimeout(pressTimer);
+            if (!isLongPress) {
+                // 短いクリックの場合は何もしない
+            }
+            isLongPress = false;
+        });
+        
+        img.addEventListener('mouseleave', () => {
+            clearTimeout(pressTimer);
+            isLongPress = false;
+        });
+        
+        // 画像の外側をクリックしたら削除ボタンを非表示
+        document.addEventListener('click', (e) => {
+            if (!img.contains(e.target) && !deleteButton.contains(e.target)) {
+                deleteButton.style.display = 'none';
             }
         });
-        
-        // メニューアクション
-        menuModal.querySelector('[data-action="change"]').addEventListener('click', () => {
-            menuModal.remove();
-            openUploadModal(index);
-        });
-        
-        menuModal.querySelector('[data-action="delete"]').addEventListener('click', () => {
-            delete state.uploadedImages[index];
-            resetPhotoDisplay(index);
-            menuModal.remove();
-            showToast('写真を削除しました', 'success');
-        });
     }
+    
+    // 画像を削除
+    function deleteImage(index) {
+        if (confirm('この画像を削除しますか？')) {
+            // 画像データを削除
+            delete state.uploadedImages[index];
+            
+            // 表示をリセット
+            resetPhotoDisplay(index);
+            
+            // サブタイトルテキストを更新
+            updateSubtitleText();
+            
+            showToast('画像を削除しました', 'success');
+        }
+    }
+    
+    // Photo menu functionality removed as grid-menu-button is deleted
     
     // 写真表示をリセット
     function resetPhotoDisplay(index) {
@@ -299,6 +384,12 @@
         // クラスを削除
         photoArea.classList.remove('has-image');
         gridItem.classList.remove('has-image');
+        
+        // Show theme text again when image is removed
+        const themeText = gridItem.querySelector('.theme-text');
+        if (themeText) {
+            themeText.style.display = 'block';
+        }
         
         // コンテンツをリセット
         photoArea.innerHTML = '';
@@ -379,12 +470,6 @@
         window.open(twitterUrl, '_blank', 'width=600,height=400');
     }
     
-    // Facebookで共有
-    function shareOnFacebook() {
-        const shareUrl = window.location.href;
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-        window.open(facebookUrl, '_blank', 'width=600,height=400');
-    }
     
     // LINEで共有
     function shareOnLine() {
@@ -394,112 +479,118 @@
         window.open(lineUrl, '_blank', 'width=600,height=400');
     }
     
-    // Instagram Stories共有機能
-    function shareInstagramStories() {
-        // html2canvasライブラリを使用してグリッドをキャプチャ
-        if (typeof html2canvas === 'undefined') {
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            script.onload = () => {
-                createInstagramStoriesImage();
-            };
-            document.head.appendChild(script);
-        } else {
-            createInstagramStoriesImage();
-        }
-    }
-    
-    // Instagram Stories用の画像を作成
-    function createInstagramStoriesImage() {
-        const gridContainer = elements.photoThemeGrid;
+    // 実際のダウンロード処理
+    function performDownload() {
+        // グリッドに背景色を一時的に設定
+        const originalBg = elements.photoThemeGrid.style.backgroundColor;
+        elements.photoThemeGrid.style.backgroundColor = state.gridBgColor;
         
-        // Create a temporary container for Instagram Stories format (9:16 aspect ratio)
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'fixed';
-        tempContainer.style.left = '-9999px';
-        tempContainer.style.width = '1080px';
-        tempContainer.style.height = '1920px';
-        tempContainer.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        tempContainer.style.display = 'flex';
-        tempContainer.style.flexDirection = 'column';
-        tempContainer.style.alignItems = 'center';
-        tempContainer.style.justifyContent = 'center';
-        tempContainer.style.padding = '80px';
-        tempContainer.style.boxSizing = 'border-box';
-        
-        // Add title
-        const title = document.createElement('h1');
-        title.textContent = 'GridMe フォトグリッド';
-        title.style.color = 'white';
-        title.style.fontSize = '64px';
-        title.style.marginBottom = '40px';
-        title.style.textAlign = 'center';
-        title.style.fontWeight = 'bold';
-        title.style.textShadow = '0 4px 6px rgba(0,0,0,0.3)';
-        
-        // Clone and style the grid
-        const gridClone = gridContainer.cloneNode(true);
-        gridClone.style.width = '920px';
-        gridClone.style.height = '920px';
-        gridClone.style.background = 'white';
-        gridClone.style.borderRadius = '24px';
-        gridClone.style.padding = '40px';
-        gridClone.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
-        
-        // Add URL footer
-        const footer = document.createElement('div');
-        footer.style.marginTop = '40px';
-        footer.style.color = 'white';
-        footer.style.fontSize = '32px';
-        footer.style.textAlign = 'center';
-        footer.innerHTML = 'Created with GridMe<br><span style="font-size: 24px; opacity: 0.8;">Share your photos!</span>';
-        
-        tempContainer.appendChild(title);
-        tempContainer.appendChild(gridClone);
-        tempContainer.appendChild(footer);
-        document.body.appendChild(tempContainer);
-        
-        // Generate image
-        html2canvas(tempContainer, {
-            width: 1080,
-            height: 1920,
-            scale: 1,
-            backgroundColor: null
+        html2canvas(elements.photoThemeGrid, {
+            backgroundColor: state.gridBgColor,
+            scale: 2, // 高解像度
+            useCORS: true, // CORS画像のサポート
+            allowTaint: true, // 外部画像の許可
+            logging: false, // デバッグログを無効化
+            imageTimeout: 0, // 画像タイムアウトを無効化
+            onclone: (clonedDoc) => {
+                // クローンされたドキュメントのグリッドを取得
+                const clonedGrid = clonedDoc.getElementById('photo-theme-grid');
+                
+                // グリッドのサイズを明示的に設定
+                if (clonedGrid) {
+                    const computedStyle = window.getComputedStyle(elements.photoThemeGrid);
+                    clonedGrid.style.width = computedStyle.width;
+                    clonedGrid.style.height = computedStyle.height;
+                }
+                
+                // 各グリッドアイテムと画像コンテナのサイズを固定
+                const clonedGridItems = clonedDoc.querySelectorAll('.grid-theme-item');
+                clonedGridItems.forEach((item, index) => {
+                    const originalItem = elements.photoThemeGrid.querySelectorAll('.grid-theme-item')[index];
+                    if (originalItem) {
+                        const originalRect = originalItem.getBoundingClientRect();
+                        item.style.width = originalRect.width + 'px';
+                        item.style.height = originalRect.height + 'px';
+                    }
+                });
+                
+                // 画像表示エリアのサイズを固定
+                const clonedPhotoAreas = clonedDoc.querySelectorAll('.photo-display-area');
+                clonedPhotoAreas.forEach((area, index) => {
+                    const originalArea = elements.photoThemeGrid.querySelectorAll('.photo-display-area')[index];
+                    if (originalArea) {
+                        const originalRect = originalArea.getBoundingClientRect();
+                        area.style.width = originalRect.width + 'px';
+                        area.style.height = originalRect.height + 'px';
+                        area.style.position = 'absolute';
+                    }
+                });
+                
+                // 画像コンテナのサイズを固定
+                const clonedContainers = clonedDoc.querySelectorAll('.image-container');
+                clonedContainers.forEach((container, index) => {
+                    const originalContainer = elements.photoThemeGrid.querySelectorAll('.image-container')[index];
+                    if (originalContainer) {
+                        const originalRect = originalContainer.getBoundingClientRect();
+                        container.style.width = originalRect.width + 'px';
+                        container.style.height = originalRect.height + 'px';
+                        container.style.position = 'relative';
+                    }
+                });
+                
+                // クローンされたドキュメントで画像のスタイルを確実に適用
+                const clonedImages = clonedDoc.querySelectorAll('.uploaded-image');
+                clonedImages.forEach((img, index) => {
+                    const originalImg = elements.photoThemeGrid.querySelectorAll('.uploaded-image')[index];
+                    if (originalImg) {
+                        const container = img.closest('.image-container');
+                        if (container) {
+                            // コンテナのサイズを取得
+                            const containerStyle = window.getComputedStyle(originalImg.closest('.image-container'));
+                            const size = parseFloat(containerStyle.width);
+                            
+                            // 正方形のサイズを維持
+                            container.style.width = size + 'px';
+                            container.style.height = size + 'px';
+                            container.style.aspectRatio = '1';
+                            
+                            img.style.width = size + 'px';
+                            img.style.height = size + 'px';
+                        }
+                    }
+                    
+                    // object-fitとpositionを設定
+                    img.style.objectFit = 'cover';
+                    img.style.objectPosition = 'center';
+                    img.style.position = 'absolute';
+                    img.style.top = '0';
+                    img.style.left = '0';
+                    img.style.aspectRatio = '1';
+                    
+                    // 追加のスタイル属性を強制
+                    img.setAttribute('style', img.getAttribute('style') + ' !important');
+                });
+            }
         }).then(canvas => {
-            // Remove temporary container
-            document.body.removeChild(tempContainer);
+            // 元の背景色に戻す
+            elements.photoThemeGrid.style.backgroundColor = originalBg;
             
-            // Convert to blob
+            // ブラウザのデフォルトダウンロードを使用（アルバム保存は自動的に処理される場合がある）
             canvas.toBlob((blob) => {
-                // Create download link
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
-                link.download = `gridme-instagram-stories-${Date.now()}.png`;
+                link.download = `gridme-${new Date().getTime()}.png`;
                 link.href = url;
                 link.click();
                 
-                // Show instructions
-                showToast('画像をダウンロードしました。Instagramアプリでストーリーズに投稿してください！', 'success');
-                
-                // Clean up
+                // リソースをクリーンアップ
                 setTimeout(() => URL.revokeObjectURL(url), 100);
+                
+                showToast('ダウンロードを開始しました', 'success');
             }, 'image/png');
         }).catch(err => {
-            document.body.removeChild(tempContainer);
-            console.error('Instagram Stories画像の作成エラー:', err);
-            showToast('画像の作成に失敗しました', 'error');
-        });
-    }
-    
-    // 実際のダウンロード処理
-    function performDownload() {
-        html2canvas(elements.photoThemeGrid).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `gridme-${new Date().getTime()}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            showToast('ダウンロードを開始しました', 'success');
-        }).catch(err => {
+            // 元の背景色に戻す
+            elements.photoThemeGrid.style.backgroundColor = originalBg;
             console.error('ダウンロードエラー:', err);
             showToast('ダウンロードに失敗しました', 'error');
         });
@@ -520,13 +611,6 @@
             });
         }
         
-        // Instagram Storiesボタン（モーダル内）
-        if (elements.shareInstagramBtn) {
-            elements.shareInstagramBtn.addEventListener('click', () => {
-                shareInstagramStories();
-                closeShareModal();
-            });
-        }
         
         // 新しいSNS共有ボタンのイベントリスナー
         if (elements.copyUrlBtn) {
@@ -541,11 +625,6 @@
             });
         }
         
-        if (elements.shareFacebookBtn) {
-            elements.shareFacebookBtn.addEventListener('click', () => {
-                shareOnFacebook();
-            });
-        }
         
         if (elements.shareLineBtn) {
             elements.shareLineBtn.addEventListener('click', () => {

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dynamic Textarea</title>
+    <link rel="stylesheet" href="styles/design-tokens.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/app.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 300px;
+            margin: 0 auto;
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .test-grid-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h2>Dynamic Textarea Test</h2>
+        <div class="test-grid-item">
+            <textarea class="section-title-input" placeholder="短いテキスト" rows="1"></textarea>
+        </div>
+        <div class="test-grid-item">
+            <textarea class="section-title-input" placeholder="長いテキストを入力してください" rows="1">これは長いテキストの例です。一行に収まらない場合は自動的に二行に拡張されます。</textarea>
+        </div>
+    </div>
+    
+    <script>
+        // テキストエリアの高さを自動調整
+        function adjustTextareaHeight(textarea) {
+            // 一旦高さをリセット
+            textarea.style.height = '2.2em';
+            
+            // スクロール高さを取得
+            const scrollHeight = textarea.scrollHeight;
+            const lineHeight = parseFloat(window.getComputedStyle(textarea).lineHeight);
+            const padding = parseFloat(window.getComputedStyle(textarea).paddingTop) + 
+                           parseFloat(window.getComputedStyle(textarea).paddingBottom);
+            
+            // 2行分の高さを計算（行の高さ × 2 + パディング）
+            const twoLinesHeight = (lineHeight * 2) + padding;
+            
+            // 内容が1行を超える場合は2行分の高さに設定
+            if (scrollHeight > textarea.offsetHeight) {
+                textarea.style.height = Math.min(scrollHeight, twoLinesHeight) + 'px';
+            }
+        }
+        
+        // すべてのテキストエリアに対してイベントリスナーを設定
+        document.querySelectorAll('.section-title-input').forEach(textarea => {
+            textarea.addEventListener('input', (e) => {
+                adjustTextareaHeight(e.target);
+            });
+            
+            // 初期コンテンツがある場合は高さを調整
+            if (textarea.value) {
+                setTimeout(() => adjustTextareaHeight(textarea), 0);
+            }
+        });
+    </script>
+</body>
+</html>

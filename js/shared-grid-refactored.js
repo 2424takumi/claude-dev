@@ -25,8 +25,7 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         photoThemeGrid: document.getElementById('photo-theme-grid'),
         downloadBtn: document.getElementById('download-grid-btn'),
         gridBgColorInput: document.getElementById('grid-bg-color'),
-        themeToggle: document.querySelector('.theme-toggle'),
-        shareInstagramBtn: document.getElementById('share-instagram-stories-btn')
+        themeToggle: document.querySelector('.theme-toggle')
     };
     
     // 共有データを保存する変数
@@ -43,10 +42,7 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         const encodedData = urlParams.get('data');
         
         if (!encodedData) {
-            toast.error('共有データが見つかりません');
-            setTimeout(() => {
-                window.location.href = './index.html';
-            }, 2000);
+            // 共有データがない場合はnullを返す（デモモードで表示）
             return null;
         }
         
@@ -67,49 +63,71 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         return decodedData;
     }
     
+    // ページのタイトルとサブタイトルを更新
+    function updatePageTitles(nickname) {
+        const sharedTitle = document.querySelector('.shared-title');
+        const sharedSubtitle = document.querySelector('.shared-subtitle');
+        
+        if (sharedTitle) {
+            sharedTitle.textContent = `${nickname} Grid`;
+        }
+        
+        if (sharedSubtitle) {
+            sharedSubtitle.textContent = `Please add photos related to ${nickname}.`;
+        }
+    }
+    
     // グリッドレンダラーの初期化
     const gridRenderer = new GridRenderer('photo-theme-grid', {
         itemClass: 'grid-theme-item',
         renderItem: (gridItem, section, index) => {
+            // テーマテキストを上に表示
+            const themeText = document.createElement('div');
+            themeText.className = 'theme-text';
+            themeText.textContent = section.title || `テーマ ${index + 1}`;
+            gridItem.appendChild(themeText);
+            
             // セクションコンテナ
             const sectionContainer = document.createElement('div');
             sectionContainer.className = 'grid-section-container';
             
+            // 写真表示エリア
+            const photoArea = document.createElement('div');
+            photoArea.className = 'photo-display-area';
+            photoArea.dataset.index = index;
+            
             // 既に画像がアップロードされている場合
             if (state.uploadedImages[index]) {
                 // has-imageクラスを追加
+                photoArea.classList.add('has-image');
                 gridItem.classList.add('has-image');
                 
-                // 画像を表示（正方形にクロップ）
+                // 画像を表示
                 const img = document.createElement('img');
                 img.className = 'uploaded-image';
                 img.src = state.uploadedImages[index];
                 img.alt = `アップロードされた画像 ${index + 1}`;
-                sectionContainer.appendChild(img);
-                
-                // メニューボタンとプラスボタンは表示しない
+                photoArea.appendChild(img);
             } else {
-                // テーマテキストを表示
-                const themeText = document.createElement('div');
-                themeText.className = 'grid-theme-text';
-                themeText.textContent = section.title || `テーマ ${index + 1}`;
-                sectionContainer.appendChild(themeText);
-                
                 // プラスアイコン
-                const addButton = document.createElement('button');
-                addButton.className = 'grid-add-button';
-                addButton.innerHTML = `
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="12" y1="5" x2="12" y2="19"/>
-                        <line x1="5" y1="12" x2="19" y2="12"/>
-                    </svg>
-                `;
-                addButton.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    openUploadModal(index);
-                });
-                sectionContainer.appendChild(addButton);
+                const addPhotoIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                addPhotoIcon.setAttribute('class', 'add-photo-icon');
+                addPhotoIcon.setAttribute('viewBox', '0 0 24 24');
+                addPhotoIcon.setAttribute('fill', 'none');
+                addPhotoIcon.setAttribute('stroke', 'currentColor');
+                addPhotoIcon.setAttribute('stroke-width', '2');
+                addPhotoIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
+                
+                photoArea.appendChild(addPhotoIcon);
             }
+            
+            // クリックイベントの設定
+            photoArea.addEventListener('click', (e) => {
+                e.stopPropagation();
+                openUploadModal(index);
+            });
+            
+            sectionContainer.appendChild(photoArea);
             
             // テーマクラスを適用（存在する場合）
             if (section.theme) {
@@ -117,22 +135,34 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
             }
             
             gridItem.appendChild(sectionContainer);
-            
-            // クリックイベントの設定
-            if (!state.uploadedImages[index]) {
-                gridItem.addEventListener('click', () => openUploadModal(index));
-            }
         }
     });
     
     // グリッドの初期化
     function initializeGrid() {
         const sharedData = getSharedData();
-        if (!sharedData) return;
         
-        state.gridSize = sharedData.size || 2;
-        state.gridSections = sharedData.sections || [];
-        state.gridBgColor = sharedData.bgColor || '#FF8B25';
+        // デモデータを作成（共有データがない場合）
+        if (!sharedData) {
+            state.gridSize = 3;
+            state.gridSections = [];
+            const themes = ['動物', '食べ物', '季節', '色', '趣味', '音楽', 'スポーツ', '映画', '本'];
+            for (let i = 0; i < state.gridSize * state.gridSize; i++) {
+                state.gridSections.push({
+                    title: themes[i] || `テーマ ${i + 1}`
+                });
+            }
+            state.gridBgColor = '#FF8B25';
+        } else {
+            state.gridSize = sharedData.size || 2;
+            state.gridSections = sharedData.sections || [];
+            state.gridBgColor = sharedData.bgColor || '#FF8B25';
+            
+            // ニックネームがある場合、タイトルとサブタイトルを更新
+            if (sharedData.nickname) {
+                updatePageTitles(sharedData.nickname);
+            }
+        }
         
         // 背景色入力を更新
         if (elements.gridBgColorInput) {
@@ -143,7 +173,6 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         gridRenderer.setSize(state.gridSize);
         gridRenderer.render(state.gridSections);
         
-
         // 背景色を適用
         applyGridBackgroundColor();
         // 保存された画像を読み込み
@@ -425,26 +454,35 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         }
     }
     
-    // ダウンロード機能
+    // ダウンロード機能（写真アルバムへの保存）
     async function downloadGrid() {
         const filename = `gridme-${new Date().getTime()}.png`;
-        const dataUrl = await gridRenderer.exportAsImage(filename);
         
-        if (dataUrl) {
-            toast.success('ダウンロードを開始しました');
-        } else {
-            // html2canvasライブラリがない場合は動的に読み込む
+        // html2canvasが読み込まれているか確認
+        if (typeof html2canvas === 'undefined') {
+            // html2canvasライブラリを動的に読み込む
             const script = document.createElement('script');
             script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
             script.onload = async () => {
-                const dataUrl = await gridRenderer.exportAsImage(filename);
-                if (dataUrl) {
-                    toast.success('ダウンロードを開始しました');
-                } else {
-                    toast.error('ダウンロードに失敗しました');
-                }
+                await performSaveToAlbum(filename);
             };
             document.head.appendChild(script);
+        } else {
+            await performSaveToAlbum(filename);
+        }
+    }
+    
+    // 実際の保存処理
+    async function performSaveToAlbum(filename) {
+        const result = await gridRenderer.saveAsPhoto(filename);
+        
+        if (result === true) {
+            toast.success('画像を保存しました');
+        } else if (result === false) {
+            // ユーザーがキャンセルした場合
+            toast.info('保存をキャンセルしました');
+        } else {
+            toast.error('保存に失敗しました');
         }
     }
     
@@ -495,41 +533,6 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         });
     }
     
-    // Instagram Storiesで共有
-    async function shareInstagramStories() {
-        try {
-            // グリッドを画像として生成
-            const filename = `gridme-stories-${new Date().getTime()}.png`;
-            let dataUrl = await gridRenderer.exportAsImage(filename, false); // falseでダウンロードをスキップ
-            
-            if (!dataUrl && typeof html2canvas === 'undefined') {
-                // html2canvasライブラリがない場合は動的に読み込む
-                await new Promise((resolve, reject) => {
-                    const script = document.createElement('script');
-                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-                    script.onload = resolve;
-                    script.onerror = reject;
-                    document.head.appendChild(script);
-                });
-                
-                // 再度画像生成を試行
-                dataUrl = await gridRenderer.exportAsImage(filename, false);
-            }
-            
-            if (dataUrl) {
-                // ShareManagerを使用してInstagram Storiesで共有
-                const result = share.shareOnInstagramStories(dataUrl);
-                if (result.success) {
-                    toast.success(result.message);
-                }
-            } else {
-                toast.error('画像の生成に失敗しました');
-            }
-        } catch (error) {
-            console.error('Instagram share error:', error);
-            toast.error('Instagram共有中にエラーが発生しました');
-        }
-    }
 
     // イベントリスナーの設定
     function setupEventListeners() {
@@ -538,10 +541,6 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         
         if (elements.downloadBtn) {
             elements.downloadBtn.addEventListener('click', downloadGrid);
-        }
-        
-        if (elements.shareInstagramBtn) {
-            elements.shareInstagramBtn.addEventListener('click', shareInstagramStories);
         }
         
         // 背景色変更は無効化（共有データの色のみ使用）
