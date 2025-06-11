@@ -800,13 +800,13 @@ main {
 /* ===== テーマグリッド ===== */
 .theme-grid {
     display: grid;
-    gap: 12px;
+    gap: 8px;
     aspect-ratio: 1;
     max-width: 780px;
     width: calc(100% - 32px);
     margin: 0 auto;
     background: #FF8B25;
-    padding: 12px;
+    padding: 8px;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
 }
@@ -814,7 +814,7 @@ main {
 .grid-theme-item {
     position: relative;
     background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(0, 0, 0, 0.1);
+    border: none;
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
@@ -1386,8 +1386,8 @@ main {
     .theme-grid {
         max-width: 780px;
         width: calc(100% - 32px);
-        padding: 12px;
-        gap: 12px;
+        padding: 8px;
+        gap: 8px;
     }
     
     .action-buttons {
@@ -1402,8 +1402,8 @@ main {
 
 @media (max-width: 480px) {
     .theme-grid {
-        gap: 12px;
-        padding: 12px;
+        gap: 8px;
+        padding: 8px;
         width: calc(100% - 32px);
         max-width: 780px;
     }
@@ -1521,6 +1521,21 @@ main {
 .photo-theme-grid .photo-display-area {
     aspect-ratio: 1 !important;
     overflow: hidden !important;
+}
+
+/* 画像がある場合、グリッドアイテムのパディングを削除して画像で埋める */
+.grid-theme-item.has-image {
+    padding: 0 !important;
+}
+
+.grid-theme-item.has-image .image-container,
+.grid-theme-item.has-image .photo-display-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-lg);
 }
 
 /* ===== 追加のダークモード対応 ===== */
