@@ -501,7 +501,7 @@
         
         html2canvas(elements.photoThemeGrid, {
             backgroundColor: state.gridBgColor,
-            scale: 2, // 高解像度
+            scale: 3, // より高解像度（画質向上）
             useCORS: true, // CORS画像のサポート
             allowTaint: true, // 外部画像の許可
             logging: false, // デバッグログを無効化
@@ -560,29 +560,26 @@
                         const container = img.closest('.image-container');
                         if (container) {
                             // コンテナのサイズを取得
-                            const containerStyle = window.getComputedStyle(originalImg.closest('.image-container'));
-                            const size = parseFloat(containerStyle.width);
+                            const containerRect = originalImg.closest('.image-container').getBoundingClientRect();
+                            const size = containerRect.width;
                             
-                            // 正方形のサイズを維持
+                            // コンテナを正方形に設定
                             container.style.width = size + 'px';
                             container.style.height = size + 'px';
-                            container.style.aspectRatio = '1';
+                            container.style.overflow = 'hidden';
+                            container.style.position = 'relative';
                             
-                            img.style.width = size + 'px';
-                            img.style.height = size + 'px';
+                            // 画像のスタイルを設定（100%で埋めて、object-fit: coverでクロップ）
+                            img.style.width = '100%';
+                            img.style.height = '100%';
+                            img.style.objectFit = 'cover';
+                            img.style.objectPosition = 'center';
+                            img.style.position = 'absolute';
+                            img.style.top = '0';
+                            img.style.left = '0';
+                            img.style.display = 'block';
                         }
                     }
-                    
-                    // object-fitとpositionを設定
-                    img.style.objectFit = 'cover';
-                    img.style.objectPosition = 'center';
-                    img.style.position = 'absolute';
-                    img.style.top = '0';
-                    img.style.left = '0';
-                    img.style.aspectRatio = '1';
-                    
-                    // 追加のスタイル属性を強制
-                    img.setAttribute('style', img.getAttribute('style') + ' !important');
                 });
             }
         }).then(canvas => {
