@@ -862,10 +862,12 @@ main {
     line-height: 1.4;
     text-align: center;
     margin-bottom: var(--spacing-2);
-    min-height: 2.4em;
+    height: 2.2em; /* デフォルトは1行分の高さ */
     vertical-align: middle;
     display: block;
     margin: auto;
+    overflow-wrap: break-word; /* 長い単語を折り返す */
+    word-wrap: break-word; /* 古いブラウザ対応 */
 }
 
 .section-title-input:focus {
