@@ -814,7 +814,7 @@ main {
 .grid-theme-item {
     position: relative;
     background: white;
-    border: none;
+    border: 1px solid var(--border-primary);
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
@@ -849,11 +849,11 @@ main {
     border-radius: var(--radius-md);
     padding: var(--spacing-2) var(--spacing-2);
     font-size: var(--text-sm);
-    font-weight: var(--font-normal);
+    font-weight: var(--font-medium);
     font-family: inherit;
     transition: all var(--transition-base);
     background: transparent;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     resize: none;
     overflow: hidden;
     line-height: 1.4;
@@ -1106,9 +1106,8 @@ main {
 }
 
 .dark-theme .section-title-input {
-    background: var(--bg-secondary); /* Use theme-aware background in dark mode */
-    color: var(--text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent; /* Keep transparent in dark mode */
+    color: var(--text-primary);
 }
 
 .dark-theme .section-title-input:focus {

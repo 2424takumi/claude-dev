@@ -86,11 +86,11 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
                 }, 200);
             });
             
-            // セクションコンテナ（プラスアイコン用）
+            // セクションコンテナ（視覚的な要素用）
             const sectionContainer = document.createElement('div');
             sectionContainer.className = 'grid-section-container';
             
-            // プラスアイコン
+            // プラスアイコン（視覚的な補助として）
             const addIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             addIcon.setAttribute('class', 'add-photo-icon');
             addIcon.setAttribute('viewBox', '0 0 24 24');
@@ -100,6 +100,7 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
             addIcon.style.width = '48px';
             addIcon.style.height = '48px';
             addIcon.style.color = 'var(--text-tertiary)';
+            addIcon.style.opacity = '0.3';
             addIcon.innerHTML = '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
             
             sectionContainer.appendChild(addIcon);
