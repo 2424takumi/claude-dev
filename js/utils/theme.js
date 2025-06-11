@@ -186,4 +186,3 @@ export class ThemeManager {
 
 // デフォルトインスタンスをエクスポート
 export const theme = new ThemeManager();
-export { ThemeManager };

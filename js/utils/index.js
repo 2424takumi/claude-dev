@@ -5,7 +5,8 @@
  */
 
 export { toast, ToastManager } from './toast.js';
-export { theme, ThemeManager } from './theme.js';
+export { theme } from './theme.js';
+export { ThemeManager } from './theme.js';
 export { modal, ModalManager } from './modal.js';
 export { storage, StorageManager, Storage } from './storage.js';
 export { share, ShareManager } from './share.js';
