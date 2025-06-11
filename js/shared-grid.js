@@ -415,7 +415,7 @@
         fileInput.value = '';
     }
     
-    // ダウンロード機能
+    // ダウンロード機能（写真アルバムへの保存）
     function downloadGrid() {
         // html2canvasライブラリを使用してグリッドをキャプチャ
         if (typeof html2canvas === 'undefined') {
@@ -477,6 +477,20 @@
         const text = encodeURIComponent('GridMe!!でフォトグリッドを作成しました！');
         const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${text}`;
         window.open(lineUrl, '_blank', 'width=600,height=400');
+    }
+    
+    // フォールバックダウンロード処理
+    function fallbackDownload(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = url;
+        link.click();
+        
+        // リソースをクリーンアップ
+        setTimeout(() => URL.revokeObjectURL(url), 100);
+        
+        showToast('画像を保存しました', 'success');
     }
     
     // 実際のダウンロード処理
@@ -575,18 +589,31 @@
             // 元の背景色に戻す
             elements.photoThemeGrid.style.backgroundColor = originalBg;
             
-            // ブラウザのデフォルトダウンロードを使用（アルバム保存は自動的に処理される場合がある）
-            canvas.toBlob((blob) => {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = `gridme-${new Date().getTime()}.png`;
-                link.href = url;
-                link.click();
+            // 画像をBlobに変換
+            canvas.toBlob(async (blob) => {
+                const filename = `gridme-${new Date().getTime()}.png`;
                 
-                // リソースをクリーンアップ
-                setTimeout(() => URL.revokeObjectURL(url), 100);
-                
-                showToast('ダウンロードを開始しました', 'success');
+                // モバイルデバイスでWeb Share APIが利用可能な場合
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/png' })] })) {
+                    try {
+                        const file = new File([blob], filename, { type: 'image/png' });
+                        await navigator.share({
+                            files: [file],
+                            title: 'GridMe フォトグリッド',
+                            text: 'GridMeで作成したフォトグリッド'
+                        });
+                        showToast('画像を共有しました', 'success');
+                    } catch (err) {
+                        if (err.name !== 'AbortError') {
+                            console.error('共有エラー:', err);
+                            // 共有に失敗した場合は通常のダウンロードにフォールバック
+                            fallbackDownload(blob, filename);
+                        }
+                    }
+                } else {
+                    // Web Share APIが利用できない場合は通常のダウンロード
+                    fallbackDownload(blob, filename);
+                }
             }, 'image/png');
         }).catch(err => {
             // 元の背景色に戻す
