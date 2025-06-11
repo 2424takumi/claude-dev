@@ -493,16 +493,82 @@
             logging: false, // デバッグログを無効化
             imageTimeout: 0, // 画像タイムアウトを無効化
             onclone: (clonedDoc) => {
+                // クローンされたドキュメントのグリッドを取得
+                const clonedGrid = clonedDoc.getElementById('photo-theme-grid');
+                
+                // グリッドのサイズを明示的に設定
+                if (clonedGrid) {
+                    const computedStyle = window.getComputedStyle(elements.photoThemeGrid);
+                    clonedGrid.style.width = computedStyle.width;
+                    clonedGrid.style.height = computedStyle.height;
+                }
+                
+                // 各グリッドアイテムと画像コンテナのサイズを固定
+                const clonedGridItems = clonedDoc.querySelectorAll('.grid-theme-item');
+                clonedGridItems.forEach((item, index) => {
+                    const originalItem = elements.photoThemeGrid.querySelectorAll('.grid-theme-item')[index];
+                    if (originalItem) {
+                        const originalRect = originalItem.getBoundingClientRect();
+                        item.style.width = originalRect.width + 'px';
+                        item.style.height = originalRect.height + 'px';
+                    }
+                });
+                
+                // 画像表示エリアのサイズを固定
+                const clonedPhotoAreas = clonedDoc.querySelectorAll('.photo-display-area');
+                clonedPhotoAreas.forEach((area, index) => {
+                    const originalArea = elements.photoThemeGrid.querySelectorAll('.photo-display-area')[index];
+                    if (originalArea) {
+                        const originalRect = originalArea.getBoundingClientRect();
+                        area.style.width = originalRect.width + 'px';
+                        area.style.height = originalRect.height + 'px';
+                        area.style.position = 'absolute';
+                    }
+                });
+                
+                // 画像コンテナのサイズを固定
+                const clonedContainers = clonedDoc.querySelectorAll('.image-container');
+                clonedContainers.forEach((container, index) => {
+                    const originalContainer = elements.photoThemeGrid.querySelectorAll('.image-container')[index];
+                    if (originalContainer) {
+                        const originalRect = originalContainer.getBoundingClientRect();
+                        container.style.width = originalRect.width + 'px';
+                        container.style.height = originalRect.height + 'px';
+                        container.style.position = 'relative';
+                    }
+                });
+                
                 // クローンされたドキュメントで画像のスタイルを確実に適用
                 const clonedImages = clonedDoc.querySelectorAll('.uploaded-image');
-                clonedImages.forEach(img => {
+                clonedImages.forEach((img, index) => {
+                    const originalImg = elements.photoThemeGrid.querySelectorAll('.uploaded-image')[index];
+                    if (originalImg) {
+                        const container = img.closest('.image-container');
+                        if (container) {
+                            // コンテナのサイズを取得
+                            const containerStyle = window.getComputedStyle(originalImg.closest('.image-container'));
+                            const size = parseFloat(containerStyle.width);
+                            
+                            // 正方形のサイズを維持
+                            container.style.width = size + 'px';
+                            container.style.height = size + 'px';
+                            container.style.aspectRatio = '1';
+                            
+                            img.style.width = size + 'px';
+                            img.style.height = size + 'px';
+                        }
+                    }
+                    
+                    // object-fitとpositionを設定
                     img.style.objectFit = 'cover';
                     img.style.objectPosition = 'center';
-                    img.style.width = '100%';
-                    img.style.height = '100%';
                     img.style.position = 'absolute';
                     img.style.top = '0';
                     img.style.left = '0';
+                    img.style.aspectRatio = '1';
+                    
+                    // 追加のスタイル属性を強制
+                    img.setAttribute('style', img.getAttribute('style') + ' !important');
                 });
             }
         }).then(canvas => {

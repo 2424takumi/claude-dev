@@ -362,6 +362,9 @@
     height: 100%;
     overflow: hidden;
     border-radius: var(--radius-lg);
+    /* 正方形のアスペクト比を強制 */
+    aspect-ratio: 1;
+    display: block;
 }
 
 /* ===== 画像削除ボタン ===== */
