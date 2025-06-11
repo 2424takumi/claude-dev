@@ -1481,6 +1481,32 @@ main {
     border-color: var(--neutral-700);
 }
 
+/* ===== グリッド画像の強制的なアスペクト比維持 ===== */
+/* 全てのグリッド実装で画像が正方形にクロップされるようにする */
+.grid-theme-item .uploaded-image,
+.theme-grid .uploaded-image,
+.photo-theme-grid .uploaded-image {
+    object-fit: cover !important;
+    object-position: center !important;
+    -webkit-object-fit: cover !important;
+    -moz-object-fit: cover !important;
+    -o-object-fit: cover !important;
+}
+
+.grid-theme-item .image-container,
+.theme-grid .image-container,
+.photo-theme-grid .image-container {
+    overflow: hidden !important;
+    aspect-ratio: 1 !important;
+}
+
+.grid-theme-item .photo-display-area,
+.theme-grid .photo-display-area,
+.photo-theme-grid .photo-display-area {
+    aspect-ratio: 1 !important;
+    overflow: hidden !important;
+}
+
 /* ===== 追加のダークモード対応 ===== */
 
 /* メインコンテンツ領域のダークモード */
