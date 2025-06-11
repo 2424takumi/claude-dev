@@ -52,6 +52,7 @@
 .grid-theme-item {
     position: relative;
     background: var(--bg-primary);
+    border: 12px solid var(--bg-secondary);
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
