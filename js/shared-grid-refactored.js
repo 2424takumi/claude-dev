@@ -42,10 +42,7 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         const encodedData = urlParams.get('data');
         
         if (!encodedData) {
-            toast.error('共有データが見つかりません');
-            setTimeout(() => {
-                window.location.href = './index.html';
-            }, 2000);
+            // 共有データがない場合はnullを返す（デモモードで表示）
             return null;
         }
         
@@ -144,27 +141,26 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
     // グリッドの初期化
     function initializeGrid() {
         const sharedData = getSharedData();
-        if (!sharedData) return;
         
-        state.gridSize = sharedData.size || 2;
-        state.gridSections = sharedData.sections || [];
-        state.gridBgColor = sharedData.bgColor || '#FF8B25';
-        
-
-        // ニックネームがある場合、タイトルとサブタイトルを更新
-        if (sharedData.nickname) {
-            updatePageTitles(sharedData.nickname);
-
-        // ニックネームがある場合はタイトルとサブタイトルを更新
-        if (sharedData.nickname) {
-            const titleElement = document.querySelector('.shared-title');
-            const subtitleElement = document.querySelector('.shared-subtitle');
-            
-            if (titleElement) {
-                titleElement.textContent = `${sharedData.nickname} をGridしましょう`;
+        // デモデータを作成（共有データがない場合）
+        if (!sharedData) {
+            state.gridSize = 3;
+            state.gridSections = [];
+            const themes = ['動物', '食べ物', '季節', '色', '趣味', '音楽', 'スポーツ', '映画', '本'];
+            for (let i = 0; i < state.gridSize * state.gridSize; i++) {
+                state.gridSections.push({
+                    title: themes[i] || `テーマ ${i + 1}`
+                });
             }
-            if (subtitleElement) {
-                subtitleElement.textContent = `${sharedData.nickname}にあった画像を追加してね`;
+            state.gridBgColor = '#FF8B25';
+        } else {
+            state.gridSize = sharedData.size || 2;
+            state.gridSections = sharedData.sections || [];
+            state.gridBgColor = sharedData.bgColor || '#FF8B25';
+            
+            // ニックネームがある場合、タイトルとサブタイトルを更新
+            if (sharedData.nickname) {
+                updatePageTitles(sharedData.nickname);
             }
         }
         
@@ -177,7 +173,6 @@ import { toast, modal, share, GridRenderer, StorageManager, theme } from './util
         gridRenderer.setSize(state.gridSize);
         gridRenderer.render(state.gridSections);
         
-
         // 背景色を適用
         applyGridBackgroundColor();
         // 保存された画像を読み込み
