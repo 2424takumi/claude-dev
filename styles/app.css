@@ -23,6 +23,12 @@ body {
     transition: background-color var(--transition-base), color var(--transition-base);
 }
 
+main {
+    background: var(--bg-primary);
+    min-height: 100vh;
+    padding-top: 80px; /* Account for fixed navbar */
+}
+
 .container {
     max-width: 1280px;
     margin: 0 auto;
@@ -63,7 +69,8 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--bg-primary);
+    background: color-mix(in srgb, var(--bg-primary) 95%, transparent);
     backdrop-filter: blur(10px);
     border-bottom: none;
     z-index: var(--z-sticky);
@@ -553,7 +560,8 @@ body {
 
 /* ===== アプリケーションスタイル ===== */
 .app-header {
-    background: rgba(255, 255, 255, 0.9);
+    background: var(--bg-primary);
+    background: color-mix(in srgb, var(--bg-primary) 90%, transparent);
     backdrop-filter: blur(10px);
     padding: var(--spacing-1) 0;
     margin-bottom: 0;
@@ -860,7 +868,7 @@ body {
 .section-title-input:focus {
     outline: none;
     box-shadow: none;
-    background: white; /* Keep white background on focus */
+    background: var(--bg-primary); /* Use theme-aware background */
 }
 
 /* セクションテーマ選択 */
@@ -1099,13 +1107,13 @@ body {
 }
 
 .dark-theme .section-title-input {
-    background: white; /* Pure white background in dark mode */
+    background: var(--bg-secondary); /* Use theme-aware background in dark mode */
     color: var(--text-secondary);
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dark-theme .section-title-input:focus {
-    background: white; /* Keep white background on focus */
+    background: var(--bg-primary); /* Use theme-aware background */
     border-color: rgba(255, 139, 37, 0.3);
 }
 
