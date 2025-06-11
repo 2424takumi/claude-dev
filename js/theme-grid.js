@@ -333,6 +333,55 @@
     }
     
     
+    // ダウンロード機能
+    function downloadGrid() {
+        // html2canvasライブラリを使用してグリッドをキャプチャ
+        if (typeof html2canvas === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = () => {
+                performDownload();
+            };
+            document.head.appendChild(script);
+        } else {
+            performDownload();
+        }
+    }
+    
+    // 実際のダウンロード処理
+    function performDownload() {
+        // グリッドに背景色を一時的に設定
+        const originalBg = elements.themeGrid.style.backgroundColor;
+        elements.themeGrid.style.backgroundColor = state.gridBgColor;
+        
+        html2canvas(elements.themeGrid, {
+            backgroundColor: state.gridBgColor,
+            scale: 2 // 高解像度
+        }).then(canvas => {
+            // 元の背景色に戻す
+            elements.themeGrid.style.backgroundColor = originalBg;
+            
+            // ブラウザのデフォルトダウンロードを使用（アルバム保存は自動的に処理される場合がある）
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `gridme-${new Date().getTime()}.png`;
+                link.href = url;
+                link.click();
+                
+                // リソースをクリーンアップ
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+                
+                showToast('ダウンロードを開始しました', 'success');
+            }, 'image/png');
+        }).catch(err => {
+            // 元の背景色に戻す
+            elements.themeGrid.style.backgroundColor = originalBg;
+            console.error('ダウンロードエラー:', err);
+            showToast('ダウンロードに失敗しました', 'error');
+        });
+    }
+    
     // グリッド背景色を適用
     function applyGridBackgroundColor() {
         if (elements.themeGrid) {
@@ -458,6 +507,11 @@
         }
         if (elements.shareLineBtn) {
             elements.shareLineBtn.addEventListener('click', shareOnLine);
+        }
+        
+        // ダウンロードボタン
+        if (elements.downloadBtn) {
+            elements.downloadBtn.addEventListener('click', downloadGrid);
         }
         
         // 背景色変更
