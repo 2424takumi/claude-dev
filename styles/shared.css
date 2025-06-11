@@ -282,6 +282,9 @@
     /* グリッドテーマテキスト */
     .grid-theme-text {
         color: var(--text-primary);
+        background: rgba(255, 255, 255, 0.1);
+        padding: var(--spacing-2);
+        border-radius: var(--radius-sm);
     }
     
     /* テーマテキスト */
@@ -292,24 +295,31 @@
 
 /* ===== グリッドテーマテキスト ===== */
 .grid-theme-text {
-    /* Removed display: none to ensure grid items are visible */
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--text-primary);
+    text-align: center;
 }
 
 /* ===== テーマテキスト ===== */
 .theme-text {
     position: relative;
     width: 100%;
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
-    color: var(--text-secondary);
-    padding: 0;
-    margin-bottom: var(--spacing-2);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    color: var(--text-primary);
+    padding: var(--spacing-2);
+    margin-bottom: var(--spacing-3);
     text-align: center;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-md);
+    line-height: 1.4;
 }
 
 /* ダークモード時のテーマテキスト */
 .dark-theme .theme-text {
-    color: var(--text-secondary);
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* ===== グリッドボタン ===== */
