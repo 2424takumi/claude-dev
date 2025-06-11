@@ -104,6 +104,8 @@
     cursor: pointer;
     transition: all var(--transition-base);
     overflow: hidden;
+    /* Ensure the photo display area maintains square aspect ratio */
+    aspect-ratio: 1;
 }
 
 .photo-display-area.has-image {
@@ -339,12 +341,18 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: center;
     border-radius: var(--radius-lg);
     display: block;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    /* Force the image to maintain aspect ratio and crop */
+    overflow: hidden;
+    -webkit-object-fit: cover;
+    -moz-object-fit: cover;
+    -o-object-fit: cover;
 }
 
 /* ===== 画像コンテナ ===== */
@@ -352,6 +360,8 @@
     position: relative;
     width: 100%;
     height: 100%;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
 }
 
 /* ===== 画像削除ボタン ===== */

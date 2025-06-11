@@ -120,7 +120,24 @@ export class GridRenderer {
         try {
             const canvas = await html2canvas(this.container, {
                 backgroundColor: null,
-                scale: 2 // 高解像度
+                scale: 2, // 高解像度
+                useCORS: true, // CORS画像のサポート
+                allowTaint: true, // 外部画像の許可
+                logging: false, // デバッグログを無効化
+                imageTimeout: 0, // 画像タイムアウトを無効化
+                onclone: (clonedDoc) => {
+                    // クローンされたドキュメントで画像のスタイルを確実に適用
+                    const clonedImages = clonedDoc.querySelectorAll('.uploaded-image');
+                    clonedImages.forEach(img => {
+                        img.style.objectFit = 'cover';
+                        img.style.objectPosition = 'center';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.position = 'absolute';
+                        img.style.top = '0';
+                        img.style.left = '0';
+                    });
+                }
             });
             
             const dataUrl = canvas.toDataURL('image/png');
