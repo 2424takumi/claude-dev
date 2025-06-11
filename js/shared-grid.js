@@ -12,7 +12,8 @@
         gridSize: 2,
         gridSections: [],
         uploadedImages: {}, // インデックスをキーとして画像を保存
-        gridBgColor: '#FF8B25' // グリッド背景色のデフォルト値
+        gridBgColor: '#FF8B25', // グリッド背景色のデフォルト値
+        nickname: '' // ニックネームを保存
     };
     
     // DOM要素
@@ -59,6 +60,23 @@
         }
     }
     
+    // サブタイトルテキストを更新
+    function updateSubtitleText() {
+        const subtitleElement = document.querySelector('.shared-subtitle');
+        if (!subtitleElement || !state.nickname) return;
+        
+        // アップロードされた画像の数をカウント
+        const imageCount = Object.keys(state.uploadedImages).length;
+        
+        if (imageCount > 0) {
+            // 画像がある場合：長押しで削除できることを案内
+            subtitleElement.textContent = '画像を長押しすると画像を削除できるよ';
+        } else {
+            // 画像がない場合：元のメッセージ
+            subtitleElement.textContent = `${state.nickname}にあった画像を追加してね`;
+        }
+    }
+    
     // グリッドの初期化
     function initializeGrid() {
         const sharedData = getSharedData();
@@ -67,6 +85,7 @@
         state.gridSize = sharedData.size || 2;
         state.gridSections = sharedData.sections || [];
         state.gridBgColor = sharedData.bgColor || '#FF8B25';
+        state.nickname = sharedData.nickname || '';
         
 
         // ニックネームがある場合はタイトルとサブタイトルを更新
@@ -77,9 +96,7 @@
             if (titleElement) {
                 titleElement.textContent = `${sharedData.nickname} をGridしましょう`;
             }
-            if (subtitleElement) {
-                subtitleElement.textContent = `${sharedData.nickname}にあった画像を追加してね`;
-            }
+            updateSubtitleText();
         }
         
         // グリッドHTMLの生成
@@ -266,6 +283,9 @@
         if (themeText) {
             themeText.style.display = 'none';
         }
+        
+        // サブタイトルテキストを更新
+        updateSubtitleText();
 
     }
     
@@ -346,6 +366,9 @@
             
             // 表示をリセット
             resetPhotoDisplay(index);
+            
+            // サブタイトルテキストを更新
+            updateSubtitleText();
             
             showToast('画像を削除しました', 'success');
         }
