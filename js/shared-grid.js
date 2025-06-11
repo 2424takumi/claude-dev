@@ -494,10 +494,87 @@
     }
     
     // 実際のダウンロード処理
-    function performDownload() {
+    async function performDownload() {
         // グリッドに背景色を一時的に設定
         const originalBg = elements.photoThemeGrid.style.backgroundColor;
         elements.photoThemeGrid.style.backgroundColor = state.gridBgColor;
+        
+        // スケールファクターを取得（高解像度対応）
+        const scale = 3; // html2canvasのscaleと同じ値
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        
+        // html2canvasの前に画像を手動でクロップ処理
+        const images = elements.photoThemeGrid.querySelectorAll('.uploaded-image');
+        const originalImageStyles = [];
+        const imageLoadPromises = [];
+        
+        // 各画像を一時的にCanvasでクロップした画像に置き換える
+        images.forEach((img, index) => {
+            if (img.complete && img.naturalWidth > 0) {
+                const container = img.closest('.photo-display-area') || img.closest('.image-container');
+                if (container) {
+                    // 元のスタイルを保存
+                    originalImageStyles.push({
+                        element: img,
+                        src: img.src,
+                        style: img.style.cssText
+                    });
+                    
+                    // 一時的なCanvasを作成してクロップ
+                    const tempCanvas = document.createElement('canvas');
+                    const ctx = tempCanvas.getContext('2d');
+                    
+                    // 高解像度用のサイズを計算
+                    const displaySize = container.getBoundingClientRect().width;
+                    const canvasSize = displaySize * scale;
+                    
+                    tempCanvas.width = canvasSize;
+                    tempCanvas.height = canvasSize;
+                    
+                    // 画像のアスペクト比を計算して正方形にクロップ
+                    const imgAspect = img.naturalWidth / img.naturalHeight;
+                    let sx = 0, sy = 0, sWidth = img.naturalWidth, sHeight = img.naturalHeight;
+                    
+                    if (imgAspect > 1) {
+                        // 横長の画像：左右をクロップ（中央を残す）
+                        sWidth = img.naturalHeight;
+                        sx = (img.naturalWidth - sWidth) / 2;
+                    } else if (imgAspect < 1) {
+                        // 縦長の画像：上下をクロップ（中央を残す）
+                        sHeight = img.naturalWidth;
+                        sy = (img.naturalHeight - sHeight) / 2;
+                    }
+                    // 正方形の画像はそのまま
+                    
+                    // 高品質でクロップして描画
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, canvasSize, canvasSize);
+                    
+                    // 新しい画像の読み込みを待つPromiseを作成
+                    const loadPromise = new Promise((resolve) => {
+                        const newImg = new Image();
+                        newImg.onload = () => {
+                            img.src = tempCanvas.toDataURL('image/png', 1.0);
+                            // 元のスタイルを維持しながら、幅と高さを明示的に設定
+                            img.style.width = displaySize + 'px';
+                            img.style.height = displaySize + 'px';
+                            img.style.objectFit = 'contain';
+                            resolve();
+                        };
+                        newImg.src = tempCanvas.toDataURL('image/png', 1.0);
+                    });
+                    
+                    imageLoadPromises.push(loadPromise);
+                }
+            }
+        });
+        
+        // すべての画像の読み込みを待つ
+        await Promise.all(imageLoadPromises);
+        
+        // 少し待機して、DOMの更新を確実に反映させる
+        await new Promise(resolve => setTimeout(resolve, 100));
         
         html2canvas(elements.photoThemeGrid, {
             backgroundColor: state.gridBgColor,
@@ -506,6 +583,7 @@
             allowTaint: true, // 外部画像の許可
             logging: false, // デバッグログを無効化
             imageTimeout: 0, // 画像タイムアウトを無効化
+            // html2canvasのoncloneは画像のスタイル調整には使用しない
             onclone: (clonedDoc) => {
                 // クローンされたドキュメントのグリッドを取得
                 const clonedGrid = clonedDoc.getElementById('photo-theme-grid');
@@ -554,51 +632,18 @@
                     }
                 });
                 
-                // クローンされたドキュメントで画像のスタイルを確実に適用
-                const clonedImages = clonedDoc.querySelectorAll('.uploaded-image');
-                clonedImages.forEach((img, index) => {
-                    const originalImg = elements.photoThemeGrid.querySelectorAll('.uploaded-image')[index];
-                    if (originalImg) {
-                        // 画像の親要素（photo-display-areaまたはimage-container）を取得
-                        const photoArea = img.closest('.photo-display-area');
-                        const container = img.closest('.image-container');
-                        
-                        if (photoArea) {
-                            // photo-display-areaが正方形であることを確認
-                            const size = photoArea.style.width || photoArea.style.height;
-                            photoArea.style.aspectRatio = '1';
-                            photoArea.style.overflow = 'hidden';
-                        }
-                        
-                        if (container) {
-                            // コンテナを正方形に設定
-                            const containerSize = container.parentElement.offsetWidth;
-                            container.style.width = '100%';
-                            container.style.height = '100%';
-                            container.style.overflow = 'hidden';
-                            container.style.position = 'relative';
-                            container.style.aspectRatio = '1';
-                        }
-                        
-                        // 画像のスタイルを強制的に設定
-                        img.style.cssText = `
-                            width: 100% !important;
-                            height: 100% !important;
-                            object-fit: cover !important;
-                            object-position: center !important;
-                            position: absolute !important;
-                            top: 0 !important;
-                            left: 0 !important;
-                            display: block !important;
-                            max-width: none !important;
-                            max-height: none !important;
-                        `;
-                    }
-                });
+                // クローンされたドキュメントでは、既にクロップ済みの画像を使用するため
+                // 追加のスタイル調整は不要
             }
         }).then(canvas => {
             // 元の背景色に戻す
             elements.photoThemeGrid.style.backgroundColor = originalBg;
+            
+            // 元の画像に戻す
+            originalImageStyles.forEach(item => {
+                item.element.src = item.src;
+                item.element.style.cssText = item.style;
+            });
             
             // 画像をBlobに変換
             canvas.toBlob(async (blob) => {
@@ -629,6 +674,15 @@
         }).catch(err => {
             // 元の背景色に戻す
             elements.photoThemeGrid.style.backgroundColor = originalBg;
+            
+            // エラー時も元の画像に戻す
+            if (originalImageStyles && originalImageStyles.length > 0) {
+                originalImageStyles.forEach(item => {
+                    item.element.src = item.src;
+                    item.element.style.cssText = item.style;
+                });
+            }
+            
             console.error('ダウンロードエラー:', err);
             showToast('ダウンロードに失敗しました', 'error');
         });
