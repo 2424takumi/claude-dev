@@ -119,10 +119,13 @@
         titleInput.value = section.title;
         titleInput.dataset.index = index;
         titleInput.dataset.field = 'title';
-        titleInput.rows = 2;
+        titleInput.rows = 1;
         
         // イベントリスナーの追加
-        titleInput.addEventListener('input', handleSectionUpdate);
+        titleInput.addEventListener('input', (e) => {
+            handleSectionUpdate(e);
+            adjustTextareaHeight(e.target);
+        });
         titleInput.addEventListener('focus', () => {
             state.currentFocusedInput = titleInput;
         });
@@ -138,7 +141,32 @@
         // 要素の組み立て - テキストのみ追加
         gridItem.appendChild(titleInput);
         
+        // 初期コンテンツがある場合は高さを調整
+        if (section.title) {
+            setTimeout(() => adjustTextareaHeight(titleInput), 0);
+        }
+        
         return gridItem;
+    }
+    
+    // テキストエリアの高さを自動調整
+    function adjustTextareaHeight(textarea) {
+        // 一旦高さをリセット
+        textarea.style.height = '2.2em';
+        
+        // スクロール高さを取得
+        const scrollHeight = textarea.scrollHeight;
+        const lineHeight = parseFloat(window.getComputedStyle(textarea).lineHeight);
+        const padding = parseFloat(window.getComputedStyle(textarea).paddingTop) + 
+                       parseFloat(window.getComputedStyle(textarea).paddingBottom);
+        
+        // 2行分の高さを計算（行の高さ × 2 + パディング）
+        const twoLinesHeight = (lineHeight * 2) + padding;
+        
+        // 内容が1行を超える場合は2行分の高さに設定
+        if (scrollHeight > textarea.offsetHeight) {
+            textarea.style.height = Math.min(scrollHeight, twoLinesHeight) + 'px';
+        }
     }
     
     // セクション更新ハンドラー
@@ -570,6 +598,8 @@
                 // イベントを手動でトリガー
                 const event = new Event('input', { bubbles: true });
                 state.currentFocusedInput.dispatchEvent(event);
+                // 高さも調整
+                adjustTextareaHeight(state.currentFocusedInput);
                 state.currentFocusedInput.focus();
             } else {
                 showToast('まずテーマ入力欄をクリックしてください', 'info');
