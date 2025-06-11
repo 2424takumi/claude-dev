@@ -51,8 +51,8 @@
 /* グリッドアイテムスタイル（index.htmlと同じ） */
 .grid-theme-item {
     position: relative;
-    background: white;
-    border: none;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.1);
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
@@ -63,6 +63,9 @@
     padding: var(--spacing-3);
     min-height: 100px;
     aspect-ratio: 1;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .grid-theme-item:hover {
@@ -296,7 +299,7 @@
 
 /* ===== グリッドテーマテキスト ===== */
 .grid-theme-text {
-    display: none; /* テキストを非表示に */
+    /* Removed display: none to ensure grid items are visible */
 }
 
 /* ===== テーマテキスト ===== */
