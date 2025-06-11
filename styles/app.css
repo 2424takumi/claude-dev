@@ -805,7 +805,7 @@ main {
     max-width: 780px;
     width: calc(100% - 32px);
     margin: 0 auto;
-    background: var(--bg-secondary);
+    background: #FF8B25;
     padding: 12px;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
@@ -813,8 +813,8 @@ main {
 
 .grid-theme-item {
     position: relative;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-primary);
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid rgba(0, 0, 0, 0.1);
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
@@ -825,6 +825,9 @@ main {
     padding: var(--spacing-3);
     min-height: 100px;
     aspect-ratio: 1;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .grid-theme-item:hover {
@@ -845,22 +848,21 @@ main {
 /* セクションタイトル入力 */
 .section-title-input {
     width: 100%;
-    border: none;
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: var(--radius-md);
     padding: var(--spacing-2) var(--spacing-2);
     font-size: var(--text-sm);
-    font-weight: var(--font-normal);
+    font-weight: var(--font-medium);
     font-family: inherit;
     transition: all var(--transition-base);
-    background: transparent;
-    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.8);
+    color: #333;
     resize: none;
     overflow: hidden;
     line-height: 1.4;
     text-align: center;
     margin-bottom: var(--spacing-2);
     min-height: 2.4em;
-    text-align: center;
     vertical-align: middle;
     display: block;
     margin: auto;
@@ -1075,7 +1077,8 @@ main {
 }
 
 .dark-theme .grid-theme-item {
-    background: #1a1a1a;
+    background: rgba(40, 40, 40, 0.95);
+    border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .dark-theme .grid-theme-item.theme-warm {
@@ -1107,18 +1110,18 @@ main {
 }
 
 .dark-theme .theme-grid {
-    background: var(--bg-secondary);
+    background: #FF8B25;
 }
 
 .dark-theme .section-title-input {
-    background: var(--bg-secondary); /* Use theme-aware background in dark mode */
-    color: var(--text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(60, 60, 60, 0.8);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .dark-theme .section-title-input:focus {
-    background: var(--bg-primary); /* Use theme-aware background */
-    border-color: rgba(255, 139, 37, 0.3);
+    background: rgba(80, 80, 80, 0.8);
+    border-color: rgba(255, 139, 37, 0.5);
 }
 
 /* ===== アクションセクション ===== */
