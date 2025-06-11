@@ -813,8 +813,8 @@ main {
 
 .grid-theme-item {
     position: relative;
-    background: white;
-    border: none;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-primary);
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-base);
@@ -853,7 +853,7 @@ main {
     font-family: inherit;
     transition: all var(--transition-base);
     background: transparent;
-    color: var(--text-secondary);
+    color: var(--text-primary);
     resize: none;
     overflow: hidden;
     line-height: 1.4;
@@ -869,7 +869,12 @@ main {
 .section-title-input:focus {
     outline: none;
     box-shadow: none;
-    background: var(--bg-primary); /* Use theme-aware background */
+    background: transparent;
+}
+
+.section-title-input::placeholder {
+    color: var(--text-tertiary);
+    opacity: 1;
 }
 
 /* セクションテーマ選択 */
