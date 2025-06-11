@@ -477,7 +477,7 @@
   width: 18px;
   left: 3px;
   bottom: 3px;
-  background: white;
+  background: var(--bg-primary);
   transition: var(--transition-base);
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);

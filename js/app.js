@@ -4,9 +4,13 @@
  * インタラクティブな機能を実装
  */
 
+import { ThemeManager } from './utils/theme.js';
+
+// ThemeManagerのインスタンスを作成
+const themeManager = new ThemeManager();
+
 // グローバル状態管理
 const state = {
-    theme: localStorage.getItem('theme') || 'light',
     scrolled: false,
     mobileMenuOpen: false
 };
@@ -25,27 +29,14 @@ const elements = {
     toastContainer: document.getElementById('toast-container')
 };
 
-// テーマの初期化
-function initTheme() {
-    if (state.theme === 'dark' || 
-        (!state.theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark-theme');
-        updateThemeIcon(true);
-    }
-}
-
-// テーマ切り替え
-function toggleTheme() {
-    const isDark = document.documentElement.classList.toggle('dark-theme');
-    state.theme = isDark ? 'dark' : 'light';
-    localStorage.setItem('theme', state.theme);
-    updateThemeIcon(isDark);
-}
-
 // テーマアイコン更新
-function updateThemeIcon(isDark) {
-    const sunIcon = elements.themeToggle.querySelector('.icon-sun');
-    const moonIcon = elements.themeToggle.querySelector('.icon-moon');
+function updateThemeIcon() {
+    const sunIcon = elements.themeToggle?.querySelector('.icon-sun');
+    const moonIcon = elements.themeToggle?.querySelector('.icon-moon');
+    
+    if (!sunIcon || !moonIcon) return;
+    
+    const isDark = themeManager.getCurrentTheme() === 'dark';
     
     if (isDark) {
         sunIcon.style.display = 'none';
@@ -87,7 +78,7 @@ function handleScroll() {
             'rgba(255, 255, 255, 0.95)' : 
             'rgba(255, 255, 255, 0.8)';
         
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches || state.theme === 'dark') {
+        if (themeManager.getCurrentTheme() === 'dark') {
             elements.navbar.style.background = scrolled ? 
                 'rgba(9, 9, 11, 0.95)' : 
                 'rgba(9, 9, 11, 0.8)';
@@ -218,33 +209,12 @@ function addCardEffects() {
     });
 }
 
-// CSS カスタムプロパティ for dark theme
-function addDarkThemeStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-        .dark-theme {
-            --bg-primary: var(--neutral-950);
-            --bg-secondary: var(--neutral-900);
-            --bg-tertiary: var(--neutral-800);
-            --text-primary: var(--neutral-50);
-            --text-secondary: var(--neutral-400);
-            --text-tertiary: var(--neutral-500);
-            --border-primary: var(--neutral-700);
-            --border-secondary: var(--neutral-800);
-            --card-bg: var(--neutral-900);
-            --card-border: var(--neutral-800);
-        }
-        
-        .dark-theme .navbar {
-            background: rgba(9, 9, 11, 0.8);
-        }
-        
-        .dark-theme .card-glass {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-    `;
-    document.head.appendChild(style);
+// テーマ切り替え関数
+function toggleTheme() {
+    themeManager.toggleTheme();
+    updateThemeIcon();
+    // ナビバーの背景を更新
+    handleScroll();
 }
 
 // イベントリスナーの設定
@@ -291,8 +261,9 @@ function setupEventListeners() {
 
 // 初期化
 document.addEventListener('DOMContentLoaded', () => {
-    addDarkThemeStyles();
-    initTheme();
+    // テーマの初期化
+    themeManager.init();
+    updateThemeIcon();
     setupEventListeners();
     addCardEffects();
     animateProgressBar();

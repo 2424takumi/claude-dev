@@ -93,18 +93,7 @@ export class ThemeManager {
         const style = document.createElement('style');
         style.id = 'dark-theme-styles';
         style.textContent = `
-            .dark-theme {
-                --bg-primary: var(--neutral-950);
-                --bg-secondary: var(--neutral-900);
-                --bg-tertiary: var(--neutral-800);
-                --text-primary: var(--neutral-50);
-                --text-secondary: var(--neutral-400);
-                --text-tertiary: var(--neutral-500);
-                --border-primary: var(--neutral-700);
-                --border-secondary: var(--neutral-800);
-                --card-bg: var(--neutral-900);
-                --card-border: var(--neutral-800);
-            }
+            /* CSS変数はdesign-tokens.cssで定義済み */
             
             .dark-theme .navbar {
                 background: rgba(9, 9, 11, 0.8);
@@ -197,3 +186,4 @@ export class ThemeManager {
 
 // デフォルトインスタンスをエクスポート
 export const theme = new ThemeManager();
+export { ThemeManager };

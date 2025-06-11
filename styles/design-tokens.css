@@ -135,7 +135,29 @@
   --breakpoint-2xl: 1536px;
 }
 
-/* ===== ダークモード対応 ===== */
+/* ===== テーマカラー変数 ===== */
+/* ライトモード（デフォルト） */
+:root {
+  /* 背景色 */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: var(--neutral-50);
+  --bg-tertiary: var(--neutral-100);
+  
+  /* テキスト色 */
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+  --text-tertiary: var(--neutral-500);
+  
+  /* ボーダー色 */
+  --border-primary: var(--neutral-200);
+  --border-secondary: var(--neutral-100);
+  
+  /* カード背景 */
+  --card-bg: #FFFFFF;
+  --card-border: var(--neutral-200);
+}
+
+/* ダークモード - システム設定に基づく */
 @media (prefers-color-scheme: dark) {
   :root {
     /* 背景色 */
@@ -158,25 +180,25 @@
   }
 }
 
-/* ライトモード（デフォルト） */
-:root {
+/* ダークモード - 手動切り替え用 */
+.dark-theme {
   /* 背景色 */
-  --bg-primary: #FFFFFF;
-  --bg-secondary: var(--neutral-50);
-  --bg-tertiary: var(--neutral-100);
+  --bg-primary: var(--neutral-950);
+  --bg-secondary: var(--neutral-900);
+  --bg-tertiary: var(--neutral-800);
   
   /* テキスト色 */
-  --text-primary: var(--neutral-900);
-  --text-secondary: var(--neutral-600);
+  --text-primary: var(--neutral-50);
+  --text-secondary: var(--neutral-400);
   --text-tertiary: var(--neutral-500);
   
   /* ボーダー色 */
-  --border-primary: var(--neutral-200);
-  --border-secondary: var(--neutral-100);
+  --border-primary: var(--neutral-700);
+  --border-secondary: var(--neutral-800);
   
   /* カード背景 */
-  --card-bg: #FFFFFF;
-  --card-border: var(--neutral-200);
+  --card-bg: var(--neutral-900);
+  --card-border: var(--neutral-800);
 }
 
 /* ===== グラデーション定義 ===== */
