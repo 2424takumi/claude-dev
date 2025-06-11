@@ -536,7 +536,9 @@
                         const originalRect = originalArea.getBoundingClientRect();
                         area.style.width = originalRect.width + 'px';
                         area.style.height = originalRect.height + 'px';
-                        area.style.position = 'absolute';
+                        area.style.position = 'relative';
+                        area.style.overflow = 'hidden';
+                        area.style.aspectRatio = '1';
                     }
                 });
                 
@@ -557,28 +559,40 @@
                 clonedImages.forEach((img, index) => {
                     const originalImg = elements.photoThemeGrid.querySelectorAll('.uploaded-image')[index];
                     if (originalImg) {
+                        // 画像の親要素（photo-display-areaまたはimage-container）を取得
+                        const photoArea = img.closest('.photo-display-area');
                         const container = img.closest('.image-container');
+                        
+                        if (photoArea) {
+                            // photo-display-areaが正方形であることを確認
+                            const size = photoArea.style.width || photoArea.style.height;
+                            photoArea.style.aspectRatio = '1';
+                            photoArea.style.overflow = 'hidden';
+                        }
+                        
                         if (container) {
-                            // コンテナのサイズを取得
-                            const containerRect = originalImg.closest('.image-container').getBoundingClientRect();
-                            const size = containerRect.width;
-                            
                             // コンテナを正方形に設定
-                            container.style.width = size + 'px';
-                            container.style.height = size + 'px';
+                            const containerSize = container.parentElement.offsetWidth;
+                            container.style.width = '100%';
+                            container.style.height = '100%';
                             container.style.overflow = 'hidden';
                             container.style.position = 'relative';
-                            
-                            // 画像のスタイルを設定（100%で埋めて、object-fit: coverでクロップ）
-                            img.style.width = '100%';
-                            img.style.height = '100%';
-                            img.style.objectFit = 'cover';
-                            img.style.objectPosition = 'center';
-                            img.style.position = 'absolute';
-                            img.style.top = '0';
-                            img.style.left = '0';
-                            img.style.display = 'block';
+                            container.style.aspectRatio = '1';
                         }
+                        
+                        // 画像のスタイルを強制的に設定
+                        img.style.cssText = `
+                            width: 100% !important;
+                            height: 100% !important;
+                            object-fit: cover !important;
+                            object-position: center !important;
+                            position: absolute !important;
+                            top: 0 !important;
+                            left: 0 !important;
+                            display: block !important;
+                            max-width: none !important;
+                            max-height: none !important;
+                        `;
                     }
                 });
             }
