@@ -53,15 +53,6 @@ export class ShareManager {
         this.openShareWindow(twitterUrl);
     }
 
-    // Facebook で共有
-    shareOnFacebook(shareUrl) {
-        const params = new URLSearchParams({
-            u: shareUrl
-        });
-
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?${params}`;
-        this.openShareWindow(facebookUrl);
-    }
 
     // LINE で共有
     shareOnLine(shareUrl, text = '') {
@@ -103,22 +94,6 @@ export class ShareManager {
         window.open(whatsappUrl, '_blank');
     }
 
-    // Instagram Stories で共有
-    shareOnInstagramStories(imageDataUrl) {
-        // Instagramアプリへの直接共有はWebからは制限されているため、
-        // 画像をダウンロードしてユーザーに手動でアップロードしてもらう
-        const link = document.createElement('a');
-        const filename = `gridme-instagram-${Date.now()}.png`;
-        link.download = filename;
-        link.href = imageDataUrl;
-        link.click();
-        
-        // ユーザーへの案内メッセージを返す
-        return {
-            success: true,
-            message: '画像がダウンロードされました。Instagramアプリを開いて、ストーリーズに画像をアップロードしてください。'
-        };
-    }
 
     // 共有データのエンコード
     encodeShareData(data) {
@@ -200,13 +175,6 @@ export class ShareManager {
             });
         }
 
-        // Facebook ボタン
-        const facebookBtn = container.querySelector('[data-share="facebook"]');
-        if (facebookBtn) {
-            facebookBtn.addEventListener('click', () => {
-                this.shareOnFacebook(url);
-            });
-        }
 
         // LINE ボタン
         const lineBtn = container.querySelector('[data-share="line"]');

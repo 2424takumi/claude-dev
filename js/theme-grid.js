@@ -47,9 +47,7 @@
         shareModalClose: null,
         copyUrlBtn: document.getElementById('copy-url-btn'),
         shareTwitterBtn: document.getElementById('share-twitter-btn'),
-        shareFacebookBtn: document.getElementById('share-facebook-btn'),
         shareLineBtn: document.getElementById('share-line-btn'),
-        shareInstagramBtn: document.getElementById('share-instagram-btn'),
         shareUrlInput: document.getElementById('share-url-input'),
         gridBgColorInput: document.getElementById('grid-bg-color')
     };
@@ -325,12 +323,6 @@
         window.open(twitterUrl, '_blank', 'width=600,height=400');
     }
     
-    // Facebookで共有
-    function shareOnFacebook() {
-        const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
-        const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
-        window.open(facebookUrl, '_blank', 'width=600,height=400');
-    }
     
     // LINEで共有
     function shareOnLine() {
@@ -340,109 +332,6 @@
         window.open(lineUrl, '_blank', 'width=600,height=400');
     }
     
-    // Instagram Storiesで共有
-    function shareOnInstagram() {
-        // Instagram Stories sharing works differently - we need to prepare the grid as an image
-        // and provide instructions since Instagram doesn't support direct web sharing to stories
-        prepareGridForInstagramStories();
-    }
-    
-    // Instagram Stories用にグリッドを準備
-    function prepareGridForInstagramStories() {
-        // Check if html2canvas is loaded
-        if (typeof html2canvas === 'undefined') {
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            script.onload = () => {
-                createInstagramStoriesImage();
-            };
-            document.head.appendChild(script);
-        } else {
-            createInstagramStoriesImage();
-        }
-    }
-    
-    // Instagram Stories用の画像を作成
-    function createInstagramStoriesImage() {
-        const gridContainer = elements.themeGrid;
-        
-        // Create a temporary container for Instagram Stories format (9:16 aspect ratio)
-        const tempContainer = document.createElement('div');
-        tempContainer.style.position = 'fixed';
-        tempContainer.style.left = '-9999px';
-        tempContainer.style.width = '1080px';
-        tempContainer.style.height = '1920px';
-        tempContainer.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        tempContainer.style.display = 'flex';
-        tempContainer.style.flexDirection = 'column';
-        tempContainer.style.alignItems = 'center';
-        tempContainer.style.justifyContent = 'center';
-        tempContainer.style.padding = '80px';
-        tempContainer.style.boxSizing = 'border-box';
-        
-        // Add title
-        const title = document.createElement('h1');
-        title.textContent = 'GridMe テーマグリッド';
-        title.style.color = 'white';
-        title.style.fontSize = '64px';
-        title.style.marginBottom = '40px';
-        title.style.textAlign = 'center';
-        title.style.fontWeight = 'bold';
-        title.style.textShadow = '0 4px 6px rgba(0,0,0,0.3)';
-        
-        // Clone and style the grid
-        const gridClone = gridContainer.cloneNode(true);
-        gridClone.style.width = '920px';
-        gridClone.style.height = '920px';
-        gridClone.style.background = 'white';
-        gridClone.style.borderRadius = '24px';
-        gridClone.style.padding = '40px';
-        gridClone.style.boxShadow = '0 20px 40px rgba(0,0,0,0.2)';
-        
-        // Add URL footer
-        const footer = document.createElement('div');
-        footer.style.marginTop = '40px';
-        footer.style.color = 'white';
-        footer.style.fontSize = '32px';
-        footer.style.textAlign = 'center';
-        footer.innerHTML = 'Created with GridMe<br><span style="font-size: 24px; opacity: 0.8;">Share your themes!</span>';
-        
-        tempContainer.appendChild(title);
-        tempContainer.appendChild(gridClone);
-        tempContainer.appendChild(footer);
-        document.body.appendChild(tempContainer);
-        
-        // Generate image
-        html2canvas(tempContainer, {
-            width: 1080,
-            height: 1920,
-            scale: 1,
-            backgroundColor: null
-        }).then(canvas => {
-            // Remove temporary container
-            document.body.removeChild(tempContainer);
-            
-            // Convert to blob
-            canvas.toBlob((blob) => {
-                // Create download link
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.download = `gridme-instagram-stories-${Date.now()}.png`;
-                link.href = url;
-                link.click();
-                
-                // Show instructions
-                showToast('画像をダウンロードしました。Instagramアプリでストーリーズに投稿してください！', 'success');
-                
-                // Clean up
-                setTimeout(() => URL.revokeObjectURL(url), 100);
-            }, 'image/png');
-        }).catch(err => {
-            document.body.removeChild(tempContainer);
-            console.error('Instagram Stories画像の作成エラー:', err);
-            showToast('画像の作成に失敗しました', 'error');
-        });
-    }
     
     // ダウンロード機能
     function downloadGrid() {
@@ -616,14 +505,8 @@
         if (elements.shareTwitterBtn) {
             elements.shareTwitterBtn.addEventListener('click', shareOnTwitter);
         }
-        if (elements.shareFacebookBtn) {
-            elements.shareFacebookBtn.addEventListener('click', shareOnFacebook);
-        }
         if (elements.shareLineBtn) {
             elements.shareLineBtn.addEventListener('click', shareOnLine);
-        }
-        if (elements.shareInstagramBtn) {
-            elements.shareInstagramBtn.addEventListener('click', shareOnInstagram);
         }
         
         // ダウンロードボタン
