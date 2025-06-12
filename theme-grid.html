@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GridMe - 共有されたGridを見る</title>
+    <meta name="description" content="共有されたGridを閲覧">
+    
+    <!-- フォントの読み込み -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- デザインシステムの読み込み -->
+    <link rel="stylesheet" href="styles/design-tokens.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/app.css">
+    <link rel="stylesheet" href="styles/theme-grid.css">
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <h1 class="app-title">
+                    <a href="./index.html" style="text-decoration: none;">
+                        <img src="assets/logos/GridMe_logo.png" alt="GridMe" style="height: 48px; vertical-align: middle; margin-top: 6px;">
+                    </a>
+                </h1>
+            </div>
+        </div>
+    </header>
+    
+    <!-- メインコンテンツ -->
+    <main class="app-main">
+        <div class="container">
+            <!-- 共有グリッドセクション -->
+            <section class="theme-grid-view-section">
+                <h2 class="theme-grid-title">共有されたGrid</h2>
+                <p class="theme-grid-subtitle">画像をタップするとテーマが表示されます</p>
+                
+                <!-- フォトグリッド -->
+                <div class="theme-grid flip-grid" id="view-theme-grid">
+                    <!-- 動的に生成されます -->
+                </div>
+                
+                <!-- アクションボタン -->
+                <div class="action-button-container">
+                    <button class="btn-primary btn-lg" id="download-grid-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        画像をダウンロード
+                    </button>
+                    <button class="btn-secondary btn-lg" id="create-new-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                        新しいGridを作成
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+    
+    <!-- フッター -->
+    <footer class="app-footer">
+        <div class="container">
+            <p>&copy; 2024 GridMe. <a href="https://gridme.vercel.app" target="_blank">gridme.vercel.app</a></p>
+        </div>
+    </footer>
+    
+    <!-- トースト通知コンテナ -->
+    <div id="toast-container"></div>
+    
+    <!-- JavaScript -->
+    <script src="js/app.js"></script>
+    <script src="js/theme-grid-view.js"></script>
+</body>
+</html>

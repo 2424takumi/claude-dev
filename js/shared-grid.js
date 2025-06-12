@@ -436,9 +436,39 @@
             elements.shareModal.classList.add('active');
         }
         
-        // 現在のURLを共有URLとして設定
+        // 画像を含めた新しい共有URLを生成
+        const shareData = {
+            size: state.gridSize,
+            sections: state.gridSections,
+            bgColor: state.gridBgColor,
+            nickname: state.nickname,
+            images: state.uploadedImages // 画像データを含める
+        };
+        
+        // データをエンコード
+        const encodedData = encodeShareData(shareData);
+        
+        // theme-grid.htmlへのURLを生成
+        const baseUrl = window.location.origin + window.location.pathname.replace('shared.html', 'theme-grid.html');
+        const shareUrl = `${baseUrl}?data=${encodeURIComponent(encodedData)}`;
+        
         if (elements.shareUrlInput) {
-            elements.shareUrlInput.value = window.location.href;
+            elements.shareUrlInput.value = shareUrl;
+        }
+    }
+    
+    // 共有データのエンコード
+    function encodeShareData(data) {
+        try {
+            const jsonString = JSON.stringify(data);
+            const utf8Bytes = encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+                function(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+                });
+            return btoa(utf8Bytes);
+        } catch (error) {
+            console.error('Share data encode error:', error);
+            return null;
         }
     }
     
@@ -451,7 +481,7 @@
     
     // URLをコピー
     async function copyShareUrl() {
-        const shareUrl = window.location.href;
+        const shareUrl = elements.shareUrlInput.value; // 生成された共有URLを使用
         
         try {
             await navigator.clipboard.writeText(shareUrl);
@@ -464,7 +494,7 @@
     
     // Twitterで共有
     function shareOnTwitter() {
-        const shareUrl = window.location.href;
+        const shareUrl = elements.shareUrlInput.value; // 生成された共有URLを使用
         const text = encodeURIComponent('GridMe!!でフォトグリッドを作成しました！');
         const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}`;
         window.open(twitterUrl, '_blank', 'width=600,height=400');
@@ -473,7 +503,7 @@
     
     // LINEで共有
     function shareOnLine() {
-        const shareUrl = window.location.href;
+        const shareUrl = elements.shareUrlInput.value; // 生成された共有URLを使用
         const text = encodeURIComponent('GridMe!!でフォトグリッドを作成しました！');
         const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${text}`;
         window.open(lineUrl, '_blank', 'width=600,height=400');

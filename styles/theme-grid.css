@@ -1,0 +1,191 @@
+/**
+ * Theme Grid View Styles
+ * 共有されたグリッドを閲覧するページ専用のスタイル
+ */
+
+/* セクションスタイル */
+.theme-grid-view-section {
+    padding: 2rem 0;
+}
+
+.theme-grid-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.theme-grid-subtitle {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* フリップグリッドコンテナ */
+.flip-grid {
+    perspective: 1000px;
+}
+
+/* グリッドアイテム - フリップカード */
+.flip-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    cursor: pointer;
+}
+
+.flip-card.flipped {
+    transform: rotateY(180deg);
+}
+
+/* カードの表面と裏面の共通スタイル */
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+/* カードの表面（画像） */
+.flip-card-front {
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flip-card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* カードの裏面（テーマテキスト） */
+.flip-card-back {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    transform: rotateY(180deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    text-align: center;
+}
+
+.theme-display-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* タッチデバイスでのホバー効果を無効化 */
+@media (hover: hover) {
+    .flip-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+    
+    .flip-card.flipped:hover {
+        transform: rotateY(180deg) translateY(-2px);
+    }
+}
+
+/* アクションボタンコンテナ */
+.action-button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* ボタンアイコンの調整 */
+.btn-primary svg,
+.btn-secondary svg {
+    vertical-align: middle;
+}
+
+/* レスポンシブデザイン */
+@media (min-width: 640px) {
+    .action-button-container {
+        flex-direction: row;
+        justify-content: center;
+    }
+    
+    .action-button-container button {
+        flex: 0 1 auto;
+        min-width: 200px;
+    }
+}
+
+/* グリッドアイテムのシャドウとトランジション */
+.flip-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.6s, box-shadow 0.2s;
+}
+
+/* ローディング状態 */
+.flip-card.loading {
+    pointer-events: none;
+    opacity: 0.7;
+}
+
+.flip-card.loading .flip-card-front::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 2px solid var(--primary);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* エラー状態 */
+.flip-card.error .flip-card-front {
+    background: var(--bg-error);
+    color: var(--text-error);
+}
+
+.flip-card.error .flip-card-front::before {
+    content: '画像を読み込めませんでした';
+    font-size: 0.875rem;
+}
+
+/* アニメーションの最適化 */
+@media (prefers-reduced-motion: reduce) {
+    .flip-card {
+        transition: none;
+    }
+    
+    .flip-card.flipped {
+        transform: none;
+    }
+    
+    .flip-card-back {
+        transform: none;
+        opacity: 0;
+    }
+    
+    .flip-card.flipped .flip-card-back {
+        opacity: 1;
+    }
+    
+    .flip-card.flipped .flip-card-front {
+        opacity: 0;
+    }
+}
