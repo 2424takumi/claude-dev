@@ -55,7 +55,7 @@
 
 /* カードの表面（画像） */
 .flip-card-front {
-    background: var(--bg-secondary);
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -69,7 +69,7 @@
 
 /* カードの裏面（テーマテキスト） */
 .flip-card-back {
-    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--neutral-900) 100%);
     color: white;
     transform: rotateY(180deg);
     display: flex;
@@ -77,6 +77,7 @@
     justify-content: center;
     padding: 1rem;
     text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .theme-display-text {
@@ -157,8 +158,8 @@
 
 /* エラー状態 */
 .flip-card.error .flip-card-front {
-    background: var(--bg-error);
-    color: var(--text-error);
+    background: transparent;
+    color: var(--error);
 }
 
 .flip-card.error .flip-card-front::before {
