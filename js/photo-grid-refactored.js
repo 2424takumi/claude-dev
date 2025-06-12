@@ -204,10 +204,20 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
     
     // 共有モーダルの設定
     const shareModalInstance = modal.register('share-modal', {
-        onOpen: () => {
-            const shareUrl = generateShareUrl();
+        onOpen: async () => {
+            // URLを生成中の表示
             if (elements.shareUrlInput) {
-                elements.shareUrlInput.value = shareUrl;
+                elements.shareUrlInput.value = '生成中...';
+            }
+            
+            try {
+                const shareUrl = await generateShareUrl();
+                if (elements.shareUrlInput) {
+                    elements.shareUrlInput.value = shareUrl;
+                }
+            } catch (error) {
+                console.error('URL generation error:', error);
+                toast.error('URLの生成に失敗しました');
             }
         }
     });
@@ -252,7 +262,7 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
     }
     
     // 共有URLを生成
-    function generateShareUrl() {
+    async function generateShareUrl() {
         const shareData = {
             size: state.gridSize,
             sections: state.gridSections.map(section => ({
@@ -263,12 +273,30 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
         };
         
         const baseUrl = `${window.location.origin}${window.location.pathname.replace('index.html', '')}shared.html`;
-        return share.generateShareUrl(baseUrl, shareData);
+        
+        // 新しい短縮URL生成メソッドを使用
+        try {
+            return await share.generateShortShareUrl(baseUrl, shareData);
+        } catch (error) {
+            console.error('Short URL generation failed, falling back to traditional method:', error);
+            return share.generateShareUrl(baseUrl, shareData);
+        }
     }
     
     // URLをコピー
     async function copyShareUrl() {
-        const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
+        let shareUrl = elements.shareUrlInput?.value;
+        
+        // URLがまだ生成されていない場合は生成
+        if (!shareUrl || shareUrl === '生成中...') {
+            try {
+                shareUrl = await generateShareUrl();
+            } catch (error) {
+                toast.error('URLの生成に失敗しました');
+                return;
+            }
+        }
+        
         const success = await share.copyToClipboard(shareUrl);
         
         if (success) {
@@ -281,16 +309,36 @@ import { toast, modal, storage, share, GridRenderer, theme } from './utils/index
     // ソーシャル共有ハンドラー
     function setupShareHandlers() {
         if (elements.shareTwitterBtn) {
-            elements.shareTwitterBtn.addEventListener('click', () => {
-                const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
+            elements.shareTwitterBtn.addEventListener('click', async () => {
+                let shareUrl = elements.shareUrlInput?.value;
+                
+                if (!shareUrl || shareUrl === '生成中...') {
+                    try {
+                        shareUrl = await generateShareUrl();
+                    } catch (error) {
+                        toast.error('URLの生成に失敗しました');
+                        return;
+                    }
+                }
+                
                 share.shareOnTwitter(shareUrl, 'GridMe!!私ってどんな感じ？', ['GridMe']);
             });
         }
         
         
         if (elements.shareLineBtn) {
-            elements.shareLineBtn.addEventListener('click', () => {
-                const shareUrl = elements.shareUrlInput?.value || generateShareUrl();
+            elements.shareLineBtn.addEventListener('click', async () => {
+                let shareUrl = elements.shareUrlInput?.value;
+                
+                if (!shareUrl || shareUrl === '生成中...') {
+                    try {
+                        shareUrl = await generateShareUrl();
+                    } catch (error) {
+                        toast.error('URLの生成に失敗しました');
+                        return;
+                    }
+                }
+                
                 share.shareOnLine(shareUrl, 'GridMe!!私ってどんな感じ？');
             });
         }

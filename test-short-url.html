@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>短縮URL生成テスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-section {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 0;
+            cursor: pointer;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <h1>短縮URL生成テスト</h1>
+    
+    <div class="container">
+        <h2>1. 短縮URL生成テスト（画像なし）</h2>
+        <div class="test-section">
+            <button id="test-no-image">テキストのみでURL生成</button>
+            <div id="result-no-image" class="result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>2. 短縮URL生成テスト（画像あり）</h2>
+        <div class="test-section">
+            <input type="file" id="image-input" accept="image/*">
+            <button id="test-with-image">画像付きでURL生成</button>
+            <div id="result-with-image" class="result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>3. 短縮URLからデータ取得テスト</h2>
+        <div class="test-section">
+            <input type="text" id="share-id-input" placeholder="共有ID（例: AbCd1234）">
+            <button id="test-get-data">データを取得</button>
+            <div id="result-get-data" class="result"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>4. URL長さ比較</h2>
+        <div class="test-section">
+            <button id="test-compare">従来方式と新方式を比較</button>
+            <div id="result-compare" class="result"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { share, shareStorage } from './js/utils/index.js';
+
+        // 圧縮画像生成関数
+        function compressImage(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+                        
+                        const maxSize = 300;
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > height) {
+                            if (width > maxSize) {
+                                height = (height * maxSize) / width;
+                                width = maxSize;
+                            }
+                        } else {
+                            if (height > maxSize) {
+                                width = (width * maxSize) / height;
+                                height = maxSize;
+                            }
+                        }
+                        
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                        resolve(compressedDataUrl);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // テスト1: テキストのみ
+        document.getElementById('test-no-image').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result-no-image');
+            resultDiv.textContent = '生成中...';
+            
+            try {
+                const testData = {
+                    size: 3,
+                    sections: [
+                        { title: '動物' }, { title: '植物' }, { title: '色' },
+                        { title: '食べ物' }, { title: '季節' }, { title: '音楽' },
+                        { title: '趣味' }, { title: 'スポーツ' }, { title: '国' }
+                    ],
+                    bgColor: '#FF8B25',
+                    nickname: 'テストユーザー'
+                };
+                
+                const baseUrl = window.location.origin + '/shared.html';
+                const shortUrl = await share.generateShortShareUrl(baseUrl, testData);
+                
+                resultDiv.innerHTML = `
+                    <strong>成功!</strong><br>
+                    短縮URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a><br>
+                    URL長: ${shortUrl.length} 文字
+                `;
+                resultDiv.className = 'result success';
+            } catch (error) {
+                resultDiv.textContent = `エラー: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        });
+
+        // テスト2: 画像あり
+        document.getElementById('test-with-image').addEventListener('click', async () => {
+            const fileInput = document.getElementById('image-input');
+            const resultDiv = document.getElementById('result-with-image');
+            
+            if (!fileInput.files[0]) {
+                resultDiv.textContent = '画像を選択してください';
+                resultDiv.className = 'result error';
+                return;
+            }
+            
+            resultDiv.textContent = '生成中...';
+            
+            try {
+                const compressedImage = await compressImage(fileInput.files[0]);
+                
+                const testData = {
+                    size: 3,
+                    sections: [
+                        { title: '動物' }, { title: '植物' }, { title: '色' },
+                        { title: '食べ物' }, { title: '季節' }, { title: '音楽' },
+                        { title: '趣味' }, { title: 'スポーツ' }, { title: '国' }
+                    ],
+                    bgColor: '#FF8B25',
+                    nickname: 'テストユーザー',
+                    images: {
+                        0: compressedImage
+                    }
+                };
+                
+                const baseUrl = window.location.origin + '/shared.html';
+                const shortUrl = await share.generateShortShareUrl(baseUrl, testData);
+                
+                resultDiv.innerHTML = `
+                    <strong>成功!</strong><br>
+                    短縮URL: <a href="${shortUrl}" target="_blank">${shortUrl}</a><br>
+                    URL長: ${shortUrl.length} 文字<br>
+                    画像サイズ: ${Math.round(compressedImage.length / 1024)} KB
+                `;
+                resultDiv.className = 'result success';
+            } catch (error) {
+                resultDiv.textContent = `エラー: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        });
+
+        // テスト3: データ取得
+        document.getElementById('test-get-data').addEventListener('click', async () => {
+            const shareId = document.getElementById('share-id-input').value.trim();
+            const resultDiv = document.getElementById('result-get-data');
+            
+            if (!shareId) {
+                resultDiv.textContent = '共有IDを入力してください';
+                resultDiv.className = 'result error';
+                return;
+            }
+            
+            resultDiv.textContent = '取得中...';
+            
+            try {
+                const urlParams = new URLSearchParams();
+                urlParams.set('id', shareId);
+                
+                const data = await share.getShareData(urlParams);
+                
+                if (data) {
+                    resultDiv.innerHTML = `
+                        <strong>データ取得成功!</strong><br>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.textContent = 'データが見つかりません';
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.textContent = `エラー: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        });
+
+        // テスト4: 比較
+        document.getElementById('test-compare').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result-compare');
+            resultDiv.textContent = '比較中...';
+            
+            try {
+                // サンプル画像データ（小さめ）
+                const canvas = document.createElement('canvas');
+                canvas.width = 100;
+                canvas.height = 100;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#FF8B25';
+                ctx.fillRect(0, 0, 100, 100);
+                const sampleImage = canvas.toDataURL('image/jpeg', 0.7);
+                
+                const testData = {
+                    size: 3,
+                    sections: Array(9).fill({ title: 'テスト' }),
+                    bgColor: '#FF8B25',
+                    nickname: 'テストユーザー',
+                    images: { 0: sampleImage }
+                };
+                
+                const baseUrl = window.location.origin + '/shared.html';
+                
+                // 従来方式
+                const traditionalUrl = share.generateShareUrl(baseUrl, testData);
+                
+                // 新方式
+                const shortUrl = await share.generateShortShareUrl(baseUrl, testData);
+                
+                const reduction = Math.round((1 - shortUrl.length / traditionalUrl.length) * 100);
+                
+                resultDiv.innerHTML = `
+                    <strong>URL長さ比較</strong><br><br>
+                    <strong>従来方式:</strong><br>
+                    長さ: ${traditionalUrl.length.toLocaleString()} 文字<br>
+                    ${traditionalUrl.length > 2000 ? '<span style="color: red;">⚠️ 2000文字制限を超過</span>' : '<span style="color: green;">✓ 2000文字以内</span>'}<br><br>
+                    <strong>新方式（短縮URL）:</strong><br>
+                    長さ: ${shortUrl.length} 文字<br>
+                    <span style="color: green;">✓ 常に短いURL</span><br><br>
+                    <strong>削減率: ${reduction}%</strong>
+                `;
+                resultDiv.className = 'result success';
+            } catch (error) {
+                resultDiv.textContent = `エラー: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        });
+    </script>
+</body>
+</html>
