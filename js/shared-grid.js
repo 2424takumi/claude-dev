@@ -214,11 +214,10 @@
     function handleFileSelect(e, index) {
         const file = e.target.files[0];
         if (file && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            
-            reader.onload = (e) => {
-                // 画像を保存
-                state.uploadedImages[index] = e.target.result;
+            // 画像を圧縮してから保存
+            compressImage(file, (compressedDataUrl) => {
+                // 圧縮された画像を保存
+                state.uploadedImages[index] = compressedDataUrl;
                 
                 // 画像を表示
                 updatePhotoDisplay(index);
@@ -227,10 +226,55 @@
                 closeUploadModal();
                 
                 showToast('画像をアップロードしました', 'success');
-            };
-            
-            reader.readAsDataURL(file);
+                
+                // サブタイトルテキストを更新
+                updateSubtitleText();
+            });
         }
+    }
+    
+    // 画像圧縮関数
+    function compressImage(file, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                // キャンバスを作成
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // 最大サイズを設定（共有用に小さくする）
+                const maxSize = 300;
+                let width = img.width;
+                let height = img.height;
+                
+                // アスペクト比を保持しながらリサイズ
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
+                }
+                
+                // キャンバスのサイズを設定
+                canvas.width = width;
+                canvas.height = height;
+                
+                // 画像を描画
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // 圧縮されたデータURLを取得（JPEG形式で品質70%）
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                callback(compressedDataUrl);
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
     }
     
     // 写真表示を更新
@@ -816,16 +860,14 @@
             const file = e.dataTransfer.files[0];
             
             if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                
-                reader.onload = (evt) => {
-                    state.uploadedImages[index] = evt.target.result;
+                // 画像を圧縮してから保存
+                compressImage(file, (compressedDataUrl) => {
+                    state.uploadedImages[index] = compressedDataUrl;
                     updatePhotoDisplay(index);
                     closeUploadModal();
                     showToast('画像をアップロードしました', 'success');
-                };
-                
-                reader.readAsDataURL(file);
+                    updateSubtitleText();
+                });
             }
         });
     }
