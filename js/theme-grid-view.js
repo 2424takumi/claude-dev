@@ -24,10 +24,35 @@
     };
     
     // URLパラメータからデータを取得
-    function getSharedData() {
+    async function getSharedData() {
         const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
         
+        // 新しい短縮URLの場合
+        const shareId = urlParams.get('id');
+        if (shareId) {
+            try {
+                // shareモジュールを使用してデータを取得
+                const { share } = await import('./utils/share.js');
+                const data = await share.getShareData(urlParams);
+                
+                if (!data) {
+                    showToast('共有データが見つかりません', 'error');
+                    setTimeout(() => {
+                        window.location.href = './index.html';
+                    }, 2000);
+                    return null;
+                }
+                
+                return data;
+            } catch (err) {
+                console.error('データの取得エラー:', err);
+                showToast('共有データの読み込みに失敗しました', 'error');
+                return null;
+            }
+        }
+        
+        // 従来のエンコードされたデータの場合
+        const encodedData = urlParams.get('data');
         if (!encodedData) {
             showToast('共有データが見つかりません', 'error');
             setTimeout(() => {
@@ -54,8 +79,8 @@
     }
     
     // グリッドの初期化
-    function initializeGrid() {
-        const sharedData = getSharedData();
+    async function initializeGrid() {
+        const sharedData = await getSharedData();
         if (!sharedData) return;
         
         state.gridSize = sharedData.size || 3;
@@ -267,8 +292,8 @@
     }
     
     // 初期化
-    function init() {
-        initializeGrid();
+    async function init() {
+        await initializeGrid();
         setupEventListeners();
     }
     

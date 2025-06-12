@@ -4,6 +4,8 @@
  * 統一されたソーシャルメディア共有機能を提供
  */
 
+import { shareStorage } from './share-storage.js';
+
 export class ShareManager {
     constructor() {
         this.defaultOptions = {
@@ -127,7 +129,7 @@ export class ShareManager {
         }
     }
 
-    // 共有URLの生成
+    // 共有URLの生成（従来の方法）
     generateShareUrl(baseUrl, data) {
         const encodedData = this.encodeShareData(data);
         if (!encodedData) return null;
@@ -135,6 +137,72 @@ export class ShareManager {
         const url = new URL(baseUrl);
         url.searchParams.set('data', encodedData);
         return url.toString();
+    }
+
+    // 短縮共有URLの生成（新しい方法）
+    async generateShortShareUrl(baseUrl, data) {
+        try {
+            // データサイズをチェック
+            const jsonString = JSON.stringify(data);
+            const dataSize = new Blob([jsonString]).size;
+            
+            // 画像データが含まれているか、データサイズが大きい場合は短縮URLを使用
+            const hasImages = data.images && Object.keys(data.images).length > 0;
+            const isLargeData = dataSize > 1000; // 1KB以上
+            
+            if (hasImages || isLargeData) {
+                // IndexedDBまたはlocalStorageに保存
+                let shareId;
+                try {
+                    shareId = await shareStorage.save(data);
+                } catch (error) {
+                    // IndexedDBが使えない場合はlocalStorageを試す
+                    console.warn('IndexedDB save failed, trying localStorage:', error);
+                    shareId = await shareStorage.saveToLocalStorage(data);
+                }
+                
+                const url = new URL(baseUrl);
+                url.searchParams.set('id', shareId);
+                return url.toString();
+            } else {
+                // データが小さい場合は従来の方法を使用
+                return this.generateShareUrl(baseUrl, data);
+            }
+        } catch (error) {
+            console.error('Short URL generation error:', error);
+            // エラーの場合は従来の方法にフォールバック
+            return this.generateShareUrl(baseUrl, data);
+        }
+    }
+
+    // 共有データの取得（IDまたはエンコードされたデータから）
+    async getShareData(urlParams) {
+        // 短縮URLの場合
+        const shareId = urlParams.get('id');
+        if (shareId) {
+            try {
+                // IndexedDBから取得を試みる
+                let data = await shareStorage.get(shareId);
+                
+                // IndexedDBで見つからない場合はlocalStorageを試す
+                if (!data) {
+                    data = shareStorage.getFromLocalStorage(shareId);
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('Failed to get share data:', error);
+                return null;
+            }
+        }
+        
+        // 従来のエンコードされたデータの場合
+        const encodedData = urlParams.get('data');
+        if (encodedData) {
+            return this.decodeShareData(encodedData);
+        }
+        
+        return null;
     }
 
     // Web Share API を使用した共有（モバイル対応）

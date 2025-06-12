@@ -31,10 +31,35 @@
     };
     
     // URLパラメータからデータを取得
-    function getSharedData() {
+    async function getSharedData() {
         const urlParams = new URLSearchParams(window.location.search);
-        const encodedData = urlParams.get('data');
         
+        // 新しい短縮URLの場合
+        const shareId = urlParams.get('id');
+        if (shareId) {
+            try {
+                // shareモジュールを使用してデータを取得
+                const { share } = await import('./utils/share.js');
+                const data = await share.getShareData(urlParams);
+                
+                if (!data) {
+                    showToast('共有データが見つかりません', 'error');
+                    setTimeout(() => {
+                        window.location.href = './index.html';
+                    }, 2000);
+                    return null;
+                }
+                
+                return data;
+            } catch (err) {
+                console.error('データの取得エラー:', err);
+                showToast('共有データの読み込みに失敗しました', 'error');
+                return null;
+            }
+        }
+        
+        // 従来のエンコードされたデータの場合
+        const encodedData = urlParams.get('data');
         if (!encodedData) {
             showToast('共有データが見つかりません', 'error');
             setTimeout(() => {
@@ -78,8 +103,8 @@
     }
     
     // グリッドの初期化
-    function initializeGrid() {
-        const sharedData = getSharedData();
+    async function initializeGrid() {
+        const sharedData = await getSharedData();
         if (!sharedData) return;
         
         state.gridSize = sharedData.size || 2;
@@ -475,29 +500,58 @@
     }
     
     // 共有モーダルを表示
-    function showShareModal() {
+    async function showShareModal() {
         if (elements.shareModal) {
             elements.shareModal.classList.add('active');
         }
         
-        // 画像を含めた新しい共有URLを生成
-        const shareData = {
-            size: state.gridSize,
-            sections: state.gridSections,
-            bgColor: state.gridBgColor,
-            nickname: state.nickname,
-            images: state.uploadedImages // 画像データを含める
-        };
-        
-        // データをエンコード
-        const encodedData = encodeShareData(shareData);
-        
-        // theme-grid.htmlへのURLを生成
-        const baseUrl = window.location.origin + window.location.pathname.replace('shared.html', 'theme-grid.html');
-        const shareUrl = `${baseUrl}?data=${encodeURIComponent(encodedData)}`;
-        
+        // URLを生成中の表示
         if (elements.shareUrlInput) {
-            elements.shareUrlInput.value = shareUrl;
+            elements.shareUrlInput.value = '生成中...';
+        }
+        
+        try {
+            // shareモジュールをインポート
+            const { share } = await import('./utils/share.js');
+            
+            // 画像を含めた新しい共有URLを生成
+            const shareData = {
+                size: state.gridSize,
+                sections: state.gridSections,
+                bgColor: state.gridBgColor,
+                nickname: state.nickname,
+                images: state.uploadedImages // 画像データを含める
+            };
+            
+            // theme-grid.htmlへのURLを生成
+            const baseUrl = window.location.origin + window.location.pathname.replace('shared.html', 'theme-grid.html');
+            
+            // 新しい短縮URL生成メソッドを使用
+            const shareUrl = await share.generateShortShareUrl(baseUrl, shareData);
+            
+            if (elements.shareUrlInput) {
+                elements.shareUrlInput.value = shareUrl;
+            }
+        } catch (error) {
+            console.error('URL generation error:', error);
+            showToast('URLの生成に失敗しました', 'error');
+            
+            // フォールバック: 従来の方法で生成
+            const shareData = {
+                size: state.gridSize,
+                sections: state.gridSections,
+                bgColor: state.gridBgColor,
+                nickname: state.nickname,
+                images: state.uploadedImages
+            };
+            
+            const encodedData = encodeShareData(shareData);
+            const baseUrl = window.location.origin + window.location.pathname.replace('shared.html', 'theme-grid.html');
+            const shareUrl = `${baseUrl}?data=${encodeURIComponent(encodedData)}`;
+            
+            if (elements.shareUrlInput) {
+                elements.shareUrlInput.value = shareUrl;
+            }
         }
     }
     
@@ -525,7 +579,13 @@
     
     // URLをコピー
     async function copyShareUrl() {
-        const shareUrl = elements.shareUrlInput.value; // 生成された共有URLを使用
+        let shareUrl = elements.shareUrlInput.value; // 生成された共有URLを使用
+        
+        // URLがまだ生成されていない場合
+        if (!shareUrl || shareUrl === '生成中...') {
+            showToast('URLを生成中です。しばらくお待ちください。', 'info');
+            return;
+        }
         
         try {
             await navigator.clipboard.writeText(shareUrl);
@@ -906,8 +966,8 @@
     }
     
     // 初期化
-    function init() {
-        initializeGrid();
+    async function init() {
+        await initializeGrid();
         setupEventListeners();
     }
     

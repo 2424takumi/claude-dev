@@ -10,6 +10,7 @@ export { ThemeManager } from './theme.js';
 export { modal, ModalManager } from './modal.js';
 export { storage, StorageManager, Storage } from './storage.js';
 export { share, ShareManager } from './share.js';
+export { shareStorage, ShareStorage } from './share-storage.js';
 export { createGrid, GridRenderer } from './grid.js';
 
 // デフォルトインスタンスをまとめてエクスポート
