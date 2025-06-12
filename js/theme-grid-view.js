@@ -20,7 +20,14 @@
     const elements = {
         viewThemeGrid: document.getElementById('view-theme-grid'),
         downloadBtn: document.getElementById('download-grid-btn'),
-        createNewBtn: document.getElementById('create-new-btn')
+        createNewBtn: document.getElementById('create-new-btn'),
+        shareModal: document.getElementById('share-modal'),
+        shareModalClose: null,
+        copyUrlBtn: document.getElementById('copy-url-btn'),
+        shareTwitterBtn: document.getElementById('share-twitter-btn'),
+        shareLineBtn: document.getElementById('share-line-btn'),
+        shareUrlInput: document.getElementById('share-url-input'),
+        downloadImageBtn: document.getElementById('download-image-btn')
     };
     
     // URLパラメータからデータを取得
@@ -276,11 +283,62 @@
         }
     }
     
+    // 共有モーダルを表示
+    function showShareModal() {
+        if (!elements.shareModal) return;
+        
+        // 現在のURLを設定
+        const currentUrl = window.location.href;
+        if (elements.shareUrlInput) {
+            elements.shareUrlInput.value = currentUrl;
+        }
+        
+        elements.shareModal.classList.add('active');
+    }
+    
+    // 共有モーダルを閉じる
+    function closeShareModal() {
+        if (elements.shareModal) {
+            elements.shareModal.classList.remove('active');
+        }
+    }
+    
+    // URLをコピー
+    async function copyShareUrl() {
+        const shareUrl = elements.shareUrlInput?.value || window.location.href;
+        
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+            showToast('URLをコピーしました', 'success');
+        } catch (err) {
+            console.error('コピーエラー:', err);
+            showToast('URLのコピーに失敗しました', 'error');
+        }
+    }
+    
+    // Twitterで共有
+    function shareOnTwitter() {
+        const shareUrl = elements.shareUrlInput?.value || window.location.href;
+        const nickname = state.nickname ? `${state.nickname}の` : '';
+        const text = encodeURIComponent(`${nickname}GridMe!!どんな感じ？`);
+        const twitterUrl = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(shareUrl)}`;
+        window.open(twitterUrl, '_blank', 'width=600,height=400');
+    }
+    
+    // LINEで共有
+    function shareOnLine() {
+        const shareUrl = elements.shareUrlInput?.value || window.location.href;
+        const nickname = state.nickname ? `${state.nickname}の` : '';
+        const text = encodeURIComponent(`${nickname}GridMe!!どんな感じ？`);
+        const lineUrl = `https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(shareUrl)}&text=${text}`;
+        window.open(lineUrl, '_blank', 'width=600,height=400');
+    }
+    
     // イベントリスナーの設定
     function setupEventListeners() {
-        // ダウンロードボタン
+        // ダウンロードボタン（共有モーダルを表示）
         if (elements.downloadBtn) {
-            elements.downloadBtn.addEventListener('click', downloadGrid);
+            elements.downloadBtn.addEventListener('click', showShareModal);
         }
         
         // 新規作成ボタン
@@ -288,6 +346,41 @@
             elements.createNewBtn.addEventListener('click', () => {
                 window.location.href = './index.html';
             });
+        }
+        
+        // モーダル関連
+        if (elements.shareModal) {
+            // モーダルの閉じるボタンを取得
+            elements.shareModalClose = elements.shareModal.querySelector('.app-modal-close');
+            
+            // モーダルを閉じる
+            if (elements.shareModalClose) {
+                elements.shareModalClose.addEventListener('click', closeShareModal);
+            }
+            
+            // モーダル背景クリックで閉じる
+            elements.shareModal.addEventListener('click', (e) => {
+                if (e.target === elements.shareModal) {
+                    closeShareModal();
+                }
+            });
+        }
+        
+        // 共有オプションボタン
+        if (elements.downloadImageBtn) {
+            elements.downloadImageBtn.addEventListener('click', () => {
+                closeShareModal();
+                downloadGrid();
+            });
+        }
+        if (elements.copyUrlBtn) {
+            elements.copyUrlBtn.addEventListener('click', copyShareUrl);
+        }
+        if (elements.shareTwitterBtn) {
+            elements.shareTwitterBtn.addEventListener('click', shareOnTwitter);
+        }
+        if (elements.shareLineBtn) {
+            elements.shareLineBtn.addEventListener('click', shareOnLine);
         }
     }
     
