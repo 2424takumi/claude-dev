@@ -13,7 +13,8 @@
         gridSections: [],
         uploadedImages: {}, // インデックスをキーとして画像を保存
         gridBgColor: '#FF8B25', // グリッド背景色のデフォルト値
-        nickname: '' // ニックネームを保存
+        nickname: '', // ニックネームを保存
+        creatorNickname: '' // 画像を追加した人のニックネーム
     };
     
     // DOM要素
@@ -499,8 +500,111 @@
         }
     }
     
+    // 作成者のニックネームを入力してもらう
+    function promptForCreatorNickname() {
+        return new Promise((resolve) => {
+            // モーダルHTML（既存のスタイルを使用）
+            const modalHtml = `
+                <div id="creator-nickname-modal" class="app-modal">
+                    <div class="app-modal-content" style="max-width: 400px;">
+                        <div class="app-modal-header">
+                            <h3 class="app-modal-title">あなたのニックネームを入力</h3>
+                            <button class="app-modal-close">×</button>
+                        </div>
+                        <div class="app-modal-body">
+                            <p style="margin-bottom: 16px;">画像付きグリッドを作成したあなたのニックネームを入力してください</p>
+                            <input type="text" 
+                                   id="creator-nickname-input" 
+                                   class="input" 
+                                   placeholder="例: たろう" 
+                                   style="width: 100%;"
+                                   maxlength="20">
+                        </div>
+                        <div class="app-modal-footer">
+                            <button class="btn btn-secondary" data-action="cancel">キャンセル</button>
+                            <button class="btn btn-primary" data-action="confirm">確定</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 一時的なモーダルを作成
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = modalHtml;
+            const modal = tempDiv.firstElementChild;
+            document.body.appendChild(modal);
+            
+            // モーダルを表示
+            setTimeout(() => {
+                modal.classList.add('active');
+                // 入力欄にフォーカス
+                document.getElementById('creator-nickname-input').focus();
+            }, 10);
+            
+            // モーダルを閉じる関数
+            const closeModal = () => {
+                modal.classList.remove('active');
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+            };
+            
+            // 確認処理
+            const handleConfirm = () => {
+                const nicknameInput = document.getElementById('creator-nickname-input');
+                const nickname = nicknameInput.value.trim();
+                
+                if (!nickname) {
+                    showToast('ニックネームを入力してください', 'warning');
+                    nicknameInput.focus();
+                    return;
+                }
+                
+                closeModal();
+                resolve(nickname);
+            };
+            
+            // キャンセル処理
+            const handleCancel = () => {
+                closeModal();
+                resolve(null);
+            };
+            
+            // イベントリスナーを設定
+            modal.addEventListener('click', (e) => {
+                if (e.target.matches('[data-action="confirm"]')) {
+                    handleConfirm();
+                } else if (e.target.matches('[data-action="cancel"]') || 
+                           e.target.matches('.app-modal-close')) {
+                    handleCancel();
+                } else if (e.target === modal) {
+                    handleCancel();
+                }
+            });
+            
+            // Enterキーで確定
+            document.getElementById('creator-nickname-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleConfirm();
+                }
+            });
+        });
+    }
+    
     // 共有モーダルを表示
     async function showShareModal() {
+        // 画像がアップロードされているかチェック
+        const hasImages = Object.keys(state.uploadedImages).length > 0;
+        
+        if (hasImages) {
+            // 画像がある場合は、まずニックネームを入力してもらう
+            const creatorNickname = await promptForCreatorNickname();
+            if (!creatorNickname) {
+                return; // キャンセルされた場合
+            }
+            state.creatorNickname = creatorNickname;
+        }
+        
         if (elements.shareModal) {
             elements.shareModal.classList.add('active');
         }
@@ -519,8 +623,9 @@
                 size: state.gridSize,
                 sections: state.gridSections,
                 bgColor: state.gridBgColor,
-                nickname: state.nickname,
-                images: state.uploadedImages // 画像データを含める
+                nickname: state.nickname, // 元の作成者のニックネーム
+                images: state.uploadedImages, // 画像データを含める
+                creatorNickname: state.creatorNickname || null // 画像を追加した人のニックネーム
             };
             
             // theme-grid.htmlへのURLを生成
@@ -542,7 +647,8 @@
                 sections: state.gridSections,
                 bgColor: state.gridBgColor,
                 nickname: state.nickname,
-                images: state.uploadedImages
+                images: state.uploadedImages,
+                creatorNickname: state.creatorNickname || null
             };
             
             const encodedData = encodeShareData(shareData);

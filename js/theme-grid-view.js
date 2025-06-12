@@ -13,7 +13,8 @@
         gridSections: [],
         gridBgColor: '#FF8B25',
         nickname: '',
-        images: {} // 画像データを保存
+        images: {}, // 画像データを保存
+        creatorNickname: '' // 画像を追加した人のニックネーム
     };
     
     // DOM要素
@@ -88,11 +89,16 @@
         state.gridBgColor = sharedData.bgColor || '#FF8B25';
         state.nickname = sharedData.nickname || '';
         state.images = sharedData.images || {};
+        state.creatorNickname = sharedData.creatorNickname || '';
         
         // タイトルを更新
-        if (state.nickname) {
-            const titleElement = document.querySelector('.theme-grid-title');
-            if (titleElement) {
+        const titleElement = document.querySelector('.theme-grid-title');
+        if (titleElement) {
+            if (state.creatorNickname && state.nickname) {
+                // 画像を追加した人と元の作成者の両方がいる場合
+                titleElement.textContent = `${state.creatorNickname}が${state.nickname}をGridしました！`;
+            } else if (state.nickname) {
+                // 元の作成者のみの場合（従来の形式）
                 titleElement.textContent = `${state.nickname} のGrid`;
             }
         }
