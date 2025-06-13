@@ -4,6 +4,8 @@
  * 共有されたグリッドを閲覧するページの機能
  */
 
+import { GridRenderer, toast } from './utils/index.js';
+
 (function() {
     'use strict';
     
@@ -31,6 +33,15 @@
         downloadImageBtn: document.getElementById('download-image-btn')
     };
     
+    // グリッドレンダラーの初期化
+    const gridRenderer = new GridRenderer('view-theme-grid', {
+        itemClass: 'grid-theme-item',
+        renderItem: (gridItem, section, index) => {
+            const flipCard = createFlipCard(section, index);
+            gridItem.appendChild(flipCard);
+        }
+    });
+    
     // URLパラメータからデータを取得
     async function getSharedData() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -44,7 +55,7 @@
                 const data = await share.getShareData(urlParams);
                 
                 if (!data) {
-                    showToast('共有データが見つかりません', 'error');
+                    toast.error('共有データが見つかりません');
                     setTimeout(() => {
                         window.location.href = './index.html';
                     }, 2000);
@@ -54,7 +65,7 @@
                 return data;
             } catch (err) {
                 console.error('データの取得エラー:', err);
-                showToast('共有データの読み込みに失敗しました', 'error');
+                toast.error('共有データの読み込みに失敗しました');
                 return null;
             }
         }
@@ -62,7 +73,7 @@
         // 従来のエンコードされたデータの場合
         const encodedData = urlParams.get('data');
         if (!encodedData) {
-            showToast('共有データが見つかりません', 'error');
+            toast.error('共有データが見つかりません');
             setTimeout(() => {
                 window.location.href = './index.html';
             }, 2000);
@@ -81,7 +92,7 @@
             return JSON.parse(decodedString);
         } catch (err) {
             console.error('データのデコードエラー:', err);
-            showToast('共有データの読み込みに失敗しました', 'error');
+            toast.error('共有データの読み込みに失敗しました');
             return null;
         }
     }
@@ -110,25 +121,16 @@
             }
         }
         
-        // グリッドHTMLの生成
-        elements.viewThemeGrid.innerHTML = '';
-        elements.viewThemeGrid.style.gridTemplateColumns = `repeat(${state.gridSize}, 1fr)`;
-        elements.viewThemeGrid.style.gridTemplateRows = `repeat(${state.gridSize}, 1fr)`;
-        
         // 背景色を設定
         elements.viewThemeGrid.style.backgroundColor = state.gridBgColor;
         
-        state.gridSections.forEach((section, index) => {
-            const gridItem = createFlipCard(section, index);
-            elements.viewThemeGrid.appendChild(gridItem);
-        });
+        // グリッドをレンダリング
+        gridRenderer.setSize(state.gridSize);
+        gridRenderer.render(state.gridSections);
     }
     
     // フリップカードの作成
     function createFlipCard(section, index) {
-        const gridItem = document.createElement('div');
-        gridItem.className = 'grid-theme-item';
-        
         const flipCard = document.createElement('div');
         flipCard.className = 'flip-card';
         flipCard.dataset.index = index;
@@ -167,149 +169,45 @@
         
         flipCard.appendChild(cardFront);
         flipCard.appendChild(cardBack);
-        gridItem.appendChild(flipCard);
         
         // クリックイベントの設定
         flipCard.addEventListener('click', function() {
             this.classList.toggle('flipped');
         });
         
-        return gridItem;
-    }
-    
-    // グリッドをキャンバスに描画
-    function drawGridToCanvas() {
-        return new Promise((resolve, reject) => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const gridElement = elements.viewThemeGrid;
-            
-            // グリッドのサイズを取得
-            const gridRect = gridElement.getBoundingClientRect();
-            const scale = 2; // 高解像度のためのスケール
-            
-            canvas.width = gridRect.width * scale;
-            canvas.height = gridRect.height * scale;
-            ctx.scale(scale, scale);
-            
-            // 背景色を描画
-            ctx.fillStyle = state.gridBgColor;
-            ctx.fillRect(0, 0, gridRect.width, gridRect.height);
-            
-            // 各グリッドアイテムを描画
-            const gridItems = gridElement.querySelectorAll('.grid-theme-item');
-            const itemSize = gridRect.width / state.gridSize;
-            let loadedImages = 0;
-            const totalImages = gridItems.length;
-            
-            gridItems.forEach((item, index) => {
-                const row = Math.floor(index / state.gridSize);
-                const col = index % state.gridSize;
-                const x = col * itemSize;
-                const y = row * itemSize;
-                
-                // 画像がある場合は描画
-                const img = item.querySelector('img');
-                if (img && img.complete && img.naturalHeight !== 0) {
-                    ctx.drawImage(img, x, y, itemSize, itemSize);
-                } else {
-                    // 画像がない場合はテーマテキストを描画
-                    const theme = state.gridSections[index];
-                    if (theme && theme.title) {
-                        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                        ctx.fillRect(x, y, itemSize, itemSize);
-                        
-                        ctx.fillStyle = '#333';
-                        ctx.font = 'bold 16px "Noto Sans JP", sans-serif';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        
-                        // テキストを折り返して描画
-                        const maxWidth = itemSize * 0.8;
-                        const lineHeight = 24;
-                        const words = theme.title.split('');
-                        let line = '';
-                        let lines = [];
-                        
-                        for (let n = 0; n < words.length; n++) {
-                            const testLine = line + words[n];
-                            const metrics = ctx.measureText(testLine);
-                            if (metrics.width > maxWidth && n > 0) {
-                                lines.push(line);
-                                line = words[n];
-                            } else {
-                                line = testLine;
-                            }
-                        }
-                        lines.push(line);
-                        
-                        const startY = y + itemSize / 2 - (lines.length - 1) * lineHeight / 2;
-                        lines.forEach((line, i) => {
-                            ctx.fillText(line, x + itemSize / 2, startY + i * lineHeight);
-                        });
-                    }
-                }
-                
-                // 枠線を描画
-                ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(x, y, itemSize, itemSize);
-                
-                loadedImages++;
-                if (loadedImages === totalImages) {
-                    resolve(canvas);
-                }
-            });
-            
-            // 画像がない場合もresolve
-            if (totalImages === 0) {
-                resolve(canvas);
-            }
-        });
+        return flipCard;
     }
     
     // 画像をダウンロード（写真アルバムへの保存）
     async function downloadGrid() {
-        try {
-            showToast('画像を生成中...', 'info');
-            
-            const canvas = await drawGridToCanvas();
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-            const filename = `gridme_${state.nickname || 'grid'}_${timestamp}.png`;
-            
-            // CanvasをBlobに変換
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-            
-            // Web Share APIをサポートしているかチェック
-            if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/png' })] })) {
-                // Web Share APIを使用して写真を共有（モバイルでは写真アルバムに保存可能）
-                const file = new File([blob], filename, { type: 'image/png' });
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'GridMe',
-                        text: 'GridMeで作成した画像'
-                    });
-                    showToast('画像を保存しました', 'success');
-                } catch (err) {
-                    // ユーザーがキャンセルした場合
-                    if (err.name === 'AbortError') {
-                        showToast('保存をキャンセルしました', 'info');
-                    } else {
-                        throw err;
-                    }
-                }
-            } else {
-                // Web Share APIがサポートされていない場合は従来のダウンロード
-                const link = document.createElement('a');
-                link.download = filename;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                showToast('画像をダウンロードしました', 'success');
-            }
-        } catch (error) {
-            console.error('Download error:', error);
-            showToast('ダウンロードに失敗しました', 'error');
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+        const filename = `gridme_${state.nickname || 'grid'}_${timestamp}.png`;
+        
+        // html2canvasが読み込まれているか確認
+        if (typeof html2canvas === 'undefined') {
+            // html2canvasライブラリを動的に読み込む
+            const script = document.createElement('script');
+            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+            script.onload = async () => {
+                await performSaveToAlbum(filename);
+            };
+            document.head.appendChild(script);
+        } else {
+            await performSaveToAlbum(filename);
+        }
+    }
+    
+    // 実際の保存処理
+    async function performSaveToAlbum(filename) {
+        const result = await gridRenderer.saveAsPhoto(filename);
+        
+        if (result === true) {
+            toast.success('画像を保存しました');
+        } else if (result === false) {
+            // ユーザーがキャンセルした場合
+            toast.info('保存をキャンセルしました');
+        } else {
+            toast.error('保存に失敗しました');
         }
     }
     
@@ -339,10 +237,10 @@
         
         try {
             await navigator.clipboard.writeText(shareUrl);
-            showToast('URLをコピーしました', 'success');
+            toast.success('URLをコピーしました');
         } catch (err) {
             console.error('コピーエラー:', err);
-            showToast('URLのコピーに失敗しました', 'error');
+            toast.error('URLのコピーに失敗しました');
         }
     }
     
