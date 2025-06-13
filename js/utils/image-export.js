@@ -121,10 +121,30 @@ export async function exportHighQualityImage(element, options = {}) {
                 const url = URL.createObjectURL(blob);
                 
                 if (autoDownload) {
-                    const link = document.createElement('a');
-                    link.download = `${filename}.${extension}`;
-                    link.href = url;
-                    link.click();
+                    // Web Share APIをサポートしているかチェック（モバイルでの写真アルバム保存）
+                    const fullFilename = `${filename}.${extension}`;
+                    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], fullFilename, { type: format })] })) {
+                        // Web Share APIを使用して写真を共有（モバイルでは写真アルバムに保存可能）
+                        const file = new File([blob], fullFilename, { type: format });
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'GridMe',
+                                text: 'GridMeで作成した画像'
+                            });
+                        } catch (err) {
+                            // ユーザーがキャンセルした場合は何もしない
+                            if (err.name !== 'AbortError') {
+                                throw err;
+                            }
+                        }
+                    } else {
+                        // Web Share APIがサポートされていない場合は従来のダウンロード
+                        const link = document.createElement('a');
+                        link.download = fullFilename;
+                        link.href = url;
+                        link.click();
+                    }
                     
                     // リソースをクリーンアップ
                     setTimeout(() => URL.revokeObjectURL(url), 100);

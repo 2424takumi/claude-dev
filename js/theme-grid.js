@@ -552,41 +552,67 @@
         document.body.appendChild(modal);
     }
     
-    // 実際のダウンロード処理
-    function performDownload() {
+    // 実際のダウンロード処理（写真アルバムへの保存対応）
+    async function performDownload() {
         // グリッドに背景色を一時的に設定
         const originalBg = elements.themeGrid.style.backgroundColor;
         elements.themeGrid.style.backgroundColor = state.gridBgColor;
         
-        html2canvas(elements.themeGrid, {
-            backgroundColor: state.gridBgColor,
-            scale: 2, // 高解像度
-            useCORS: true, // CORS画像のサポート
-            allowTaint: true, // 外部画像の許可
-            logging: false, // デバッグログを無効化
-            imageTimeout: 0, // 画像タイムアウトを無効化
-            onclone: (clonedDoc) => {
-                // クローンされたドキュメントで画像のスタイルを確実に適用
-                const clonedImages = clonedDoc.querySelectorAll('.uploaded-image');
-                clonedImages.forEach(img => {
-                    img.style.objectFit = 'cover';
-                    img.style.objectPosition = 'center';
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.position = 'absolute';
-                    img.style.top = '0';
-                    img.style.left = '0';
-                });
-            }
-        }).then(canvas => {
+        try {
+            const canvas = await html2canvas(elements.themeGrid, {
+                backgroundColor: state.gridBgColor,
+                scale: 2, // 高解像度
+                useCORS: true, // CORS画像のサポート
+                allowTaint: true, // 外部画像の許可
+                logging: false, // デバッグログを無効化
+                imageTimeout: 0, // 画像タイムアウトを無効化
+                onclone: (clonedDoc) => {
+                    // クローンされたドキュメントで画像のスタイルを確実に適用
+                    const clonedImages = clonedDoc.querySelectorAll('.uploaded-image');
+                    clonedImages.forEach(img => {
+                        img.style.objectFit = 'cover';
+                        img.style.objectPosition = 'center';
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.position = 'absolute';
+                        img.style.top = '0';
+                        img.style.left = '0';
+                    });
+                }
+            });
+            
             // 元の背景色に戻す
             elements.themeGrid.style.backgroundColor = originalBg;
             
-            // ブラウザのデフォルトダウンロードを使用（アルバム保存は自動的に処理される場合がある）
-            canvas.toBlob((blob) => {
+            const filename = `gridme-${new Date().getTime()}.png`;
+            
+            // CanvasをBlobに変換
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            
+            // Web Share APIをサポートしているかチェック（モバイルでの写真アルバム保存）
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/png' })] })) {
+                // Web Share APIを使用して写真を共有（モバイルでは写真アルバムに保存可能）
+                const file = new File([blob], filename, { type: 'image/png' });
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'GridMe',
+                        text: 'GridMeで作成した画像'
+                    });
+                    showToast('画像を保存しました', 'success');
+                } catch (err) {
+                    // ユーザーがキャンセルした場合
+                    if (err.name === 'AbortError') {
+                        showToast('保存をキャンセルしました', 'info');
+                    } else {
+                        throw err;
+                    }
+                }
+            } else {
+                // Web Share APIがサポートされていない場合は従来のダウンロード
                 const url = URL.createObjectURL(blob);
                 const link = document.createElement('a');
-                link.download = `gridme-${new Date().getTime()}.png`;
+                link.download = filename;
                 link.href = url;
                 link.click();
                 
@@ -594,13 +620,13 @@
                 setTimeout(() => URL.revokeObjectURL(url), 100);
                 
                 showToast('ダウンロードを開始しました', 'success');
-            }, 'image/png');
-        }).catch(err => {
+            }
+        } catch (err) {
             // 元の背景色に戻す
             elements.themeGrid.style.backgroundColor = originalBg;
             console.error('ダウンロードエラー:', err);
             showToast('ダウンロードに失敗しました', 'error');
-        });
+        }
     }
     
     // グリッド背景色を適用
