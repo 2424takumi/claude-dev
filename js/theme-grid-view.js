@@ -268,21 +268,45 @@
         });
     }
     
-    // 画像をダウンロード
+    // 画像をダウンロード（写真アルバムへの保存）
     async function downloadGrid() {
         try {
             showToast('画像を生成中...', 'info');
             
             const canvas = await drawGridToCanvas();
-            
-            // ダウンロード
-            const link = document.createElement('a');
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-            link.download = `gridme_${state.nickname || 'grid'}_${timestamp}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+            const filename = `gridme_${state.nickname || 'grid'}_${timestamp}.png`;
             
-            showToast('画像をダウンロードしました', 'success');
+            // CanvasをBlobに変換
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            
+            // Web Share APIをサポートしているかチェック
+            if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'image/png' })] })) {
+                // Web Share APIを使用して写真を共有（モバイルでは写真アルバムに保存可能）
+                const file = new File([blob], filename, { type: 'image/png' });
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'GridMe',
+                        text: 'GridMeで作成した画像'
+                    });
+                    showToast('画像を保存しました', 'success');
+                } catch (err) {
+                    // ユーザーがキャンセルした場合
+                    if (err.name === 'AbortError') {
+                        showToast('保存をキャンセルしました', 'info');
+                    } else {
+                        throw err;
+                    }
+                }
+            } else {
+                // Web Share APIがサポートされていない場合は従来のダウンロード
+                const link = document.createElement('a');
+                link.download = filename;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showToast('画像をダウンロードしました', 'success');
+            }
         } catch (error) {
             console.error('Download error:', error);
             showToast('ダウンロードに失敗しました', 'error');
