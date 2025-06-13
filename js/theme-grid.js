@@ -362,18 +362,194 @@
     
     
     // ダウンロード機能
-    function downloadGrid() {
+    async function downloadGrid() {
         // html2canvasライブラリを使用してグリッドをキャプチャ
         if (typeof html2canvas === 'undefined') {
             const script = document.createElement('script');
             script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-            script.onload = () => {
-                performDownload();
+            script.onload = async () => {
+                // 新しい高画質エクスポート機能をロード
+                try {
+                    const module = await import('./utils/image-export.js');
+                    showQualityOptions(module);
+                } catch (error) {
+                    console.error('Failed to load image export module:', error);
+                    // フォールバック: 従来の方法で実行
+                    performDownload();
+                }
             };
             document.head.appendChild(script);
         } else {
-            performDownload();
+            // 新しい高画質エクスポート機能を使用
+            try {
+                const module = await import('./utils/image-export.js');
+                showQualityOptions(module);
+            } catch (error) {
+                console.error('Failed to load image export module:', error);
+                // フォールバック: 従来の方法で実行
+                performDownload();
+            }
         }
+    }
+    
+    // 画質選択ダイアログを表示
+    function showQualityOptions(exportModule) {
+        const modal = document.createElement('div');
+        modal.className = 'quality-modal';
+        modal.innerHTML = `
+            <div class="quality-modal-content">
+                <h3>画質を選択してください</h3>
+                <div class="quality-options">
+                    <button class="quality-option" data-quality="LOW">
+                        <span class="quality-name">標準画質</span>
+                        <span class="quality-desc">ファイルサイズ小・SNS共有向け</span>
+                    </button>
+                    <button class="quality-option" data-quality="MEDIUM">
+                        <span class="quality-name">高画質</span>
+                        <span class="quality-desc">バランスの取れた画質</span>
+                    </button>
+                    <button class="quality-option" data-quality="HIGH">
+                        <span class="quality-name">最高画質</span>
+                        <span class="quality-desc">印刷・大画面表示向け</span>
+                    </button>
+                    <button class="quality-option" data-quality="LOSSLESS">
+                        <span class="quality-name">ロスレス (PNG)</span>
+                        <span class="quality-desc">劣化なし・編集用</span>
+                    </button>
+                </div>
+                <button class="quality-cancel">キャンセル</button>
+            </div>
+        `;
+        
+        // スタイルを追加
+        const style = document.createElement('style');
+        style.textContent = `
+            .quality-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                animation: fadeIn 0.3s ease;
+            }
+            .quality-modal-content {
+                background: var(--surface);
+                border-radius: 16px;
+                padding: 24px;
+                max-width: 400px;
+                width: 90%;
+                animation: slideUp 0.3s ease;
+            }
+            .quality-modal h3 {
+                margin: 0 0 20px;
+                color: var(--text-primary);
+                text-align: center;
+            }
+            .quality-options {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+            .quality-option {
+                background: var(--surface-hover);
+                border: 2px solid transparent;
+                border-radius: 12px;
+                padding: 16px;
+                text-align: left;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            .quality-option:hover {
+                background: var(--primary-gradient-start);
+                border-color: var(--primary);
+                transform: translateY(-2px);
+            }
+            .quality-name {
+                display: block;
+                font-weight: 600;
+                color: var(--text-primary);
+                margin-bottom: 4px;
+            }
+            .quality-desc {
+                display: block;
+                font-size: 0.875rem;
+                color: var(--text-secondary);
+            }
+            .quality-cancel {
+                width: 100%;
+                padding: 12px;
+                background: transparent;
+                border: 1px solid var(--text-secondary);
+                border-radius: 8px;
+                color: var(--text-secondary);
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+            .quality-cancel:hover {
+                background: var(--surface-hover);
+            }
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateY(20px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // イベントハンドラーを設定
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal || e.target.classList.contains('quality-cancel')) {
+                modal.remove();
+                style.remove();
+            }
+        });
+        
+        modal.querySelectorAll('.quality-option').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const qualityKey = btn.dataset.quality;
+                const quality = exportModule.EXPORT_QUALITY[qualityKey];
+                
+                modal.remove();
+                style.remove();
+                
+                // 高画質エクスポートを実行
+                showToast('画像を生成中...', 'info');
+                
+                try {
+                    // グリッドに背景色を一時的に設定
+                    const originalBg = elements.themeGrid.style.backgroundColor;
+                    elements.themeGrid.style.backgroundColor = state.gridBgColor;
+                    
+                    const result = await exportModule.exportHighQualityImage(elements.themeGrid, {
+                        quality,
+                        backgroundColor: state.gridBgColor,
+                        autoDownload: true
+                    });
+                    
+                    // 元の背景色に戻す
+                    elements.themeGrid.style.backgroundColor = originalBg;
+                    
+                    const sizeInKB = Math.round(result.size / 1024);
+                    showToast(`ダウンロード完了！(${sizeInKB}KB)`, 'success');
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showToast('ダウンロードに失敗しました', 'error');
+                    // フォールバック: 従来の方法で実行
+                    performDownload();
+                }
+            });
+        });
+        
+        document.body.appendChild(modal);
     }
     
     // 実際のダウンロード処理
