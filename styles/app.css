@@ -864,7 +864,7 @@ main {
     height: 2.2em; /* デフォルトは1行分の高さ */
     vertical-align: middle;
     display: block;
-    margin: 0 8px;
+    margin: 0 auto; /* 中央配置 */
     overflow-wrap: break-word; /* 長い単語を折り返す */
     word-wrap: break-word; /* 古いブラウザ対応 */
 }
