@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高画質エクスポート機能デモ - GridMe</title>
+    <link rel="stylesheet" href="../styles/design-tokens.css">
+    <link rel="stylesheet" href="../styles/components.css">
+    <style>
+        body {
+            background: var(--background);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .demo-container {
+            display: grid;
+            gap: 2rem;
+        }
+        
+        .demo-grid {
+            width: 300px;
+            height: 300px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: var(--primary-gradient-start);
+            padding: 20px;
+            border-radius: 16px;
+            margin: 0 auto;
+        }
+        
+        .grid-item {
+            background: var(--surface);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .export-options {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .preview-container {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+        
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .preview-item {
+            background: var(--surface-hover);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+        
+        .preview-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .preview-info {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        
+        .quality-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .feature-list {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .feature-list h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 0.5rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .feature-list li:before {
+            content: "✨";
+            position: absolute;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🎨 GridMe 高画質エクスポート機能</h1>
+        
+        <div class="feature-list">
+            <h3>新機能の特徴</h3>
+            <ul>
+                <li>デバイスピクセル比に基づく動的スケール設定</li>
+                <li>JPEG形式での高品質出力（95%品質）</li>
+                <li>WebP形式のサポート（対応ブラウザ）</li>
+                <li>4つの画質プリセットから選択可能</li>
+                <li>ファイルサイズと画質のバランスを最適化</li>
+            </ul>
+        </div>
+        
+        <div class="demo-grid" id="demo-grid">
+            <div class="grid-item">1</div>
+            <div class="grid-item">2</div>
+            <div class="grid-item">3</div>
+            <div class="grid-item">4</div>
+            <div class="grid-item">5</div>
+            <div class="grid-item">6</div>
+            <div class="grid-item">7</div>
+            <div class="grid-item">8</div>
+            <div class="grid-item">9</div>
+        </div>
+        
+        <div class="export-options">
+            <button class="btn btn-primary" id="export-standard">標準画質でエクスポート</button>
+            <button class="btn btn-primary" id="export-high">高画質でエクスポート</button>
+            <button class="btn btn-primary" id="export-maximum">最高画質でエクスポート</button>
+            <button class="btn btn-secondary" id="export-png">PNG（ロスレス）でエクスポート</button>
+            <button class="btn btn-accent" id="compare-all">画質を比較</button>
+        </div>
+        
+        <div class="preview-container" id="preview-container" style="display: none;">
+            <h2>画質比較</h2>
+            <div class="preview-grid" id="preview-grid"></div>
+        </div>
+    </div>
+    
+    <!-- html2canvas ライブラリ -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script type="module">
+        import { 
+            exportHighQualityImage, 
+            generateQualityPreview,
+            EXPORT_QUALITY,
+            toast
+        } from '../js/utils/index.js';
+        
+        const demoGrid = document.getElementById('demo-grid');
+        const previewContainer = document.getElementById('preview-container');
+        const previewGrid = document.getElementById('preview-grid');
+        
+        // 標準画質エクスポート
+        document.getElementById('export-standard').addEventListener('click', async () => {
+            try {
+                await exportHighQualityImage(demoGrid, {
+                    quality: EXPORT_QUALITY.LOW,
+                    filename: 'gridme-standard'
+                });
+                toast.show('標準画質でダウンロードしました', 'success');
+            } catch (error) {
+                toast.show('エクスポートに失敗しました', 'error');
+            }
+        });
+        
+        // 高画質エクスポート
+        document.getElementById('export-high').addEventListener('click', async () => {
+            try {
+                await exportHighQualityImage(demoGrid, {
+                    quality: EXPORT_QUALITY.MEDIUM,
+                    filename: 'gridme-high'
+                });
+                toast.show('高画質でダウンロードしました', 'success');
+            } catch (error) {
+                toast.show('エクスポートに失敗しました', 'error');
+            }
+        });
+        
+        // 最高画質エクスポート
+        document.getElementById('export-maximum').addEventListener('click', async () => {
+            try {
+                await exportHighQualityImage(demoGrid, {
+                    quality: EXPORT_QUALITY.HIGH,
+                    filename: 'gridme-maximum'
+                });
+                toast.show('最高画質でダウンロードしました', 'success');
+            } catch (error) {
+                toast.show('エクスポートに失敗しました', 'error');
+            }
+        });
+        
+        // PNGエクスポート
+        document.getElementById('export-png').addEventListener('click', async () => {
+            try {
+                await exportHighQualityImage(demoGrid, {
+                    quality: EXPORT_QUALITY.LOSSLESS,
+                    filename: 'gridme-lossless'
+                });
+                toast.show('PNG形式でダウンロードしました', 'success');
+            } catch (error) {
+                toast.show('エクスポートに失敗しました', 'error');
+            }
+        });
+        
+        // 画質比較
+        document.getElementById('compare-all').addEventListener('click', async () => {
+            previewGrid.innerHTML = '';
+            previewContainer.style.display = 'block';
+            
+            toast.show('画質比較を生成中...', 'info');
+            
+            try {
+                const previews = await generateQualityPreview(demoGrid);
+                
+                previews.forEach(preview => {
+                    const item = document.createElement('div');
+                    item.className = 'preview-item';
+                    
+                    const sizeInKB = Math.round(preview.size / 1024);
+                    
+                    item.innerHTML = `
+                        <img src="${preview.url}" class="preview-image" alt="${preview.name}">
+                        <div class="quality-name">${preview.name}</div>
+                        <div class="preview-info">
+                            形式: ${preview.format.split('/')[1].toUpperCase()}<br>
+                            サイズ: ${sizeInKB}KB
+                        </div>
+                    `;
+                    
+                    previewGrid.appendChild(item);
+                });
+                
+                toast.show('画質比較を生成しました', 'success');
+            } catch (error) {
+                toast.show('比較生成に失敗しました', 'error');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -12,6 +12,14 @@ export { storage, StorageManager, Storage } from './storage.js';
 export { share, ShareManager } from './share.js';
 export { shareStorage, ShareStorage } from './share-storage.js';
 export { createGrid, GridRenderer } from './grid.js';
+export { 
+    exportHighQualityImage, 
+    exportMultipleFormats, 
+    generateQualityPreview,
+    EXPORT_QUALITY,
+    getOptimalScale,
+    supportsWebP 
+} from './image-export.js';
 
 // デフォルトインスタンスをまとめてエクスポート
 export const utils = {
