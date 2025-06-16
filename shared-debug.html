@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GridMe!! - 共有されたグリッド (DEBUG)</title>
+    
+    <!-- Design Tokens & Base Styles -->
+    <link rel="stylesheet" href="styles/design-tokens.css">
+    <link rel="stylesheet" href="styles/app.css">
+    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/shared.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="app-header">
+        <div class="header-content">
+            <div class="logo-container">
+                <img src="assets/logos/gridme_logo_TP.png" alt="GridMe Logo" class="logo-image">
+            </div>
+            <button id="download-grid-btn" class="app-btn app-btn-icon" title="グリッドをダウンロード">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- メインコンテンツ -->
+    <main class="app-main">
+        <div class="shared-container">
+            <h1 class="shared-title">GridMe!!</h1>
+            <p class="shared-subtitle">共有されたフォトグリッドを表示します</p>
+            
+            <!-- フォトグリッド -->
+            <div id="photo-theme-grid" class="photo-theme-grid">
+                <!-- グリッドアイテムは動的に生成されます -->
+            </div>
+            
+            <!-- アクションボタン -->
+            <div class="shared-actions">
+                <div class="color-picker-group">
+                    <label for="grid-bg-color" class="color-picker-label">背景色</label>
+                    <input type="color" id="grid-bg-color" class="color-picker" value="#FF8B25">
+                </div>
+                <button id="main-share-btn" class="app-btn app-btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                    共有
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- 共有モーダル -->
+    <div id="share-modal" class="app-modal">
+        <div class="app-modal-content">
+            <div class="app-modal-header">
+                <h2 class="app-modal-title">GridMe!!を共有</h2>
+                <button class="app-modal-close">&times;</button>
+            </div>
+            <div class="app-modal-body">
+                <div class="share-actions">
+                    <button id="download-btn" class="app-btn app-btn-primary share-action-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        <span>画像として保存</span>
+                    </button>
+                    
+                    <button id="copy-url-btn" class="app-btn app-btn-secondary share-action-btn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                        <span>URLをコピー</span>
+                    </button>
+                    
+                    <button id="share-twitter-btn" class="app-btn app-btn-secondary share-action-btn">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                        </svg>
+                        <span>X (Twitter)</span>
+                    </button>
+                    
+                    <button id="share-line-btn" class="app-btn app-btn-secondary share-action-btn">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.627-.63.348 0 .631.285.631.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                        </svg>
+                        <span>LINE</span>
+                    </button>
+                </div>
+                
+                <div class="share-url-container">
+                    <label for="share-url-input" class="share-url-label">共有URL</label>
+                    <div class="share-url-group">
+                        <input type="text" id="share-url-input" class="share-url-input" readonly>
+                        <button class="share-url-copy" onclick="document.getElementById('copy-url-btn').click()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- アップロードモーダル -->
+    <div id="upload-modal" class="app-modal">
+        <div class="app-modal-content modal-compact">
+            <div class="app-modal-header">
+                <h2 class="app-modal-title">写真を追加</h2>
+                <button class="app-modal-close">&times;</button>
+            </div>
+            <div class="app-modal-body">
+                <div id="upload-area" class="upload-area">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                    </svg>
+                    <p class="upload-text">画像をドラッグ＆ドロップ<br>またはクリックして選択</p>
+                    <input type="file" id="file-input" accept="image/*" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- トースト通知コンテナ -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Debug Console -->
+    <div style="position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: #0f0; padding: 10px; border-radius: 5px; font-family: monospace; font-size: 12px; max-width: 300px; z-index: 10000;">
+        <div style="color: #FF8B25; font-weight: bold; margin-bottom: 5px;">DEBUG MODE ACTIVE</div>
+        <div>Check browser console for detailed logs</div>
+        <div style="margin-top: 5px; color: #fff;">Press F12 to open DevTools</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/shared-grid-debug.js"></script>
+</body>
+</html>

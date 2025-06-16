@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share URL Debug Test</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .test-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        .test-section h2 {
+            color: #FF8B25;
+            margin-bottom: 15px;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        textarea {
+            height: 150px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        button {
+            background: #FF8B25;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #e67a20;
+        }
+        .output {
+            background: #333;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        .stats {
+            margin-top: 15px;
+            padding: 10px;
+            background: #e8f4ff;
+            border-radius: 4px;
+        }
+        .stats p {
+            margin: 5px 0;
+        }
+        .error {
+            color: #d32f2f;
+            background: #ffebee;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .success {
+            color: #388e3c;
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        #generated-url {
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 GridMe Share URL Debug Tool</h1>
+        
+        <!-- Test Data Input Section -->
+        <div class="test-section">
+            <h2>1. Test Data Configuration</h2>
+            <div class="input-group">
+                <label for="grid-size">Grid Size:</label>
+                <input type="number" id="grid-size" value="2" min="1" max="5">
+            </div>
+            <div class="input-group">
+                <label for="nickname">Nickname:</label>
+                <input type="text" id="nickname" value="テスト太郎" placeholder="Enter nickname">
+            </div>
+            <div class="input-group">
+                <label for="bg-color">Background Color:</label>
+                <input type="text" id="bg-color" value="#FF8B25" placeholder="#FF8B25">
+            </div>
+            <div class="input-group">
+                <label for="sections">Grid Sections (JSON format):</label>
+                <textarea id="sections">[
+    {"title": "好きな食べ物", "theme": "warm"},
+    {"title": "趣味", "theme": "cool"},
+    {"title": "思い出の場所", "theme": "nature"},
+    {"title": "大切なもの", "theme": "elegant"}
+]</textarea>
+            </div>
+            <div class="input-group">
+                <label for="include-images">
+                    <input type="checkbox" id="include-images"> Include sample image data
+                </label>
+            </div>
+            <button onclick="generateShareUrl()">Generate Share URL</button>
+            <button onclick="addMoreSections()">Add More Sections (Stress Test)</button>
+        </div>
+
+        <!-- Encoding Process Section -->
+        <div class="test-section">
+            <h2>2. Encoding Process Debug</h2>
+            <div id="encoding-steps" class="output">
+                Encoding steps will appear here...
+            </div>
+            <div id="encoding-stats" class="stats"></div>
+        </div>
+
+        <!-- Generated URL Section -->
+        <div class="test-section">
+            <h2>3. Generated Share URL</h2>
+            <div class="input-group">
+                <textarea id="generated-url" readonly placeholder="Generated URL will appear here..."></textarea>
+            </div>
+            <div id="url-stats" class="stats"></div>
+            <button onclick="copyUrl()">Copy URL</button>
+            <button onclick="testUrl()">Test URL (Open in New Tab)</button>
+            <button onclick="decodeUrl()">Decode URL</button>
+        </div>
+
+        <!-- Decoding Process Section -->
+        <div class="test-section">
+            <h2>4. Decoding Process Debug</h2>
+            <div id="decoding-steps" class="output">
+                Decoding steps will appear here...
+            </div>
+            <div id="decoded-data" class="output" style="margin-top: 15px;">
+                Decoded data will appear here...
+            </div>
+        </div>
+
+        <!-- Manual URL Test Section -->
+        <div class="test-section">
+            <h2>5. Test External URL</h2>
+            <div class="input-group">
+                <label for="external-url">Paste a share URL to test:</label>
+                <textarea id="external-url" placeholder="Paste a GridMe share URL here..."></textarea>
+            </div>
+            <button onclick="testExternalUrl()">Decode External URL</button>
+            <div id="external-result" class="output" style="margin-top: 15px; display: none;">
+                Results will appear here...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Logging helper
+        function log(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}\n`;
+            
+            if (element.tagName === 'TEXTAREA') {
+                element.value += logEntry;
+            } else {
+                element.innerHTML += logEntry;
+            }
+            
+            // Also log to console
+            if (isError) {
+                console.error(message);
+            } else {
+                console.log(message);
+            }
+        }
+
+        // Clear log
+        function clearLog(elementId) {
+            const element = document.getElementById(elementId);
+            if (element.tagName === 'TEXTAREA') {
+                element.value = '';
+            } else {
+                element.innerHTML = '';
+            }
+        }
+
+        // Generate sample image data
+        function generateSampleImageData() {
+            // Create a small 10x10 pixel red square as base64
+            const canvas = document.createElement('canvas');
+            canvas.width = 10;
+            canvas.height = 10;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'red';
+            ctx.fillRect(0, 0, 10, 10);
+            return canvas.toDataURL('image/jpeg', 0.5);
+        }
+
+        // Add more sections for stress testing
+        function addMoreSections() {
+            const sectionsTextarea = document.getElementById('sections');
+            const currentSections = JSON.parse(sectionsTextarea.value);
+            
+            // Add 10 more sections
+            for (let i = 0; i < 10; i++) {
+                currentSections.push({
+                    title: `追加セクション ${currentSections.length + 1}`,
+                    theme: 'default'
+                });
+            }
+            
+            sectionsTextarea.value = JSON.stringify(currentSections, null, 4);
+            alert(`Added 10 more sections. Total: ${currentSections.length} sections`);
+        }
+
+        // Main share URL generation
+        function generateShareUrl() {
+            clearLog('encoding-steps');
+            clearLog('generated-url');
+            clearLog('encoding-stats');
+            clearLog('url-stats');
+            
+            try {
+                // Step 1: Collect data
+                log('encoding-steps', '=== STEP 1: Collecting Data ===');
+                
+                const gridSize = parseInt(document.getElementById('grid-size').value);
+                const nickname = document.getElementById('nickname').value;
+                const bgColor = document.getElementById('bg-color').value;
+                const sections = JSON.parse(document.getElementById('sections').value);
+                const includeImages = document.getElementById('include-images').checked;
+                
+                const shareData = {
+                    size: gridSize,
+                    sections: sections,
+                    bgColor: bgColor,
+                    nickname: nickname
+                };
+                
+                if (includeImages) {
+                    shareData.images = {};
+                    const sampleImage = generateSampleImageData();
+                    for (let i = 0; i < sections.length; i++) {
+                        shareData.images[i] = sampleImage;
+                    }
+                    log('encoding-steps', `Added ${sections.length} sample images`);
+                }
+                
+                log('encoding-steps', `Data object size: ${JSON.stringify(shareData).length} characters`);
+                
+                // Step 2: JSON stringify
+                log('encoding-steps', '\n=== STEP 2: JSON Stringify ===');
+                const jsonString = JSON.stringify(shareData);
+                log('encoding-steps', `JSON string length: ${jsonString.length} characters`);
+                log('encoding-steps', `First 100 chars: ${jsonString.substring(0, 100)}...`);
+                
+                // Step 3: UTF-8 encoding
+                log('encoding-steps', '\n=== STEP 3: UTF-8 Encoding ===');
+                const utf8Bytes = encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+                    function(match, p1) {
+                        return String.fromCharCode('0x' + p1);
+                    });
+                log('encoding-steps', `UTF-8 byte string length: ${utf8Bytes.length} bytes`);
+                
+                // Step 4: Base64 encoding
+                log('encoding-steps', '\n=== STEP 4: Base64 Encoding ===');
+                const base64String = btoa(utf8Bytes);
+                log('encoding-steps', `Base64 string length: ${base64String.length} characters`);
+                log('encoding-steps', `First 100 chars: ${base64String.substring(0, 100)}...`);
+                
+                // Step 5: URL encoding
+                log('encoding-steps', '\n=== STEP 5: URL Encoding ===');
+                const urlEncodedData = encodeURIComponent(base64String);
+                log('encoding-steps', `URL encoded length: ${urlEncodedData.length} characters`);
+                log('encoding-steps', `Encoding increased size by: ${((urlEncodedData.length / base64String.length - 1) * 100).toFixed(1)}%`);
+                
+                // Step 6: Generate final URL
+                log('encoding-steps', '\n=== STEP 6: Final URL Generation ===');
+                const baseUrl = window.location.origin + '/shared.html';
+                const finalUrl = `${baseUrl}?data=${urlEncodedData}`;
+                log('encoding-steps', `Final URL length: ${finalUrl.length} characters`);
+                
+                // Display URL
+                document.getElementById('generated-url').value = finalUrl;
+                
+                // Display statistics
+                const statsHtml = `
+                    <p><strong>Encoding Statistics:</strong></p>
+                    <p>• Original data size: ${JSON.stringify(shareData).length} characters</p>
+                    <p>• Base64 encoded size: ${base64String.length} characters</p>
+                    <p>• URL encoded size: ${urlEncodedData.length} characters</p>
+                    <p>• Final URL length: ${finalUrl.length} characters</p>
+                    <p>• Compression ratio: ${(finalUrl.length / JSON.stringify(shareData).length).toFixed(2)}x</p>
+                    ${includeImages ? `<p>• Image data included: Yes (${Object.keys(shareData.images || {}).length} images)</p>` : '<p>• Image data included: No</p>'}
+                `;
+                document.getElementById('encoding-stats').innerHTML = statsHtml;
+                
+                // URL statistics
+                const urlStatsHtml = `
+                    <p><strong>URL Analysis:</strong></p>
+                    <p>• Total length: ${finalUrl.length} characters</p>
+                    <p>• URL length limit (browsers): ~2,048 characters</p>
+                    <p>• URL length limit (some servers): ~8,192 characters</p>
+                    <p>• Status: ${finalUrl.length < 2048 ? '<span style="color: green;">✓ Safe for all browsers</span>' : 
+                        finalUrl.length < 8192 ? '<span style="color: orange;">⚠ May not work in some browsers</span>' : 
+                        '<span style="color: red;">✗ Too long, will likely fail</span>'}</p>
+                `;
+                document.getElementById('url-stats').innerHTML = urlStatsHtml;
+                
+                log('encoding-steps', '\n✅ Share URL generated successfully!');
+                
+            } catch (error) {
+                log('encoding-steps', `\n❌ ERROR: ${error.message}`, true);
+                document.getElementById('encoding-stats').innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        // Decode URL
+        function decodeUrl() {
+            clearLog('decoding-steps');
+            clearLog('decoded-data');
+            
+            const url = document.getElementById('generated-url').value;
+            if (!url) {
+                alert('Please generate a URL first!');
+                return;
+            }
+            
+            try {
+                log('decoding-steps', '=== STEP 1: Parse URL ===');
+                const urlObj = new URL(url);
+                const encodedData = urlObj.searchParams.get('data');
+                log('decoding-steps', `Extracted data parameter: ${encodedData ? encodedData.length + ' characters' : 'NOT FOUND'}`);
+                
+                if (!encodedData) {
+                    throw new Error('No data parameter found in URL');
+                }
+                
+                log('decoding-steps', '\n=== STEP 2: URL Decode ===');
+                const decodedUrlData = decodeURIComponent(encodedData);
+                log('decoding-steps', `URL decoded length: ${decodedUrlData.length} characters`);
+                log('decoding-steps', `First 100 chars: ${decodedUrlData.substring(0, 100)}...`);
+                
+                log('decoding-steps', '\n=== STEP 3: Base64 Decode ===');
+                const decodedBase64 = atob(decodedUrlData);
+                log('decoding-steps', `Base64 decoded length: ${decodedBase64.length} bytes`);
+                
+                log('decoding-steps', '\n=== STEP 4: UTF-8 Decode ===');
+                const decodedString = decodeURIComponent(decodedBase64.split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                log('decoding-steps', `UTF-8 decoded length: ${decodedString.length} characters`);
+                
+                log('decoding-steps', '\n=== STEP 5: JSON Parse ===');
+                const parsedData = JSON.parse(decodedString);
+                log('decoding-steps', '✅ Successfully parsed JSON data');
+                
+                // Display decoded data
+                log('decoded-data', 'DECODED DATA:\n' + JSON.stringify(parsedData, null, 2));
+                
+                // Validate data
+                log('decoding-steps', '\n=== Data Validation ===');
+                log('decoding-steps', `• Grid size: ${parsedData.size || 'NOT FOUND'}`);
+                log('decoding-steps', `• Nickname: ${parsedData.nickname || 'NOT FOUND'}`);
+                log('decoding-steps', `• Background color: ${parsedData.bgColor || 'NOT FOUND'}`);
+                log('decoding-steps', `• Sections count: ${parsedData.sections ? parsedData.sections.length : 'NOT FOUND'}`);
+                log('decoding-steps', `• Has images: ${parsedData.images ? 'Yes (' + Object.keys(parsedData.images).length + ' images)' : 'No'}`);
+                
+            } catch (error) {
+                log('decoding-steps', `\n❌ ERROR at decoding: ${error.message}`, true);
+                log('decoding-steps', `Error stack: ${error.stack}`, true);
+            }
+        }
+
+        // Copy URL to clipboard
+        function copyUrl() {
+            const url = document.getElementById('generated-url').value;
+            if (!url) {
+                alert('No URL to copy!');
+                return;
+            }
+            
+            navigator.clipboard.writeText(url).then(() => {
+                alert('URL copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy URL: ' + err.message);
+            });
+        }
+
+        // Test URL in new tab
+        function testUrl() {
+            const url = document.getElementById('generated-url').value;
+            if (!url) {
+                alert('No URL to test!');
+                return;
+            }
+            window.open(url, '_blank');
+        }
+
+        // Test external URL
+        function testExternalUrl() {
+            const url = document.getElementById('external-url').value.trim();
+            if (!url) {
+                alert('Please enter a URL to test!');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('external-result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = '';
+            
+            try {
+                log('external-result', '=== Testing External URL ===');
+                log('external-result', `URL length: ${url.length} characters`);
+                
+                const urlObj = new URL(url);
+                const encodedData = urlObj.searchParams.get('data');
+                
+                if (!encodedData) {
+                    throw new Error('No data parameter found in URL');
+                }
+                
+                log('external-result', `\nEncoded data length: ${encodedData.length} characters`);
+                
+                // Try to decode
+                const decodedUrlData = decodeURIComponent(encodedData);
+                const decodedBase64 = atob(decodedUrlData);
+                const decodedString = decodeURIComponent(decodedBase64.split('').map(function(c) {
+                    return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                }).join(''));
+                const parsedData = JSON.parse(decodedString);
+                
+                log('external-result', '\n✅ Successfully decoded!');
+                log('external-result', '\nDECODED DATA:\n' + JSON.stringify(parsedData, null, 2));
+                
+            } catch (error) {
+                log('external-result', `\n❌ ERROR: ${error.message}`, true);
+                log('external-result', `\nThis might indicate the URL is corrupted or truncated.`, true);
+            }
+        }
+
+        // Initialize with a simple example
+        window.addEventListener('DOMContentLoaded', () => {
+            log('encoding-steps', 'Debug tool ready. Click "Generate Share URL" to start.');
+        });
+    </script>
+</body>
+</html>

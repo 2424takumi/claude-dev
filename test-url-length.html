@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Length Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .warning {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        .success {
+            color: #51cf66;
+            font-weight: bold;
+        }
+        .url-display {
+            word-break: break-all;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        #fileInput {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>GridMe URL Length Test</h1>
+    
+    <div class="test-section">
+        <h2>Test Image Upload and URL Generation</h2>
+        <input type="file" id="fileInput" accept="image/*" />
+        <button onclick="testWithImage()">Test URL with Selected Image</button>
+        <button onclick="testWithSampleData()">Test URL with Sample Data</button>
+        <button onclick="testWithMultipleImages()">Test URL with Multiple Images</button>
+    </div>
+    
+    <div class="test-section" id="results" style="display: none;">
+        <h2>Test Results</h2>
+        <div id="urlLength"></div>
+        <div id="urlStatus"></div>
+        <div id="dataSize"></div>
+        <div class="url-display" id="generatedUrl"></div>
+    </div>
+
+    <script>
+        // Browser URL length limits
+        const URL_LIMITS = {
+            chrome: 2083,
+            firefox: 65536,
+            safari: 80000,
+            edge: 2083,
+            ie: 2083,
+            recommended: 2000 // Safe limit for all browsers
+        };
+
+        function encodeShareData(data) {
+            try {
+                const jsonString = JSON.stringify(data);
+                const utf8Bytes = encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+                    function(match, p1) {
+                        return String.fromCharCode('0x' + p1);
+                    });
+                return btoa(utf8Bytes);
+            } catch (error) {
+                console.error('Share data encode error:', error);
+                return null;
+            }
+        }
+
+        function testWithImage() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image first');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imageData = e.target.result;
+                
+                // Simulate GridMe share data structure
+                const shareData = {
+                    size: 3,
+                    sections: [
+                        { title: "テーマ1" },
+                        { title: "テーマ2" },
+                        { title: "テーマ3" },
+                        { title: "テーマ4" },
+                        { title: "テーマ5" },
+                        { title: "テーマ6" },
+                        { title: "テーマ7" },
+                        { title: "テーマ8" },
+                        { title: "テーマ9" }
+                    ],
+                    bgColor: '#FF8B25',
+                    nickname: 'テストユーザー',
+                    images: {
+                        0: imageData // Single image at index 0
+                    }
+                };
+                
+                testUrlGeneration(shareData);
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function testWithSampleData() {
+            // Test with minimal data (no images)
+            const shareData = {
+                size: 3,
+                sections: [
+                    { title: "テーマ1" },
+                    { title: "テーマ2" },
+                    { title: "テーマ3" },
+                    { title: "テーマ4" },
+                    { title: "テーマ5" },
+                    { title: "テーマ6" },
+                    { title: "テーマ7" },
+                    { title: "テーマ8" },
+                    { title: "テーマ9" }
+                ],
+                bgColor: '#FF8B25',
+                nickname: 'テストユーザー',
+                images: {}
+            };
+            
+            testUrlGeneration(shareData);
+        }
+
+        function testWithMultipleImages() {
+            // Create small sample images (1x1 pixel)
+            const canvas = document.createElement('canvas');
+            canvas.width = 100;
+            canvas.height = 100;
+            const ctx = canvas.getContext('2d');
+            
+            const images = {};
+            
+            // Generate 9 small images
+            for (let i = 0; i < 9; i++) {
+                ctx.fillStyle = `hsl(${i * 40}, 70%, 50%)`;
+                ctx.fillRect(0, 0, 100, 100);
+                images[i] = canvas.toDataURL('image/jpeg', 0.5); // Use JPEG with compression
+            }
+            
+            const shareData = {
+                size: 3,
+                sections: [
+                    { title: "テーマ1" },
+                    { title: "テーマ2" },
+                    { title: "テーマ3" },
+                    { title: "テーマ4" },
+                    { title: "テーマ5" },
+                    { title: "テーマ6" },
+                    { title: "テーマ7" },
+                    { title: "テーマ8" },
+                    { title: "テーマ9" }
+                ],
+                bgColor: '#FF8B25',
+                nickname: 'テストユーザー',
+                images: images
+            };
+            
+            testUrlGeneration(shareData);
+        }
+
+        function testUrlGeneration(shareData) {
+            // Show results section
+            document.getElementById('results').style.display = 'block';
+            
+            // Calculate data sizes
+            const jsonString = JSON.stringify(shareData);
+            const jsonSize = new Blob([jsonString]).size;
+            
+            // Calculate image data sizes
+            let totalImageSize = 0;
+            let imageCount = 0;
+            if (shareData.images) {
+                for (const key in shareData.images) {
+                    totalImageSize += shareData.images[key].length;
+                    imageCount++;
+                }
+            }
+            
+            // Encode data
+            const encodedData = encodeShareData(shareData);
+            const baseUrl = 'https://example.com/theme-grid.html';
+            const shareUrl = `${baseUrl}?data=${encodeURIComponent(encodedData)}`;
+            
+            // Display results
+            const urlLength = shareUrl.length;
+            document.getElementById('urlLength').innerHTML = `<strong>URL Length:</strong> ${urlLength.toLocaleString()} characters`;
+            
+            // Check against browser limits
+            let status = '';
+            if (urlLength <= URL_LIMITS.recommended) {
+                status = '<span class="success">✓ Safe for all browsers</span>';
+            } else if (urlLength <= URL_LIMITS.chrome) {
+                status = '<span class="warning">⚠ May not work in Chrome/Edge (limit: 2,083)</span>';
+            } else if (urlLength <= URL_LIMITS.firefox) {
+                status = '<span class="warning">⚠ Works in Firefox but not Chrome/Edge</span>';
+            } else {
+                status = '<span class="warning">✗ URL too long for most browsers</span>';
+            }
+            document.getElementById('urlStatus').innerHTML = `<strong>Status:</strong> ${status}`;
+            
+            // Display data sizes
+            document.getElementById('dataSize').innerHTML = `
+                <strong>Data Breakdown:</strong><br>
+                - JSON size: ${(jsonSize / 1024).toFixed(2)} KB<br>
+                - Image count: ${imageCount}<br>
+                - Total image data: ${(totalImageSize / 1024).toFixed(2)} KB<br>
+                - Encoded data size: ${(encodedData.length / 1024).toFixed(2)} KB<br>
+                - Base64 overhead: ~${((encodedData.length / jsonSize) * 100 - 100).toFixed(0)}%
+            `;
+            
+            // Display URL (truncated for display)
+            document.getElementById('generatedUrl').textContent = shareUrl;
+            
+            // Log detailed info to console
+            console.log('Share Data:', shareData);
+            console.log('URL Length:', urlLength);
+            console.log('Browser Limits:', URL_LIMITS);
+        }
+    </script>
+</body>
+</html>

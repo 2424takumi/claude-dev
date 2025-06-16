@@ -112,7 +112,7 @@ export async function exportHighQualityImage(element, options = {}) {
         }
 
         return new Promise((resolve, reject) => {
-            canvas.toBlob((blob) => {
+            canvas.toBlob(async (blob) => {
                 if (!blob) {
                     reject(new Error('Failed to create blob'));
                     return;

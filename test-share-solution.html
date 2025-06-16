@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share URL Solution Test</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .solution-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #FF8B25;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 0;
+        }
+        .problem {
+            background: #ffebee;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .solution {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        button {
+            background: #FF8B25;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #e67a20;
+        }
+        .code-block {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .result {
+            background: #333;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 GridMe Share URL Solutions</h1>
+
+    <!-- Problem Analysis -->
+    <div class="solution-card">
+        <h2>📊 Problem Analysis</h2>
+        <div class="problem">
+            <h3>Current Issues:</h3>
+            <ul>
+                <li><strong>URL Length:</strong> When including image data, URLs can exceed browser limits (2048 characters)</li>
+                <li><strong>Data Loss:</strong> Long URLs may be truncated by browsers or social media platforms</li>
+                <li><strong>Encoding Issues:</strong> Complex UTF-8 characters (Japanese) increase encoded size</li>
+                <li><strong>Image Data:</strong> Base64 encoded images significantly increase URL length</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Solution 1: Compression -->
+    <div class="solution-card">
+        <h2>Solution 1: Data Compression</h2>
+        <div class="solution">
+            <h3>Approach: Use compression before Base64 encoding</h3>
+            <p>Compress the JSON data using LZ-string or similar compression library.</p>
+        </div>
+        <button onclick="testCompression()">Test Compression Solution</button>
+        <div id="compression-result" class="result" style="display: none;"></div>
+    </div>
+
+    <!-- Solution 2: Separate Image Storage -->
+    <div class="solution-card">
+        <h2>Solution 2: Separate Image Storage</h2>
+        <div class="solution">
+            <h3>Approach: Store images separately from grid data</h3>
+            <p>Only share grid configuration in URL, load images separately or allow re-upload.</p>
+        </div>
+        <div class="code-block">
+// Instead of including images in share data:
+const shareData = {
+    size: gridSize,
+    sections: sections,
+    bgColor: bgColor,
+    nickname: nickname
+    // No images property
+};
+        </div>
+        <button onclick="testSeparateStorage()">Test Without Images</button>
+        <div id="separate-result" class="result" style="display: none;"></div>
+    </div>
+
+    <!-- Solution 3: URL Shortener -->
+    <div class="solution-card">
+        <h2>Solution 3: URL Shortener Service</h2>
+        <div class="solution">
+            <h3>Approach: Use a URL shortening service</h3>
+            <p>Implement a simple backend service to store data and return short URLs.</p>
+        </div>
+        <div class="warning">
+            ⚠️ This requires backend infrastructure (Firebase, Supabase, or custom API)
+        </div>
+        <div class="code-block">
+// Example flow:
+// 1. POST full data to API
+// 2. API returns short ID
+// 3. Share URL: https://gridme.app/s/abc123
+// 4. On load, fetch data from API using ID
+        </div>
+    </div>
+
+    <!-- Solution 4: Local Storage -->
+    <div class="solution-card">
+        <h2>Solution 4: Local Storage + Share Code</h2>
+        <div class="solution">
+            <h3>Approach: Store in localStorage with share codes</h3>
+            <p>Generate a short code for shared grids stored in localStorage.</p>
+        </div>
+        <button onclick="testLocalStorage()">Test Local Storage Solution</button>
+        <div id="localstorage-result" class="result" style="display: none;"></div>
+    </div>
+
+    <!-- Solution 5: Progressive Enhancement -->
+    <div class="solution-card">
+        <h2>Solution 5: Progressive Share Enhancement</h2>
+        <div class="solution">
+            <h3>Approach: Smart detection and fallback</h3>
+            <ol>
+                <li>Try full share with images</li>
+                <li>If URL too long, share without images</li>
+                <li>Show warning to user about image removal</li>
+                <li>Allow image re-upload on shared page</li>
+            </ol>
+        </div>
+        <button onclick="testProgressiveShare()">Test Progressive Share</button>
+        <div id="progressive-result" class="result" style="display: none;"></div>
+    </div>
+
+    <!-- Recommended Implementation -->
+    <div class="solution-card">
+        <h2>✅ Recommended Implementation</h2>
+        <div class="solution">
+            <h3>Short-term Fix (Immediate):</h3>
+            <ul>
+                <li>Remove images from share URLs</li>
+                <li>Show clear message that images need to be re-added</li>
+                <li>Improve image compression for future sharing</li>
+            </ul>
+            
+            <h3>Long-term Solution:</h3>
+            <ul>
+                <li>Implement URL shortener service</li>
+                <li>Use IndexedDB for local caching</li>
+                <li>Add QR code generation for easy mobile sharing</li>
+            </ul>
+        </div>
+        <button onclick="implementFix()">Show Implementation Code</button>
+        <div id="implementation-code" class="code-block" style="display: none;"></div>
+    </div>
+
+    <script>
+        // Load LZ-string for compression testing
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js';
+        document.head.appendChild(script);
+
+        // Test data
+        const testData = {
+            size: 2,
+            sections: [
+                {title: "好きな食べ物", theme: "warm"},
+                {title: "趣味", theme: "cool"},
+                {title: "思い出の場所", theme: "nature"},
+                {title: "大切なもの", theme: "elegant"}
+            ],
+            bgColor: "#FF8B25",
+            nickname: "テスト太郎",
+            images: {}
+        };
+
+        // Generate sample image
+        function generateSampleImage() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 300;
+            canvas.height = 300;
+            const ctx = canvas.getContext('2d');
+            
+            // Create a gradient
+            const gradient = ctx.createLinearGradient(0, 0, 300, 300);
+            gradient.addColorStop(0, '#FF8B25');
+            gradient.addColorStop(1, '#ff6b00');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 300, 300);
+            
+            // Add some text
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Sample Image', 150, 150);
+            
+            return canvas.toDataURL('image/jpeg', 0.7);
+        }
+
+        // Add sample images to test data
+        const sampleImage = generateSampleImage();
+        for (let i = 0; i < 4; i++) {
+            testData.images[i] = sampleImage;
+        }
+
+        function testCompression() {
+            const resultDiv = document.getElementById('compression-result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = 'Testing compression...\n\n';
+
+            try {
+                // Original encoding
+                const jsonString = JSON.stringify(testData);
+                const originalEncoded = btoa(encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+                    function(match, p1) {
+                        return String.fromCharCode('0x' + p1);
+                    }));
+                
+                // Compressed encoding
+                const compressed = LZString.compressToBase64(jsonString);
+                
+                // Results
+                resultDiv.textContent += `Original JSON size: ${jsonString.length} bytes\n`;
+                resultDiv.textContent += `Original Base64 size: ${originalEncoded.length} bytes\n`;
+                resultDiv.textContent += `Compressed size: ${compressed.length} bytes\n`;
+                resultDiv.textContent += `Compression ratio: ${(compressed.length / originalEncoded.length * 100).toFixed(1)}%\n\n`;
+                
+                // Test decompression
+                const decompressed = LZString.decompressFromBase64(compressed);
+                const parsed = JSON.parse(decompressed);
+                resultDiv.textContent += `Decompression: ${parsed.nickname === testData.nickname ? '✅ Success' : '❌ Failed'}\n`;
+                
+                // URL lengths
+                const originalUrl = `https://example.com/shared.html?data=${encodeURIComponent(originalEncoded)}`;
+                const compressedUrl = `https://example.com/shared.html?data=${encodeURIComponent(compressed)}`;
+                
+                resultDiv.textContent += `\nOriginal URL length: ${originalUrl.length} characters\n`;
+                resultDiv.textContent += `Compressed URL length: ${compressedUrl.length} characters\n`;
+                resultDiv.textContent += `\nStatus: ${compressedUrl.length < 2048 ? '✅ Within browser limits' : '❌ Still too long'}`;
+                
+            } catch (error) {
+                resultDiv.textContent += `\nError: ${error.message}`;
+            }
+        }
+
+        function testSeparateStorage() {
+            const resultDiv = document.getElementById('separate-result');
+            resultDiv.style.display = 'block';
+            
+            // Test without images
+            const dataWithoutImages = {
+                size: testData.size,
+                sections: testData.sections,
+                bgColor: testData.bgColor,
+                nickname: testData.nickname
+            };
+            
+            const jsonString = JSON.stringify(dataWithoutImages);
+            const encoded = btoa(encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+                function(match, p1) {
+                    return String.fromCharCode('0x' + p1);
+                }));
+            
+            const shareUrl = `https://example.com/shared.html?data=${encodeURIComponent(encoded)}`;
+            
+            resultDiv.textContent = `Data without images:\n`;
+            resultDiv.textContent += `JSON size: ${jsonString.length} bytes\n`;
+            resultDiv.textContent += `Encoded size: ${encoded.length} bytes\n`;
+            resultDiv.textContent += `URL length: ${shareUrl.length} characters\n`;
+            resultDiv.textContent += `\nStatus: ${shareUrl.length < 2048 ? '✅ Safe for all browsers' : '❌ Still too long'}\n\n`;
+            resultDiv.textContent += `Reduction: ${((1 - shareUrl.length / 8000) * 100).toFixed(1)}% smaller than with images`;
+        }
+
+        function testLocalStorage() {
+            const resultDiv = document.getElementById('localstorage-result');
+            resultDiv.style.display = 'block';
+            
+            // Generate short code
+            const shortCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+            
+            // Store in localStorage
+            const storageKey = `gridme_share_${shortCode}`;
+            localStorage.setItem(storageKey, JSON.stringify(testData));
+            
+            // Create short URL
+            const shareUrl = `https://example.com/shared.html?code=${shortCode}`;
+            
+            resultDiv.textContent = `Local Storage Solution:\n\n`;
+            resultDiv.textContent += `Generated code: ${shortCode}\n`;
+            resultDiv.textContent += `Storage key: ${storageKey}\n`;
+            resultDiv.textContent += `Share URL: ${shareUrl}\n`;
+            resultDiv.textContent += `URL length: ${shareUrl.length} characters\n\n`;
+            resultDiv.textContent += `✅ Extremely short URL\n`;
+            resultDiv.textContent += `⚠️ Only works on same device/browser\n`;
+            resultDiv.textContent += `⚠️ Data expires when localStorage is cleared`;
+            
+            // Clean up
+            setTimeout(() => {
+                localStorage.removeItem(storageKey);
+            }, 5000);
+        }
+
+        function testProgressiveShare() {
+            const resultDiv = document.getElementById('progressive-result');
+            resultDiv.style.display = 'block';
+            resultDiv.textContent = '';
+            
+            function tryShare(data, description) {
+                const jsonString = JSON.stringify(data);
+                const encoded = btoa(encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+                    function(match, p1) {
+                        return String.fromCharCode('0x' + p1);
+                    }));
+                const url = `https://example.com/shared.html?data=${encodeURIComponent(encoded)}`;
+                
+                resultDiv.textContent += `\n${description}:\n`;
+                resultDiv.textContent += `- Data size: ${jsonString.length} bytes\n`;
+                resultDiv.textContent += `- URL length: ${url.length} characters\n`;
+                resultDiv.textContent += `- Status: ${url.length < 2048 ? '✅ OK' : '❌ Too long'}\n`;
+                
+                return url.length < 2048;
+            }
+            
+            // Try with full data
+            if (!tryShare(testData, 'Attempt 1: Full data with images')) {
+                // Try with compressed images
+                const compressedData = {...testData};
+                compressedData.images = {0: sampleImage.substring(0, 1000)}; // Simulate smaller images
+                
+                if (!tryShare(compressedData, 'Attempt 2: With compressed images')) {
+                    // Try without images
+                    const noImageData = {
+                        size: testData.size,
+                        sections: testData.sections,
+                        bgColor: testData.bgColor,
+                        nickname: testData.nickname,
+                        hasImages: true // Flag to show message
+                    };
+                    
+                    if (tryShare(noImageData, 'Attempt 3: Without images')) {
+                        resultDiv.textContent += '\n✅ Success! Shared without images.\n';
+                        resultDiv.textContent += '📝 User will see message to re-add images.';
+                    }
+                }
+            }
+        }
+
+        function implementFix() {
+            const codeDiv = document.getElementById('implementation-code');
+            codeDiv.style.display = 'block';
+            codeDiv.textContent = `// Modified encodeShareData function
+function encodeShareData(data, options = {}) {
+    const { includeImages = false, maxUrlLength = 2048 } = options;
+    
+    // Prepare share data
+    const shareData = {
+        size: data.size,
+        sections: data.sections,
+        bgColor: data.bgColor,
+        nickname: data.nickname
+    };
+    
+    // Try with images first if requested
+    if (includeImages && data.images && Object.keys(data.images).length > 0) {
+        shareData.images = data.images;
+        
+        // Test encode
+        const encoded = encodeData(shareData);
+        const testUrl = \`\${window.location.origin}/shared.html?data=\${encodeURIComponent(encoded)}\`;
+        
+        // If too long, remove images
+        if (testUrl.length > maxUrlLength) {
+            delete shareData.images;
+            shareData.imagesRemoved = true;
+            console.warn('Share URL too long with images, sharing without images');
+        }
+    }
+    
+    return encodeData(shareData);
+}
+
+// Modified getSharedData function
+function getSharedData() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedData = urlParams.get('data');
+    
+    if (!encodedData) {
+        // Check for short code
+        const code = urlParams.get('code');
+        if (code) {
+            return getDataFromCode(code);
+        }
+        return null;
+    }
+    
+    try {
+        const data = decodeData(encodedData);
+        
+        // Show message if images were removed
+        if (data.imagesRemoved) {
+            showToast('画像は共有されませんでした。必要に応じて再度追加してください。', 'info');
+        }
+        
+        return data;
+    } catch (error) {
+        console.error('Decode error:', error);
+        return null;
+    }
+}
+
+// Helper functions
+function encodeData(data) {
+    const jsonString = JSON.stringify(data);
+    const utf8Bytes = encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g,
+        function(match, p1) {
+            return String.fromCharCode('0x' + p1);
+        });
+    return btoa(utf8Bytes);
+}
+
+function decodeData(encoded) {
+    const decodedBase64 = atob(encoded);
+    const decodedString = decodeURIComponent(decodedBase64.split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(decodedString);
+}`;
+        }
+    </script>
+</body>
+</html>
