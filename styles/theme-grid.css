@@ -23,9 +23,43 @@
     margin-bottom: 2rem;
 }
 
+/* メイングリッドコンテナ */
+.theme-grid {
+    display: grid;
+    gap: 8px;
+    aspect-ratio: 1;
+    max-width: 780px;
+    width: calc(100% - 32px);
+    margin: 0 auto var(--spacing-6) auto;
+    background: var(--bg-secondary);
+    padding: 8px;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+}
+
 /* フリップグリッドコンテナ */
 .flip-grid {
     perspective: 1000px;
+}
+
+/* グリッドアイテム */
+.grid-theme-item {
+    position: relative;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    min-height: 100px;
+    aspect-ratio: 1;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* グリッドアイテム - フリップカード */
@@ -113,6 +147,28 @@
 }
 
 /* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .theme-grid {
+        max-width: 780px;
+        width: calc(100% - 32px);
+        padding: 8px;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .theme-grid {
+        gap: 8px;
+        padding: 8px;
+        width: calc(100% - 32px);
+        max-width: 780px;
+    }
+    
+    .grid-theme-item {
+        min-height: 80px;
+    }
+}
+
 @media (min-width: 640px) {
     .action-button-container {
         flex-direction: row;
